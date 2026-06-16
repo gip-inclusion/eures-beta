@@ -1580,8 +1580,6 @@ def get_record(form_id: str):
     if not uuid:
         return jsonify({'error': 'UUID parameter required'}), 400
 
-    # Build Grist API URL with filter
-    filter_param = f'{{"uuid":["{uuid}"]}}'
     url = f"{GRIST_BASE_URL}/api/docs/{config['doc_id']}/tables/{config['table_id']}/records"
 
     headers = {'Accept': 'application/json'}
