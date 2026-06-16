@@ -1060,8 +1060,9 @@ def build_eures_public_stats() -> dict:
         'mois': '',
         'candidats': 0,
         'besoins_employeurs': 0,
-        'matchings': 0,
         'candidats_contactes': 0,
+        'candidatures_recues': 0,
+        'matchings': 0,
         'candidatures_transmises_employeur': 0,
         'embauches': 0,
     })
@@ -1124,6 +1125,7 @@ def build_eures_public_stats() -> dict:
                 continue
             monthly[month]['mois'] = month
             monthly[month]['candidats_contactes'] += _safe_int(fields.get('candidats_contactes'))
+            monthly[month]['candidatures_recues'] += _safe_int(fields.get('candidatures_recues'))
             monthly[month]['candidatures_transmises_employeur'] += _safe_int(fields.get('candidatures_transmises_employeur'))
             monthly[month]['embauches'] += _safe_int(fields.get('embauches'))
 
@@ -1132,8 +1134,9 @@ def build_eures_public_stats() -> dict:
     totals = {
         'candidats': len(candidats),
         'besoins_employeurs': len(besoins),
-        'matchings': len(matchings),
         'candidats_contactes': sum(int(row['candidats_contactes']) for row in monthly_rows),
+        'candidatures_recues': sum(int(row['candidatures_recues']) for row in monthly_rows),
+        'matchings': len(matchings),
         'candidatures_transmises_employeur': sum(int(row['candidatures_transmises_employeur']) for row in monthly_rows),
         'embauches': sum(int(row['embauches']) for row in monthly_rows),
     }

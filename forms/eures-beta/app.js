@@ -212,26 +212,26 @@ const copy = {
       lede: "Cette page présente des indicateurs agrégés et non nominatifs sur l’activité du projet EURES beta.",
       updatedPrefix: "Dernière mise à jour",
       methodology: "Les chiffres affichés proviennent des tables Grist du projet. Les données personnelles, identifiants et contenus libres ne sont jamais affichés.",
-      manualNote: "Les indicateurs de contact, de transmission et d’embauche peuvent être complétés manuellement dans la table mensuelle de pilotage.",
+      manualNote: "Les indicateurs de contact, de candidatures reçues, de transmission et d’embauche peuvent être complétés manuellement dans la table mensuelle de pilotage.",
       manualMissing: "La table mensuelle de pilotage n’est pas encore configurée. Les indicateurs saisis à la main restent donc à zéro.",
       keyFiguresTitle: "Chiffres clés",
       monthlyTitle: "Suivi mensuel",
       monthlyLead: "Les volumes automatiques sont calculés à partir des dates d’enregistrement. Les suivis métier peuvent être complétés mois par mois.",
       breakdownsTitle: "Répartitions",
       totals: {
-        candidats: "Candidatures reçues",
-        besoins_employeurs: "Besoins employeurs reçus",
-        matchings: "Matchings calculés",
+        besoins_employeurs: "Besoins employeurs",
         candidats_contactes: "Candidats contactés",
+        candidatures_recues: "Candidatures reçues",
+        matchings: "Matchings réalisés",
         candidatures_transmises_employeur: "Candidatures transmises",
         embauches: "Embauches"
       },
       monthlyColumns: {
         mois: "Mois",
-        candidats: "Candidatures",
         besoins_employeurs: "Besoins employeurs",
-        matchings: "Matchings",
         candidats_contactes: "Candidats contactés",
+        candidatures_recues: "Candidatures reçues",
+        matchings: "Matchings",
         candidatures_transmises_employeur: "Candidatures transmises",
         embauches: "Embauches"
       },
@@ -455,26 +455,26 @@ const copy = {
       lede: "This page shows aggregated, non-identifying indicators about EURES beta activity.",
       updatedPrefix: "Last updated",
       methodology: "Figures come from the project's Grist tables. Personal data, identifiers and free text are never displayed.",
-      manualNote: "Contact, transmission and hiring indicators can be completed manually in the monthly steering table.",
+      manualNote: "Contact, received applications, transmission and hiring indicators can be completed manually in the monthly steering table.",
       manualMissing: "The monthly steering table is not configured yet. Manually entered indicators therefore remain at zero.",
       keyFiguresTitle: "Key figures",
       monthlyTitle: "Monthly tracking",
       monthlyLead: "Automatic volumes are calculated from submission dates. Operational follow-up can then be completed month by month.",
       breakdownsTitle: "Breakdowns",
       totals: {
-        candidats: "Candidate submissions",
         besoins_employeurs: "Employer needs",
-        matchings: "Computed matchings",
         candidats_contactes: "Candidates contacted",
+        candidatures_recues: "Applications received",
+        matchings: "Matchings completed",
         candidatures_transmises_employeur: "Applications transmitted",
         embauches: "Hires"
       },
       monthlyColumns: {
         mois: "Month",
-        candidats: "Candidates",
         besoins_employeurs: "Employer needs",
-        matchings: "Matchings",
         candidats_contactes: "Candidates contacted",
+        candidatures_recues: "Applications received",
+        matchings: "Matchings",
         candidatures_transmises_employeur: "Applications transmitted",
         embauches: "Hires"
       },
@@ -698,26 +698,26 @@ const copy = {
       lede: "Diese Seite zeigt aggregierte und nicht personenbezogene Kennzahlen zur Aktivität von EURES beta.",
       updatedPrefix: "Letzte Aktualisierung",
       methodology: "Die Zahlen stammen aus den Grist-Tabellen des Projekts. Personendaten, Kennungen und freie Texte werden nie angezeigt.",
-      manualNote: "Kontakt-, Übermittlungs- und Einstellungsindikatoren können in der monatlichen Steuerungstabelle manuell ergänzt werden.",
+      manualNote: "Kontakt-, eingegangene Bewerbungs-, Übermittlungs- und Einstellungsindikatoren können in der monatlichen Steuerungstabelle manuell ergänzt werden.",
       manualMissing: "Die monatliche Steuerungstabelle ist noch nicht konfiguriert. Manuell gepflegte Kennzahlen bleiben daher auf null.",
       keyFiguresTitle: "Kennzahlen",
       monthlyTitle: "Monatliche Entwicklung",
       monthlyLead: "Automatische Volumen werden aus den Einreichungsdaten berechnet. Die operative Nachverfolgung kann dann monatlich ergänzt werden.",
       breakdownsTitle: "Verteilungen",
       totals: {
-        candidats: "Kandidaten-Eingänge",
         besoins_employeurs: "Arbeitgeberbedarfe",
-        matchings: "Berechnete Matchings",
         candidats_contactes: "Kontaktierte Kandidaten",
+        candidatures_recues: "Eingegangene Bewerbungen",
+        matchings: "Durchgeführte Matchings",
         candidatures_transmises_employeur: "Übermittelte Bewerbungen",
         embauches: "Einstellungen"
       },
       monthlyColumns: {
         mois: "Monat",
-        candidats: "Kandidaten",
         besoins_employeurs: "Arbeitgeberbedarfe",
-        matchings: "Matchings",
         candidats_contactes: "Kontaktierte Kandidaten",
+        candidatures_recues: "Eingegangene Bewerbungen",
+        matchings: "Matchings",
         candidatures_transmises_employeur: "Übermittelte Bewerbungen",
         embauches: "Einstellungen"
       },
@@ -1855,10 +1855,10 @@ function statTemplate(lang, t, data) {
                 ${monthly.map((row) => `
                   <tr>
                     <th>${formatMonth(row.mois, lang)}</th>
-                    <td>${Number(row.candidats || 0).toLocaleString(lang)}</td>
                     <td>${Number(row.besoins_employeurs || 0).toLocaleString(lang)}</td>
-                    <td>${Number(row.matchings || 0).toLocaleString(lang)}</td>
                     <td>${Number(row.candidats_contactes || 0).toLocaleString(lang)}</td>
+                    <td>${Number(row.candidatures_recues || 0).toLocaleString(lang)}</td>
+                    <td>${Number(row.matchings || 0).toLocaleString(lang)}</td>
                     <td>${Number(row.candidatures_transmises_employeur || 0).toLocaleString(lang)}</td>
                     <td>${Number(row.embauches || 0).toLocaleString(lang)}</td>
                   </tr>
