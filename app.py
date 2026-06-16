@@ -1567,6 +1567,23 @@ def find_duplicate_finess(config: dict, current_uuid: str, finess_values: set, h
     return duplicates
 
 
+@app.after_request
+def set_security_headers(response):
+    """Add conservative security headers to every response."""
+    response.headers.setdefault('X-Frame-Options', 'DENY')
+    response.headers.setdefault('X-Content-Type-Options', 'nosniff')
+    response.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+    response.headers.setdefault('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+    response.headers.setdefault(
+        'Content-Security-Policy',
+        "default-src 'self'; base-uri 'none'; object-src 'none'; "
+        "frame-ancestors 'none'; form-action 'self'; "
+        "img-src 'self' data: https://eures.europa.eu https://cdn.francetravail.fr https://european-union.europa.eu; "
+        "style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'",
+    )
+    return response
+
+
 @app.route('/api/forms/<form_id>/record', methods=['GET'])
 def get_record(form_id: str):
     """Fetch a record by UUID or table-specific identifier."""
