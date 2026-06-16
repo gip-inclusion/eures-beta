@@ -1079,6 +1079,7 @@ def build_eures_public_stats() -> dict:
         if month:
             monthly[month]['mois'] = month
             monthly[month]['candidats'] += 1
+            monthly[month]['candidatures_recues'] += 1
         for label in _split_multi_value(fields.get('pays')):
             candidats_par_pays[label] += 1
         for label in _split_multi_value(fields.get('metier')):
@@ -1125,7 +1126,6 @@ def build_eures_public_stats() -> dict:
                 continue
             monthly[month]['mois'] = month
             monthly[month]['candidats_contactes'] += _safe_int(fields.get('candidats_contactes'))
-            monthly[month]['candidatures_recues'] += _safe_int(fields.get('candidatures_recues'))
             monthly[month]['candidatures_transmises_employeur'] += _safe_int(fields.get('candidatures_transmises_employeur'))
             monthly[month]['embauches'] += _safe_int(fields.get('embauches'))
 
@@ -1135,7 +1135,7 @@ def build_eures_public_stats() -> dict:
         'candidats': len(candidats),
         'besoins_employeurs': len(besoins),
         'candidats_contactes': sum(int(row['candidats_contactes']) for row in monthly_rows),
-        'candidatures_recues': sum(int(row['candidatures_recues']) for row in monthly_rows),
+        'candidatures_recues': len(candidats),
         'matchings': len(matchings),
         'candidatures_transmises_employeur': sum(int(row['candidatures_transmises_employeur']) for row in monthly_rows),
         'embauches': sum(int(row['embauches']) for row in monthly_rows),
