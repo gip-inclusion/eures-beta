@@ -14,6 +14,7 @@ Environment variables:
   GRIST_BASE_URL - Grist instance URL (defaults to grist.numerique.gouv.fr)
 """
 
+import logging
 import os
 import json
 import time
@@ -36,6 +37,13 @@ ASSETS_DIR = BASE_DIR / 'assets'
 DOCS_DIR = BASE_DIR / 'docs'
 
 app = Flask(__name__)
+logger = logging.getLogger('eures_beta')
+
+
+def _client_error(message: str, status: int):
+    """Return a generic client-facing error without leaking internal/upstream detail."""
+    return jsonify({'error': message}), status
+
 
 GRIST_BASE_URL = os.environ.get('GRIST_BASE_URL', 'https://grist.numerique.gouv.fr').rstrip('/')
 APP_MODE = os.environ.get('APP_MODE', 'eures-beta').strip().lower() or 'eures-beta'
@@ -1599,9 +1607,13 @@ def get_record(form_id: str):
             params={'filter': json.dumps({record_key: [uuid]})},
             headers=headers,
         )
-        return jsonify(resp.json()), resp.status_code
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        if resp.status_code != 200:
+            logger.error('get_record upstream read failed: HTTP %s', resp.status_code)
+            return _client_error('Could not read the record.', 502)
+        return jsonify(resp.json()), 200
+    except Exception:
+        logger.exception('Unhandled error while handling request')
+        return _client_error('Internal server error.', 500)
 
 
 @app.route('/api/forms/<form_id>/record', methods=['POST'])
@@ -1638,8 +1650,9 @@ def save_record(form_id: str):
         allowed_columns = get_table_columns(config, headers)
         filtered_fields = {k: v for k, v in fields.items() if str(k) in allowed_columns}
         record_key = resolve_record_key(allowed_columns)
-    except Exception as e:
-        return jsonify({'error': f'Failed to fetch Grist table columns: {e}'}), 500
+    except Exception:
+        logger.exception('save_record: failed to fetch Grist table columns')
+        return _client_error('Could not read the form configuration.', 502)
 
     if not record_key:
         return jsonify({'error': "Table is missing a supported unique key column ('uuid' or 'id_tally')"}), 500
@@ -1651,10 +1664,12 @@ def save_record(form_id: str):
     try:
         existing_record, check_resp = fetch_record_by_field(base_url, record_key, filtered_fields[record_key], headers)
         if check_resp.status_code != 200:
-            return jsonify(_parse_response_json_safe(check_resp)), check_resp.status_code
+            logger.error('save_record: existing-record lookup failed: HTTP %s', check_resp.status_code)
+            return _client_error('Could not verify the existing record.', 502)
         record_id = existing_record.get('id') if isinstance(existing_record, dict) else None
-    except Exception as e:
-        return jsonify({'error': f'Failed to check existing record: {e}'}), 500
+    except Exception:
+        logger.exception('save_record: failed to check existing record')
+        return _client_error('Could not verify the existing record.', 502)
 
     # Enforce uniqueness of FINESS across records (excluding current UUID)
     try:
@@ -1666,8 +1681,9 @@ def save_record(form_id: str):
                 'error': 'Un ou plusieurs numéros FINESS sont déjà utilisés par un autre questionnaire.',
                 'duplicates': duplicates_sorted,
             }), 409
-    except Exception as e:
-        return jsonify({'error': f'Failed to validate FINESS uniqueness: {e}'}), 500
+    except Exception:
+        logger.exception('save_record: failed to validate FINESS uniqueness')
+        return _client_error('Could not validate the submission.', 500)
 
     # Create or update, then re-read the UUID so callers never get a false success.
     try:
@@ -1686,7 +1702,8 @@ def save_record(form_id: str):
             return redirect_error
 
         if resp.status_code != 200:
-            return jsonify(_parse_response_json_safe(resp)), resp.status_code
+            logger.error('save_record: Grist write failed: HTTP %s', resp.status_code)
+            return _client_error('Could not save the record.', 502)
 
         saved_record, verify_resp = fetch_record_by_field(base_url, record_key, filtered_fields[record_key], headers)
         if verify_resp.status_code != 200:
@@ -1722,8 +1739,9 @@ def save_record(form_id: str):
             'record_id': saved_record.get('id'),
             'matching': matching_result,
         }), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        logger.exception('Unhandled error while handling request')
+        return _client_error('Internal server error.', 500)
 
 
 @app.route('/api/forms/<form_id>/export-readable-xlsx', methods=['POST'])
@@ -1736,8 +1754,9 @@ def export_readable_xlsx(form_id: str):
         return jsonify({'error': 'Invalid request body'}), 400
     try:
         xlsx = build_readable_xlsx(data)
-    except Exception as e:
-        return jsonify({'error': f'Failed to build readable Excel export: {e}'}), 500
+    except Exception:
+        logger.exception('export_readable_xlsx: failed to build workbook')
+        return _client_error('Could not build the export.', 500)
 
     uuid = str(data.get('uuid') or (data.get('fields') or {}).get('uuid') or 'saisie').strip() or 'saisie'
     filename = f'fagerh_saisie_lisible_{uuid}.xlsx'
@@ -1777,8 +1796,9 @@ def check_finess(form_id: str):
             'duplicates': duplicates,
             'has_duplicates': len(duplicates) > 0,
         }), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        logger.exception('Unhandled error while handling request')
+        return _client_error('Internal server error.', 500)
 
 
 @app.route('/api/forms/<form_id>/recover-by-email', methods=['POST'])
@@ -1808,7 +1828,8 @@ def recover_by_email(form_id: str):
         filter_param = json.dumps({"validateur_email": [email]})
         resp = requests.get(url, params={'filter': filter_param, 'limit': 5000}, headers=headers)
         if resp.status_code != 200:
-            return jsonify(resp.json()), resp.status_code
+            logger.error('recover_by_email: Grist lookup failed: HTTP %s', resp.status_code)
+            return _client_error('Could not process the request.', 502)
         payload = resp.json()
         records = payload.get('records', [])
 
@@ -1827,7 +1848,8 @@ def recover_by_email(form_id: str):
         if not matches:
             scan_resp = requests.get(url, params={'limit': 5000}, headers=headers)
             if scan_resp.status_code != 200:
-                return jsonify(scan_resp.json()), scan_resp.status_code
+                logger.error('recover_by_email: Grist scan failed: HTTP %s', scan_resp.status_code)
+                return _client_error('Could not process the request.', 502)
             scan_payload = scan_resp.json()
             for rec in scan_payload.get('records', []):
                 fields = rec.get('fields', {}) if isinstance(rec, dict) else {}
@@ -1854,8 +1876,9 @@ def recover_by_email(form_id: str):
             'count': len(matches),
             'match_on': 'email+finess' if finess else 'email',
         }), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        logger.exception('Unhandled error while handling request')
+        return _client_error('Internal server error.', 500)
 
 
 @app.route('/api/forms/<form_id>/admin/overview', methods=['GET'])
@@ -1877,8 +1900,9 @@ def admin_overview(form_id: str):
 
     try:
         records = fetch_all_records(config, headers)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        logger.exception('Unhandled error while handling request')
+        return _client_error('Internal server error.', 500)
 
     rows = []
     for rec in records:
@@ -1944,8 +1968,9 @@ def public_stats(form_id: str):
 
     try:
         return jsonify(build_eures_public_stats()), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        logger.exception('Unhandled error while handling request')
+        return _client_error('Internal server error.', 500)
 
 
 @app.route('/health')
