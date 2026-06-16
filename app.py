@@ -36,6 +36,8 @@ ASSETS_DIR = BASE_DIR / 'assets'
 DOCS_DIR = BASE_DIR / 'docs'
 
 app = Flask(__name__)
+# Cap request bodies to bound memory use and blunt large-payload DoS (forms/exports are small JSON).
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 
 GRIST_BASE_URL = os.environ.get('GRIST_BASE_URL', 'https://grist.numerique.gouv.fr').rstrip('/')
 APP_MODE = os.environ.get('APP_MODE', 'eures-beta').strip().lower() or 'eures-beta'
