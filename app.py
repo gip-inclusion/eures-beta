@@ -599,8 +599,14 @@ def _xlsx_safe_value(value):
     if isinstance(value, (int, float)):
         return value
     if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
+        text = json.dumps(value, ensure_ascii=False)
+    else:
+        text = str(value)
+    # Neutralize spreadsheet formula injection: a leading =,+,-,@ (or control char) makes
+    # Excel/LibreOffice evaluate user-supplied text as a formula when the export is opened.
+    if text[:1] in ('=', '+', '-', '@', '\t', '\r'):
+        text = "'" + text
+    return text
 
 
 def _flatten_for_xlsx(value, prefix=''):
