@@ -1467,42 +1467,43 @@ def compute_eures_matching(besoin_fields: dict, candidat_fields: dict) -> dict:
     }
 
 
-def run_eures_matching_for_saved_record(form_id: str, role: str, saved_record: dict, config: dict, headers: dict):
-    """Compute matchings for one newly saved EURES beta record and write them to Matchings."""
-    if form_id != 'eures-beta':
-        return {'processed': False, 'reason': 'unsupported_form'}
-    if role not in {'candidate', 'employer'}:
-        return {'processed': False, 'reason': 'unsupported_role'}
+def recompute_eures_matchings(config: dict, headers: dict, max_pairs: int = 10000) -> dict:
+    """Recompute Matchings for every candidate/besoin pair, off the request path.
 
+    Moved out of the public save endpoint so a single anonymous submission can no longer
+    trigger an unbounded, blocking fan-out of Grist writes. Intended to run on a schedule.
+    """
     all_candidats = fetch_table_records(config['doc_id'], EURES_CANDIDATS_TABLE, headers)
     all_besoins = fetch_table_records(config['doc_id'], EURES_BESOINS_TABLE, headers)
-    saved_fields = saved_record.get('fields', {}) if isinstance(saved_record.get('fields'), dict) else {}
 
     writes = 0
-    if role == 'candidate':
-        for besoin in all_besoins:
-            besoin_fields = besoin.get('fields', {}) if isinstance(besoin.get('fields'), dict) else {}
-            candidat_id = str(saved_fields.get('id_tally') or saved_fields.get('uuid') or '')
-            besoin_id = str(besoin_fields.get('id_tally') or besoin_fields.get('uuid') or '')
-            if not candidat_id or not besoin_id:
-                continue
-            matching = compute_eures_matching(besoin_fields, saved_fields)
-            payload = {'besoin_id': besoin_id, 'candidat_id': candidat_id, **matching}
-            upsert_matching_record(config['doc_id'], payload, headers)
-            writes += 1
-    else:
+    truncated = False
+    for besoin in all_besoins:
+        besoin_fields = besoin.get('fields', {}) if isinstance(besoin.get('fields'), dict) else {}
+        besoin_id = str(besoin_fields.get('id_tally') or besoin_fields.get('uuid') or '')
+        if not besoin_id:
+            continue
         for candidat in all_candidats:
+            if writes >= max_pairs:
+                truncated = True
+                break
             candidat_fields = candidat.get('fields', {}) if isinstance(candidat.get('fields'), dict) else {}
             candidat_id = str(candidat_fields.get('id_tally') or candidat_fields.get('uuid') or '')
-            besoin_id = str(saved_fields.get('id_tally') or saved_fields.get('uuid') or '')
-            if not candidat_id or not besoin_id:
+            if not candidat_id:
                 continue
-            matching = compute_eures_matching(saved_fields, candidat_fields)
+            matching = compute_eures_matching(besoin_fields, candidat_fields)
             payload = {'besoin_id': besoin_id, 'candidat_id': candidat_id, **matching}
             upsert_matching_record(config['doc_id'], payload, headers)
             writes += 1
+        if truncated:
+            break
 
-    return {'processed': True, 'writes': writes, 'role': role}
+    return {
+        'candidats': len(all_candidats),
+        'besoins': len(all_besoins),
+        'writes': writes,
+        'truncated': truncated,
+    }
 
 
 def normalize_finess(value) -> str:
@@ -1704,23 +1705,15 @@ def save_record(form_id: str):
                 'error': f'Grist write returned success, but the saved questionnaire {record_key} did not match.',
             }), 502
 
-        matching_result = None
-        if form_id == 'eures-beta':
-            matching_result = run_eures_matching_for_saved_record(
-                form_id=form_id,
-                role=str(fields.get('flow_role') or ''),
-                saved_record=saved_record,
-                config=config,
-                headers=headers,
-            )
-
+        # Matching is recomputed out-of-band (see the admin recompute-matchings endpoint)
+        # so a single public submission cannot trigger an unbounded fan-out of Grist writes.
         return jsonify({
             'ok': True,
             'action': action,
             'uuid': uuid,
             'record_key': record_key,
             'record_id': saved_record.get('id'),
-            'matching': matching_result,
+            'matching': {'deferred': True},
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1934,6 +1927,31 @@ def admin_overview(form_id: str):
         },
         'rows': rows,
     }), 200
+
+
+@app.route('/api/forms/<form_id>/admin/recompute-matchings', methods=['POST'])
+@admin_required
+def admin_recompute_matchings(form_id: str):
+    """Recompute EURES matchings out-of-band (intended for a scheduled job)."""
+    if not is_form_enabled(form_id) or form_id != 'eures-beta':
+        return jsonify({'error': f'Unknown form: {form_id}'}), 404
+    config = get_form_config(form_id, 'candidate') or get_form_config(form_id)
+    if not config:
+        return jsonify({'error': f'Unknown form: {form_id}'}), 404
+    if not config.get('api_key'):
+        return jsonify({'error': 'API key not configured for this form'}), 500
+
+    headers = {
+        'Authorization': f"Bearer {config['api_key']}",
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+    try:
+        result = recompute_eures_matchings(config, headers)
+    except Exception:
+        app.logger.exception('admin_recompute_matchings failed')
+        return jsonify({'error': 'Could not recompute matchings.'}), 502
+    return jsonify({'ok': True, **result}), 200
 
 
 @app.route('/api/forms/<form_id>/public-stats', methods=['GET'])
