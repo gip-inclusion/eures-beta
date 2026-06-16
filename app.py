@@ -14,6 +14,7 @@ Environment variables:
   GRIST_BASE_URL - Grist instance URL (defaults to grist.numerique.gouv.fr)
 """
 
+import hmac
 import os
 import json
 import time
@@ -288,9 +289,21 @@ def _require_admin_auth(form_id: str | None = None):
             503,
             {'Content-Type': 'text/plain; charset=utf-8'},
         )
+    if password == 'change-me':
+        return Response(
+            'Admin password is still the default placeholder. Set a strong ADMIN_PASSWORD before enabling admin access.',
+            503,
+            {'Content-Type': 'text/plain; charset=utf-8'},
+        )
 
     auth = request.authorization
-    if not auth or auth.username != username or auth.password != password:
+    username_ok = auth is not None and hmac.compare_digest(
+        str(auth.username or '').encode('utf-8'), username.encode('utf-8')
+    )
+    password_ok = auth is not None and hmac.compare_digest(
+        str(auth.password or '').encode('utf-8'), password.encode('utf-8')
+    )
+    if not (username_ok and password_ok):
         return Response(
             'Authentication required',
             401,
