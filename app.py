@@ -2492,6 +2492,16 @@ def serve_admin(form_id: str):
     """Serve admin dashboard HTML for a form."""
     if not is_form_enabled(form_id):
         return jsonify({'error': 'File not found'}), 404
+    admin_path = FORMS_DIR / form_id / 'admin.html'
+    if not admin_path.is_file():
+        return Response(
+            (
+                "Admin access is authenticated, but the expected EURES admin interface is not present "
+                "in this local deployment. Restore the correct admin artifact before reopening this route."
+            ),
+            503,
+            {'Content-Type': 'text/plain; charset=utf-8'},
+        )
     return send_from_directory(FORMS_DIR / form_id, 'admin.html')
 
 
