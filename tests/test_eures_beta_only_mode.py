@@ -63,8 +63,8 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
                 data={'email': 'intrus@example.org'},
             )
 
-        self.assertEqual(response.status_code, 403)
-        self.assertIn(b'pas autorisee', response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Si cette adresse est autorisee", response.data)
         requests_post.assert_not_called()
         response.close()
 
@@ -88,7 +88,7 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
             )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Un lien de connexion a ete envoye', response.data)
+        self.assertIn(b"Si cette adresse est autorisee", response.data)
         requests_post.assert_called_once()
         payload = requests_post.call_args.kwargs['json']
         self.assertEqual(payload['to'][0]['email'], 'eric.barthelemy@inclusion.gouv.fr')
@@ -99,11 +99,13 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
         'ADMIN_AUTH_MODE_EURES_BETA': 'magic_link',
         'ADMIN_ALLOWED_EMAILS_EURES_BETA': 'eric.barthelemy@inclusion.gouv.fr,eric.barthelemy@me.com',
         'ADMIN_MAGIC_LINK_TTL_SECONDS_EURES_BETA': '900',
+        'SESSION_SECRET': 'test-secret',
     }, clear=False)
     def test_magic_link_token_authenticates_admin_session(self):
         token = app._get_admin_magic_link_serializer('eures-beta').dumps({
             'form_id': 'eures-beta',
             'email': 'eric.barthelemy@inclusion.gouv.fr',
+            'jti': 'test-jti',
         })
 
         with patch.object(app, 'APP_MODE', 'eures-beta'):
@@ -112,7 +114,7 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
 
         self.assertEqual(login_response.status_code, 302)
         self.assertEqual(admin_response.status_code, 200)
-        self.assertIn(b'Console admin - EURES beta', admin_response.data)
+        self.assertIn(b'EURES beta admin matchings', admin_response.data)
         login_response.close()
         admin_response.close()
 

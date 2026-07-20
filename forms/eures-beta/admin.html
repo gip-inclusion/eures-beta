@@ -1,0 +1,4321 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EURES beta admin matchings</title>
+  <link rel="stylesheet" href="/forms/eures-beta/site.css">
+  <style>
+    .admin-shell {
+      width: min(1360px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1rem 0 2rem;
+    }
+
+    .admin-top {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .admin-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      border-radius: 24px;
+      padding: 1.2rem;
+    }
+
+    .admin-head h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .admin-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .admin-branding {
+      display: block;
+      width: clamp(160px, 18vw, 260px);
+      height: auto;
+      margin-bottom: 1rem;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 1rem;
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .kpi-value {
+      margin-top: 0.35rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) auto;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    #panel-matchings .toolbar {
+      grid-template-columns: 220px 220px minmax(0, 1fr) auto;
+    }
+
+    .toolbar select,
+    .toolbar input,
+    .toolbar button,
+    .decision-actions button,
+    .compact-response-actions input,
+    .notes-box textarea,
+    .notes-box button {
+      font: inherit;
+    }
+
+    .toolbar select,
+    .toolbar input,
+    .compact-response-actions input,
+    .notes-box textarea {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+    }
+
+    .toolbar button,
+    .decision-actions button,
+    .notes-box button {
+      min-height: 48px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0.8rem 1.1rem;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .toolbar button:hover,
+    .decision-actions button:hover,
+    .notes-box button:hover {
+      transform: translateY(-1px);
+    }
+
+    .toolbar button {
+      background: var(--accent);
+      color: white;
+    }
+
+    .status-line {
+      color: var(--muted);
+      font-size: 0.92rem;
+      min-height: 1.2rem;
+    }
+
+    .global-watch {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.9rem;
+      margin-top: 0.9rem;
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(21, 86, 192, 0.16);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(227, 239, 255, 0.72), rgba(255, 255, 255, 0.92));
+    }
+
+    .global-watch[hidden] {
+      display: none;
+    }
+
+    .global-watch strong {
+      color: var(--accent-strong);
+    }
+
+    .global-watch-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .global-watch-actions button {
+      min-height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--accent-strong);
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .matching-list {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .cockpit-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .cockpit-card {
+      grid-column: span 6;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 24px;
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .cockpit-card.full {
+      grid-column: 1 / -1;
+    }
+
+    .cockpit-card h3 {
+      margin: 0 0 0.9rem;
+      font-size: 1.1rem;
+    }
+
+    .cockpit-hero-card {
+      grid-column: 1 / -1;
+      border: 1px solid rgba(18, 74, 155, 0.14);
+      background:
+        radial-gradient(circle at top left, rgba(213, 230, 255, 0.95), transparent 42%),
+        linear-gradient(180deg, rgba(241, 247, 255, 0.98), rgba(255, 255, 255, 0.95));
+    }
+
+    .cockpit-hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .cockpit-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255, 230, 176, 0.7);
+      color: #8d5311;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .cockpit-hero-main h2 {
+      margin: 0.9rem 0 0.5rem;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: var(--accent-strong);
+    }
+
+    .cockpit-hero-main p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 70ch;
+    }
+
+    .cockpit-hero-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .cockpit-hero-kpi {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 0.95rem 1rem;
+    }
+
+    .cockpit-hero-kpi strong {
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+      color: var(--accent-strong);
+    }
+
+    .cockpit-hero-kpi span {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .cockpit-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .cockpit-hero-actions button,
+    .cockpit-quick-card button,
+    .cockpit-priority-item button,
+    .cockpit-health-item button {
+      min-height: 46px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .cockpit-hero-actions button:hover,
+    .cockpit-quick-card button:hover,
+    .cockpit-priority-item button:hover,
+    .cockpit-health-item button:hover {
+      transform: translateY(-1px);
+    }
+
+    .cockpit-primary-btn {
+      background: var(--accent);
+      color: white;
+    }
+
+    .cockpit-secondary-btn {
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--accent-strong);
+      border-color: var(--line) !important;
+    }
+
+    .cockpit-side-stack,
+    .cockpit-priority-list,
+    .cockpit-health-list,
+    .cockpit-quick-grid {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .cockpit-side-stack {
+      align-content: start;
+    }
+
+    .cockpit-signal-card,
+    .cockpit-priority-item,
+    .cockpit-health-item,
+    .cockpit-quick-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 1rem;
+    }
+
+    .cockpit-signal-card strong,
+    .cockpit-priority-item strong,
+    .cockpit-health-item strong,
+    .cockpit-quick-card strong {
+      color: var(--accent-strong);
+    }
+
+    .cockpit-signal-card p,
+    .cockpit-priority-item p,
+    .cockpit-health-item p,
+    .cockpit-quick-card p {
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .cockpit-signal-card.warning {
+      border-color: #e7bc77;
+      background: linear-gradient(180deg, rgba(255, 245, 226, 0.96), rgba(255, 255, 255, 0.94));
+    }
+
+    .cockpit-signal-card.danger,
+    .cockpit-health-item.danger {
+      border-color: #e0a4a4;
+      background: linear-gradient(180deg, rgba(254, 238, 238, 0.96), rgba(255, 255, 255, 0.94));
+    }
+
+    .cockpit-signal-card.success,
+    .cockpit-health-item.success {
+      border-color: #90c8a6;
+      background: linear-gradient(180deg, rgba(239, 249, 241, 0.96), rgba(255, 255, 255, 0.94));
+    }
+
+    .cockpit-health-item.warning {
+      border-color: #e7bc77;
+      background: linear-gradient(180deg, rgba(255, 247, 232, 0.96), rgba(255, 255, 255, 0.94));
+    }
+
+    .cockpit-priority-head,
+    .cockpit-health-head,
+    .cockpit-quick-head,
+    .cockpit-signal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .cockpit-priority-count,
+    .cockpit-signal-count {
+      min-width: 68px;
+      border-radius: 18px;
+      padding: 0.75rem 0.8rem;
+      text-align: center;
+      background: rgba(15, 39, 66, 0.06);
+    }
+
+    .cockpit-priority-count strong,
+    .cockpit-signal-count strong {
+      display: block;
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .cockpit-priority-count span,
+    .cockpit-signal-count span {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .cockpit-priority-item footer,
+    .cockpit-health-item footer,
+    .cockpit-quick-card footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.85rem;
+    }
+
+    .cockpit-health-grid,
+    .cockpit-operations-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .cockpit-quick-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cockpit-section-intro {
+      margin: -0.25rem 0 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .metric-list,
+    .activity-list {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .metric-row,
+    .activity-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: start;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .metric-row.actionable {
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 0.55rem 0.7rem;
+      margin: 0 -0.2rem;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+
+    .metric-row.actionable:hover {
+      background: rgba(15, 39, 66, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .metric-row:last-child,
+    .activity-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .metric-row strong,
+    .activity-row strong {
+      color: var(--accent-strong);
+    }
+
+    .activity-row small {
+      color: var(--muted);
+      display: block;
+      margin-top: 0.15rem;
+    }
+
+    .task-type-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .matching-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      overflow: hidden;
+    }
+
+    .matching-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) auto;
+      gap: 1rem;
+      padding: 1.2rem 1.2rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(220, 233, 255, 0.8), rgba(255, 255, 255, 0.75));
+    }
+
+    .matching-card[data-role="candidate"] .matching-summary {
+      background: linear-gradient(180deg, rgba(227, 239, 255, 0.95), rgba(255, 255, 255, 0.82));
+    }
+
+    .matching-card[data-role="employer"] .matching-summary {
+      background: linear-gradient(180deg, rgba(234, 246, 236, 0.95), rgba(255, 255, 255, 0.82));
+    }
+
+    .matching-summary h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.35rem;
+    }
+
+    .matching-summary p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .summary-tags,
+    .detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.85);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .pill.pending {
+      background: #fff1dd;
+      color: #8d5311;
+      border-color: #eec17d;
+    }
+
+    .pill.accepted {
+      background: #ebf8ef;
+      color: #19663c;
+      border-color: #90c8a6;
+    }
+
+    .pill.refused {
+      background: #fdebea;
+      color: #8a2f2f;
+      border-color: #e0a4a4;
+    }
+
+    .pill.auto {
+      background: #e8f3ff;
+      color: #0d4a8f;
+      border-color: #95bae7;
+    }
+
+    .pill.response-yes {
+      background: #ebf8ef;
+      color: #19663c;
+      border-color: #90c8a6;
+    }
+
+    .pill.response-no {
+      background: #fff4e8;
+      color: #8d5311;
+      border-color: #e7bc77;
+    }
+
+    .pill.role-candidate {
+      background: #e6f0ff;
+      color: #0d4a8f;
+      border-color: #9fc0ea;
+    }
+
+    .pill.role-employer {
+      background: #ebf8ef;
+      color: #19663c;
+      border-color: #90c8a6;
+    }
+
+    .summary-score {
+      min-width: 200px;
+      display: grid;
+      gap: 0.7rem;
+      align-content: start;
+      justify-items: end;
+    }
+
+    .score-box {
+      min-width: 180px;
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      text-align: right;
+    }
+
+    .score-box strong {
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+      color: var(--accent-strong);
+    }
+
+    .score-box span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .decision-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-accept {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-refuse {
+      background: #fff4f4;
+      color: var(--danger);
+      border-color: #d8a4a4 !important;
+    }
+
+    .btn-neutral {
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--text);
+      border-color: var(--line) !important;
+    }
+
+    a.btn-neutral {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.8rem 1.1rem;
+      text-decoration: none;
+    }
+
+    .matching-body {
+      display: grid;
+      gap: 1rem;
+      padding: 1.2rem;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .compare-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .compare-card h3 {
+      margin: 0 0 0.9rem;
+      font-size: 1.15rem;
+    }
+
+    .matching-card[data-role="candidate"] .compare-card:first-child {
+      border-color: #9fc0ea;
+      background: linear-gradient(180deg, rgba(240, 246, 255, 0.92), rgba(255, 255, 255, 0.96));
+    }
+
+    .matching-card[data-role="employer"] .compare-card:first-child {
+      border-color: #90c8a6;
+      background: linear-gradient(180deg, rgba(241, 250, 243, 0.92), rgba(255, 255, 255, 0.96));
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .detail-row dt {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .detail-row dd {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .subscores-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .subscore-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.84);
+      padding: 0.9rem;
+    }
+
+    .subscore-card strong {
+      display: block;
+      font-size: 1.4rem;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+      color: var(--accent-strong);
+    }
+
+    .subscore-card span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .notes-box {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.84);
+    }
+
+    .notes-box h4 {
+      margin: 0 0 0.8rem;
+      font-size: 1rem;
+    }
+
+    .notes-box ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .notes-box textarea {
+      min-height: 110px;
+      resize: vertical;
+      margin-top: 0.25rem;
+    }
+
+    .compact-response-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .compact-response-actions input {
+      min-height: 44px;
+      padding: 0.75rem 0.9rem;
+    }
+
+    .compact-response-actions .hero-actions {
+      margin-top: 0;
+    }
+
+    .decision-meta {
+      margin-top: 0.8rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tab-btn {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.8rem 1.1rem;
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .panel-stack {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .panel[hidden] {
+      display: none;
+    }
+
+    .invitation-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .invitation-layout > * {
+      min-width: 0;
+      display: grid;
+      gap: 0.9rem;
+      padding: 0.25rem;
+    }
+
+    .form-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.8rem;
+    }
+
+    .field-stack {
+      display: grid;
+      gap: 0.55rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .field-stack label,
+    .section-title {
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .field-stack input,
+    .field-stack select,
+    .field-stack textarea,
+    .csv-box textarea {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+      font: inherit;
+      box-sizing: border-box;
+    }
+
+    .field-stack textarea,
+    .csv-box textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .help-text {
+      margin: 0.35rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .help-text code,
+    .code-block,
+    #csv-text,
+    #csv-example {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .csv-box {
+      display: grid;
+      gap: 0.8rem;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .csv-box > * {
+      min-width: 0;
+    }
+
+    .csv-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      gap: 0.65rem;
+      justify-content: start;
+    }
+
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    .inline-actions button,
+    .inline-actions label {
+      min-height: 48px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0.8rem 1.1rem;
+      font: inherit;
+      cursor: pointer;
+      max-width: 100%;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .inline-actions button {
+      background: var(--accent);
+      color: white;
+    }
+
+    .inline-actions .btn-secondary {
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .inline-actions .file-label {
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--text);
+      border-color: var(--line);
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .inline-actions input[type="file"] {
+      display: none;
+    }
+
+    #csv-text,
+    #csv-example {
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      box-sizing: border-box;
+    }
+
+    .invitation-list {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .send-panel {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .send-panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.9rem;
+    }
+
+    .send-panel-count strong {
+      display: block;
+      font-size: 1.9rem;
+      line-height: 1;
+      color: var(--accent-strong);
+    }
+
+    .send-panel-count span {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .selection-list {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .selection-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.8rem;
+      align-items: center;
+      padding: 0.8rem 0.9rem;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .selection-row input {
+      width: 1.1rem;
+      height: 1.1rem;
+      margin: 0;
+    }
+
+    .selection-main {
+      min-width: 0;
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .selection-main strong {
+      font-size: 0.98rem;
+      line-height: 1.35;
+    }
+
+    .selection-main span {
+      color: var(--muted);
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .invitation-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.88);
+      padding: 1rem;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .invitation-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .invitation-head h3 {
+      margin: 0 0 0.3rem;
+      font-size: 1.1rem;
+    }
+
+    .invitation-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .invitation-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .invitation-meta .meta-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.8rem;
+    }
+
+    .meta-box strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-box span {
+      display: block;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .pill.sent {
+      background: #e8f3ff;
+      color: #0d4a8f;
+      border-color: #95bae7;
+    }
+
+    .pill.received {
+      background: #ebf8ef;
+      color: #19663c;
+      border-color: #90c8a6;
+    }
+
+    .pill.error {
+      background: #fdebea;
+      color: #8a2f2f;
+      border-color: #e0a4a4;
+    }
+
+    .code-block {
+      display: block;
+      margin: 0;
+      border-radius: 16px;
+      background: #f4f7fb;
+      border: 1px solid #dfe6f2;
+      padding: 0.9rem 1rem;
+      color: #29405f;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @media (max-width: 1280px) {
+      .cockpit-hero-grid,
+      .cockpit-health-grid,
+      .cockpit-operations-grid,
+      .cockpit-quick-grid,
+      .cockpit-hero-kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .kpis,
+      .subscores-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .compare-grid,
+      .notes-grid,
+      .matching-summary,
+      .invitation-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-score,
+      .decision-actions {
+        justify-items: start;
+        justify-content: flex-start;
+      }
+
+      .compact-response-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .admin-shell {
+        width: min(100% - 1rem, 1360px);
+      }
+
+      .kpis,
+      .subscores-grid,
+      .toolbar,
+      .form-split,
+      .invitation-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .inline-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .cockpit-hero-actions,
+      .global-watch-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .csv-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-row {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <section class="admin-card admin-head">
+      <img class="admin-branding" src="/assets/eures-email-header.png" alt="République Française, France Travail et EURES">
+      <h1>Admin EURES beta</h1>
+      <p>Piloter les invitations et valider les matchings entre candidats et entreprises. Vous pouvez importer des contacts, envoyer les invitations, puis suivre les réponses et les mises en relation.</p>
+      <div class="global-watch" id="global-response-watch" hidden>
+        <div class="status-line" id="global-response-watch-text"></div>
+        <div class="global-watch-actions">
+          <button id="global-watch-open-candidates" type="button">Voir les réponses candidats</button>
+          <button id="global-watch-open-employers" type="button">Voir les réponses employeurs</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <div class="tabs">
+        <button class="tab-btn active" type="button" data-tab="cockpit">Cockpit</button>
+        <button class="tab-btn" type="button" data-tab="tasks">À traiter</button>
+        <button class="tab-btn" type="button" data-tab="invitations">Invitations</button>
+        <button class="tab-btn" type="button" data-tab="candidate-responses">Réponses candidats</button>
+        <button class="tab-btn" type="button" data-tab="employer-responses">Réponses employeurs</button>
+        <button class="tab-btn" type="button" data-tab="matchings">Matchings</button>
+        <button class="tab-btn" type="button" data-tab="no-match">Sans matching</button>
+        <button class="tab-btn" type="button" data-tab="new-jobs">Nouveaux métiers</button>
+      </div>
+    </section>
+
+    <div class="panel-stack">
+      <section class="panel" id="panel-cockpit">
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="toolbar">
+              <div class="section-title">Cockpit de suivi EURES beta</div>
+              <div></div>
+              <button id="cockpit-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="cockpit-status-line">Chargement...</div>
+          </div>
+          <section class="cockpit-grid" id="cockpit-grid"></section>
+        </section>
+      </section>
+
+      <section class="panel" id="panel-tasks" hidden>
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="task-kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">À traiter</div>
+                <div class="kpi-value" id="task-kpi-pending">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Traités</div>
+                <div class="kpi-value" id="task-kpi-done">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Ignorés</div>
+                <div class="kpi-value" id="task-kpi-dismissed">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="toolbar">
+              <select id="task-filter-status">
+                <option value="pending">À traiter</option>
+                <option value="all">Tous</option>
+                <option value="done">Traités</option>
+                <option value="dismissed">Ignorés</option>
+              </select>
+              <input id="task-filter-search" type="search" placeholder="Rechercher un candidat, une entreprise, un poste, un email">
+              <button id="task-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="task-status-line">Chargement...</div>
+          </div>
+          <section class="matching-list" id="task-list"></section>
+        </section>
+      </section>
+
+      <section class="panel" id="panel-invitations">
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="invite-kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">À envoyer</div>
+                <div class="kpi-value" id="invite-kpi-pending">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Envoyées</div>
+                <div class="kpi-value" id="invite-kpi-sent">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Questionnaires reçus</div>
+                <div class="kpi-value" id="invite-kpi-received">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">À relancer</div>
+                <div class="kpi-value" id="invite-kpi-reminder">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card send-panel">
+            <div class="send-panel-head">
+              <div class="send-panel-count">
+                <strong id="pending-send-count">0</strong>
+                <span id="pending-send-label">invitation à envoyer</span>
+              </div>
+              <div class="inline-actions">
+                <button id="send-pending-btn" type="button">Envoyer toutes les invitations en attente</button>
+                <button class="btn-secondary" id="toggle-selection-btn" type="button">Sélectionner des invitations</button>
+              </div>
+            </div>
+            <div id="selection-panel" hidden>
+              <div class="selection-list" id="selection-list"></div>
+              <div class="inline-actions" style="margin-top: 0.2rem;">
+                <button id="send-selected-btn" type="button">Envoyer la sélection</button>
+                <button class="btn-secondary" id="cancel-selection-btn" type="button">Annuler la sélection</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card send-panel">
+            <div class="send-panel-head">
+              <div class="send-panel-count">
+                <strong id="reminder-send-count">0</strong>
+                <span id="reminder-send-label">invitation à relancer</span>
+              </div>
+              <div class="inline-actions">
+                <button id="send-reminders-btn" type="button">Relancer les invitations sans réponse</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card invitation-layout">
+            <div class="invitation-panel">
+              <div class="section-title">Ajouter une invitation unitaire</div>
+              <div class="form-split">
+                <div class="field-stack">
+                  <label for="single-role">Type</label>
+                  <select id="single-role">
+                    <option value="candidate">Candidat</option>
+                    <option value="employer">Employeur</option>
+                  </select>
+                </div>
+                <div class="field-stack">
+                  <label for="single-language">Langue</label>
+                  <select id="single-language">
+                    <option value="fr">FR</option>
+                    <option value="en">EN</option>
+                    <option value="de">DE</option>
+                  </select>
+                </div>
+                <div class="field-stack">
+                  <label for="single-email">Email</label>
+                  <input id="single-email" type="email" placeholder="contact@example.com">
+                </div>
+                <div class="field-stack">
+                  <label for="single-company">Structure</label>
+                  <input id="single-company" type="text" placeholder="Entreprise ou structure">
+                </div>
+                <div class="field-stack">
+                  <label for="single-first-name">Prénom</label>
+                  <input id="single-first-name" type="text" placeholder="Prénom">
+                </div>
+                <div class="field-stack">
+                  <label for="single-last-name">Nom</label>
+                  <input id="single-last-name" type="text" placeholder="Nom">
+                </div>
+                <div class="field-stack">
+                  <label for="single-external-ref">Référence externe</label>
+                  <input id="single-external-ref" type="text" placeholder="ID, source, campagne...">
+                </div>
+                <div class="field-stack">
+                  <label for="single-source">Source</label>
+                  <input id="single-source" type="text" value="admin_manual">
+                </div>
+              </div>
+              <div class="field-stack" id="candidate-target-jobs-block">
+                <label for="single-target-job">Métier ciblé dans l’invitation candidat</label>
+                <select id="single-target-job">
+                  <option value="">Aucun métier sélectionné</option>
+                  <option value="vente">Vente et commerce</option>
+                  <option value="nettoyage">Nettoyage et entretien</option>
+                  <option value="hotellerie">Hôtellerie et restauration</option>
+                  <option value="agriculture">Agriculture et récolte</option>
+                  <option value="polyvalent">Missions polyvalentes</option>
+                  <option value="industrie_production">Opérateur de production dans l’industrie</option>
+                </select>
+                <p class="help-text">Optionnel. Sans sélection, le mail générique est envoyé. Avec un métier sélectionné, le mail personnalisé correspondant est utilisé lorsqu’il existe.</p>
+              </div>
+              <div class="field-stack">
+                <label for="single-notes">Note</label>
+                <textarea id="single-notes" placeholder="Optionnel"></textarea>
+              </div>
+              <div class="inline-actions">
+                <button id="single-save-btn" type="button">Ajouter l’invitation</button>
+              </div>
+              <p class="help-text">Cette action crée une ligne dans la table <code>Invitations</code> avec le statut <code>invitation_a_envoyer</code>.</p>
+            </div>
+
+            <div class="invitation-panel">
+              <div class="section-title">Importer un CSV</div>
+              <div class="csv-box">
+                <div class="inline-actions csv-actions">
+                  <label class="file-label" for="csv-file">Choisir un fichier CSV</label>
+                  <input id="csv-file" type="file" accept=".csv,text/csv">
+                  <button class="btn-secondary" id="csv-sample-btn" type="button">Charger un exemple</button>
+                </div>
+                <textarea id="csv-text" placeholder="Collez ici le contenu CSV si besoin"></textarea>
+                <div class="inline-actions">
+                  <button id="csv-import-btn" type="button">Importer le CSV</button>
+                </div>
+                <p class="help-text">Colonnes recommandées : <code>role,email,first_name,last_name,company_name,language,source,external_ref,target_job_keys,notes</code></p>
+                <pre class="code-block" id="csv-example">role,email,first_name,last_name,company_name,language,source,external_ref,target_job_keys,notes
+candidate,alice@example.com,Alice,Martin,,fr,campagne_juin,CAND-001,industrie_production,
+employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="toolbar">
+              <select id="invite-filter-status">
+                <option value="all">Tous les statuts</option>
+                <option value="invitation_a_envoyer">À envoyer</option>
+                <option value="duplicate_followup_pending">Relances à arbitrer</option>
+                <option value="invitation_envoyee">Envoyées</option>
+                <option value="reminder_due">À relancer</option>
+                <option value="questionnaire_recu">Questionnaires reçus</option>
+                <option value="erreur_envoi">Erreurs d’envoi</option>
+              </select>
+              <input id="invite-filter-search" type="search" placeholder="Rechercher un email, un nom, une structure, une référence">
+              <button id="invite-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="invite-status-line">Chargement...</div>
+            <section class="invitation-list" id="invitation-list"></section>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel" id="panel-candidate-responses" hidden>
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="candidate-response-kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Actives</div>
+                <div class="kpi-value" id="candidate-response-kpi-active">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Désactivées</div>
+                <div class="kpi-value" id="candidate-response-kpi-disabled">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="toolbar">
+              <div></div>
+              <input id="candidate-response-filter-search" type="search" placeholder="Rechercher un nom, un email, un métier, un pays">
+              <button id="candidate-response-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="candidate-response-status-line">Chargement...</div>
+            <section class="matching-list" id="candidate-response-list"></section>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel" id="panel-employer-responses" hidden>
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="employer-response-kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Actives</div>
+                <div class="kpi-value" id="employer-response-kpi-active">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Désactivées</div>
+                <div class="kpi-value" id="employer-response-kpi-disabled">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="toolbar">
+              <div></div>
+              <input id="employer-response-filter-search" type="search" placeholder="Rechercher une entreprise, un contact, un poste, un pays">
+              <button id="employer-response-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="employer-response-status-line">Chargement...</div>
+            <section class="matching-list" id="employer-response-list"></section>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel" id="panel-matchings" hidden>
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">À valider</div>
+                <div class="kpi-value" id="kpi-pending">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Acceptés</div>
+                <div class="kpi-value" id="kpi-accepted">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Refusés</div>
+                <div class="kpi-value" id="kpi-refused">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="toolbar">
+              <select id="filter-status">
+                <option value="pending">À valider</option>
+                <option value="all">Tous</option>
+                <option value="accepted">Acceptés</option>
+                <option value="refused">Refusés</option>
+              </select>
+              <select id="filter-source">
+                <option value="all">Toutes les sources</option>
+                <option value="manual">Matchings manuels</option>
+                <option value="auto">Matchings automatiques</option>
+              </select>
+              <input id="filter-search" type="search" placeholder="Rechercher un nom, une entreprise, un poste, un email">
+              <button id="reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="status-line">Chargement...</div>
+            <div class="status-line" id="brevo-status-line">Vérification Brevo...</div>
+          </div>
+
+          <div class="admin-card">
+            <div class="section-title">Créer un matching manuel</div>
+            <div class="form-grid">
+              <label class="field">
+                <span>Candidat</span>
+                <select id="manual-match-candidate">
+                  <option value="">Sélectionner un candidat</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Besoin employeur</span>
+                <select id="manual-match-employer">
+                  <option value="">Sélectionner un besoin employeur</option>
+                </select>
+              </label>
+            </div>
+            <div class="field-stack" style="margin-top:0.9rem;">
+              <label for="manual-match-employer-comment">Commentaire employeur</label>
+              <textarea id="manual-match-employer-comment" placeholder="Optionnel. Ajouté uniquement au mail envoyé à l’employeur."></textarea>
+            </div>
+            <div class="field-stack" style="margin-top:0.9rem;">
+              <label for="manual-match-candidate-comment">Commentaire candidat</label>
+              <textarea id="manual-match-candidate-comment" placeholder="Optionnel. Ajouté uniquement au mail envoyé au candidat."></textarea>
+            </div>
+            <section class="matching-body" id="manual-match-preview" hidden style="margin-top:1rem;">
+              <div class="compare-grid">
+                <section class="compare-card">
+                  <h3>Candidat sélectionné</h3>
+                  <dl class="detail-list" id="manual-match-candidate-preview"></dl>
+                </section>
+                <section class="compare-card">
+                  <h3>Besoin employeur sélectionné</h3>
+                  <dl class="detail-list" id="manual-match-employer-preview"></dl>
+                </section>
+              </div>
+            </section>
+            <div class="inline-actions" style="margin-top:0.9rem;">
+              <button id="manual-match-create-btn" type="button">Créer le matching</button>
+              <button class="btn-secondary" id="manual-match-send-btn" type="button">Créer et envoyer directement</button>
+            </div>
+            <div class="status-line" id="manual-match-status-line"></div>
+          </div>
+        </section>
+
+        <section class="matching-list" id="matching-list"></section>
+      </section>
+
+      <section class="panel" id="panel-no-match" hidden>
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="no-match-kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">À traiter</div>
+                <div class="kpi-value" id="no-match-kpi-pending">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Emails envoyés</div>
+                <div class="kpi-value" id="no-match-kpi-sent">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Ignorés</div>
+                <div class="kpi-value" id="no-match-kpi-dismissed">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="toolbar">
+              <select id="no-match-filter-status">
+                <option value="pending">À traiter</option>
+                <option value="all">Tous</option>
+                <option value="sent">Emails envoyés</option>
+                <option value="dismissed">Ignorés</option>
+              </select>
+              <input id="no-match-filter-search" type="search" placeholder="Rechercher un nom, une entreprise, un poste, un email">
+              <button id="no-match-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="no-match-status-line">Chargement...</div>
+          </div>
+        </section>
+
+        <section class="matching-list" id="no-match-list"></section>
+      </section>
+
+      <section class="panel" id="panel-new-jobs" hidden>
+        <section class="admin-top">
+          <div class="admin-card">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="kpi-label">Total affiché</div>
+                <div class="kpi-value" id="new-job-kpi-total">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">À traiter</div>
+                <div class="kpi-value" id="new-job-kpi-pending">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Traités</div>
+                <div class="kpi-value" id="new-job-kpi-processed">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Ignorés</div>
+                <div class="kpi-value" id="new-job-kpi-dismissed">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="toolbar">
+              <select id="new-job-filter-status">
+                <option value="pending">À traiter</option>
+                <option value="all">Tous</option>
+                <option value="processed">Traités</option>
+                <option value="dismissed">Ignorés</option>
+              </select>
+              <input id="new-job-filter-search" type="search" placeholder="Rechercher une entreprise, un contact, un poste, un email">
+              <button id="new-job-reload-btn" type="button">Rafraîchir</button>
+            </div>
+            <div class="status-line" id="new-job-status-line">Chargement...</div>
+          </div>
+        </section>
+
+        <section class="matching-list" id="new-job-list"></section>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      activeTab: "cockpit",
+      cockpit: {
+        data: null,
+        loading: false,
+      },
+      tasks: {
+        rows: [],
+        loading: false,
+      },
+      invitations: {
+        rows: [],
+        loading: false,
+        selectionMode: false,
+        selectedIds: [],
+      },
+      candidateResponses: {
+        rows: [],
+        loading: false,
+        signature: "",
+        unseenCount: 0,
+        initialized: false,
+      },
+      employerResponses: {
+        rows: [],
+        loading: false,
+        signature: "",
+        unseenCount: 0,
+        initialized: false,
+      },
+      matchings: {
+        rows: [],
+        loading: false,
+      },
+      noMatch: {
+        rows: [],
+        loading: false,
+      },
+      newJobs: {
+        rows: [],
+        loading: false,
+      },
+      brevo: null,
+      questionnaireAutoRefreshTimer: null,
+    };
+
+    function esc(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function apiUrl(path) {
+      return `/api/forms/eures-beta${path}`;
+    }
+
+    function setStatus(targetId, message) {
+      document.getElementById(targetId).textContent = message;
+    }
+
+    function responseWatchLabel(count, singular, plural) {
+      return `${count} ${count > 1 ? plural : singular}`;
+    }
+
+    function renderGlobalResponseWatch() {
+      const candidateCount = Number(state.candidateResponses.unseenCount || 0);
+      const employerCount = Number(state.employerResponses.unseenCount || 0);
+      const total = candidateCount + employerCount;
+      const panel = document.getElementById("global-response-watch");
+      const text = document.getElementById("global-response-watch-text");
+      const candidateButton = document.getElementById("global-watch-open-candidates");
+      const employerButton = document.getElementById("global-watch-open-employers");
+      if (!panel || !text || !candidateButton || !employerButton) return;
+
+      if (!total) {
+        panel.hidden = true;
+        text.textContent = "";
+        candidateButton.hidden = true;
+        employerButton.hidden = true;
+        if (state.cockpit.data) {
+          renderCockpit();
+        }
+        return;
+      }
+
+      const parts = [];
+      if (candidateCount) {
+        parts.push(responseWatchLabel(candidateCount, "nouvelle réponse candidat", "nouvelles réponses candidats"));
+      }
+      if (employerCount) {
+        parts.push(responseWatchLabel(employerCount, "nouvelle réponse employeur", "nouvelles réponses employeurs"));
+      }
+      panel.hidden = false;
+      text.innerHTML = `<strong>Nouvelles réponses détectées :</strong> ${esc(parts.join(" · "))}`;
+      candidateButton.hidden = candidateCount === 0;
+      employerButton.hidden = employerCount === 0;
+      if (state.cockpit.data) {
+        renderCockpit();
+      }
+    }
+
+    function clearResponseWatch(role) {
+      const stateKey = role === "candidate" ? "candidateResponses" : "employerResponses";
+      state[stateKey].unseenCount = 0;
+      renderGlobalResponseWatch();
+    }
+
+    function questionnaireResponseSignature(rows) {
+      if (!Array.isArray(rows) || !rows.length) return "";
+      return rows
+        .map((row) => `${row.record_id}:${row.response_received_at || row.submitted_at || ""}:${row.response_status || ""}`)
+        .join("|");
+    }
+
+    function renderBrevoStatus(health) {
+      const message = health?.message || "état inconnu";
+      if (!health?.configured) {
+        setStatus("brevo-status-line", `Brevo : configuration incomplète. ${message}`);
+        return;
+      }
+      if (health.api_ok === false) {
+        setStatus("brevo-status-line", `Brevo : incident API. ${message}`);
+        return;
+      }
+      if (health.api_ok === true) {
+        setStatus("brevo-status-line", `Brevo : opérationnel. ${message}`);
+        return;
+      }
+      setStatus("brevo-status-line", `Brevo : configuration OK. ${message}`);
+    }
+
+    function scoreStatusLabel(row) {
+      if (row.scoring_status === "auto_envoyable") return "auto";
+      if (row.scoring_status === "a_valider") return "à valider";
+      if (row.scoring_status === "a_ecarter") return "à écarter";
+      return row.scoring_status || "inconnu";
+    }
+
+    function adminStatusLabel(status) {
+      if (status === "accepted") return "accepté";
+      if (status === "refused") return "refusé";
+      return "pending";
+    }
+
+    function employerResponseLabel(status) {
+      if (status === "contact") return "va contacter";
+      if (status === "not_contact") return "ne contactera pas";
+      return "aucun retour employeur";
+    }
+
+    function workflowStatusLabel(status) {
+      if (status === "calcule") return "calculé";
+      if (status === "a_valider_admin") return "à valider";
+      if (status === "refuse_admin") return "refus admin";
+      if (status === "valide_admin") return "validé admin";
+      if (status === "envoye_employeur") return "envoyé employeur";
+      if (status === "accepte_employeur") return "accepté employeur";
+      if (status === "refuse_employeur") return "refusé employeur";
+      if (status === "mise_en_relation_faite") return "mise en relation faite";
+      if (status === "embauche_confirmee") return "embauche confirmée";
+      return status || "inconnu";
+    }
+
+    function noMatchStatusLabel(status) {
+      if (status === "pending") return "à traiter";
+      if (status === "sent") return "email envoyé";
+      if (status === "dismissed") return "ignoré";
+      return status || "inconnu";
+    }
+
+    function newJobStatusLabel(status) {
+      if (status === "pending") return "à traiter";
+      if (status === "processed") return "traité";
+      if (status === "dismissed") return "ignoré";
+      return status || "inconnu";
+    }
+
+    function taskStatusLabel(status) {
+      if (status === "pending") return "à traiter";
+      if (status === "done") return "traité";
+      if (status === "dismissed") return "ignoré";
+      return status || "inconnu";
+    }
+
+    function taskTypeLabel(type) {
+      if (type === "matching_review") return "Matching";
+      if (type === "no_match_followup") return "Sans matching";
+      if (type === "new_job_request") return "Nouveau métier";
+      if (type === "new_employer_alert") return "Nouvel employeur";
+      if (type === "duplicate_invitation_followup") return "Invitation en doublon";
+      return type || "Tâche";
+    }
+
+    function duplicateFollowupLabel(status) {
+      if (status === "pending") return "relance à arbitrer";
+      if (status === "reminded") return "relance envoyée";
+      if (status === "ignored") return "ignoré";
+      return status || "inconnu";
+    }
+
+    function normalizeText(value) {
+      return String(value || "").toLowerCase();
+    }
+
+    function matchesSearch(row, search) {
+      if (!search) return true;
+      const haystack = [
+        row.candidat?.nom,
+        row.candidat?.email,
+        row.candidat?.metier,
+        row.employeur?.employeur,
+        row.employeur?.contact,
+        row.employeur?.poste,
+        row.employeur?.pays,
+        row.besoin_id,
+        row.candidat_id,
+      ].map(normalizeText).join(" ");
+      return haystack.includes(search);
+    }
+
+    function noMatchSearch(row, search) {
+      if (!search) return true;
+      const payload = row.payload || {};
+      const haystack = [
+        row.role,
+        row.title,
+        row.subtitle,
+        row.recipient_email,
+        payload.nom,
+        payload.email,
+        payload.metier,
+        payload.employeur,
+        payload.contact,
+        payload.poste,
+        payload.pays,
+      ].map(normalizeText).join(" ");
+      return haystack.includes(search);
+    }
+
+    function newJobSearch(row, search) {
+      if (!search) return true;
+      const haystack = [
+        row.employeur,
+        row.contact,
+        row.email,
+        row.poste,
+        row.pays,
+        row.requested_jobs,
+      ].map(normalizeText).join(" ");
+      return haystack.includes(search);
+    }
+
+    function taskMatchesSearch(row, search) {
+      if (!search) return true;
+      const matching = row.matching || {};
+      const noMatch = row.no_match || {};
+      const newJob = row.new_job || {};
+      const newEmployer = row.new_employer || {};
+      const haystack = [
+        row.task_type,
+        taskTypeLabel(row.task_type),
+        row.title,
+        row.subtitle,
+        row.summary,
+        matching?.candidat?.nom,
+        matching?.candidat?.email,
+        matching?.employeur?.employeur,
+        matching?.employeur?.poste,
+        noMatch?.recipient_email,
+        newJob?.email,
+        newJob?.requested_jobs,
+        newEmployer?.employeur,
+        newEmployer?.contact,
+        newEmployer?.email,
+        newEmployer?.sponsor_company_name,
+        newEmployer?.sponsor_email,
+        newEmployer?.source_invitation_scope,
+      ].map(normalizeText).join(" ");
+      return haystack.includes(search);
+    }
+
+    function bulletList(items, emptyLabel) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return `<ul><li>${esc(emptyLabel)}</li></ul>`;
+      }
+      return `<ul>${items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
+    }
+
+    function invitationStatusLabel(status) {
+      if (status === "invitation_a_envoyer") return "à envoyer";
+      if (status === "traitee") return "traitée";
+      if (status === "invitation_envoyee") return "envoyée";
+      if (status === "questionnaire_recu") return "questionnaire reçu";
+      if (status === "rapprochee") return "rapprochée";
+      if (status === "erreur_envoi") return "erreur d’envoi";
+      return status || "inconnu";
+    }
+
+    function invitationStatusClass(status) {
+      if (status === "invitation_envoyee") return "sent";
+      if (status === "questionnaire_recu" || status === "rapprochee") return "received";
+      if (status === "erreur_envoi") return "error";
+      return "pending";
+    }
+
+    function updateInvitationKpis(stats = {}) {
+      document.getElementById("invite-kpi-total").textContent = stats.total ?? 0;
+      document.getElementById("invite-kpi-pending").textContent = stats.invitation_a_envoyer ?? 0;
+      document.getElementById("invite-kpi-sent").textContent = stats.invitation_envoyee ?? 0;
+      document.getElementById("invite-kpi-received").textContent = stats.questionnaire_recu ?? 0;
+      document.getElementById("invite-kpi-reminder").textContent = stats.reminder_due ?? 0;
+    }
+
+    function pendingInvitationRows() {
+      return state.invitations.rows.filter((row) =>
+        row.invitation_status === "invitation_a_envoyer" && row.duplicate_followup_status !== "pending"
+      );
+    }
+
+    function reminderInvitationRows() {
+      return state.invitations.rows.filter((row) => row.needs_reminder);
+    }
+
+    function updatePendingSendPanel() {
+      const pendingRows = pendingInvitationRows();
+      const count = pendingRows.length;
+      document.getElementById("pending-send-count").textContent = count;
+      document.getElementById("pending-send-label").textContent = count > 1
+        ? "invitations à envoyer"
+        : "invitation à envoyer";
+      document.getElementById("send-pending-btn").disabled = count === 0;
+      document.getElementById("toggle-selection-btn").disabled = count === 0;
+
+      const panel = document.getElementById("selection-panel");
+      const list = document.getElementById("selection-list");
+      panel.hidden = !state.invitations.selectionMode || count === 0;
+      if (!state.invitations.selectionMode || count === 0) {
+        list.innerHTML = "";
+        return;
+      }
+
+      list.innerHTML = pendingRows.map((row) => {
+        const name = row.role === "employer"
+          ? (row.company_name || [row.first_name, row.last_name].filter(Boolean).join(" ") || row.email || "Employeur")
+          : ([row.first_name, row.last_name].filter(Boolean).join(" ") || row.email || "Candidat");
+        const type = row.role === "employer" ? "Employeur" : "Candidat";
+        const checked = state.invitations.selectedIds.includes(Number(row.record_id)) ? "checked" : "";
+        return `
+          <label class="selection-row">
+            <input type="checkbox" value="${esc(row.record_id)}" ${checked}>
+            <span class="selection-main">
+              <strong>${esc(name)}</strong>
+              <span>${esc(type)} · ${esc(row.email || "-")}</span>
+            </span>
+          </label>
+        `;
+      }).join("");
+
+      for (const input of list.querySelectorAll('input[type="checkbox"]')) {
+        input.addEventListener("change", (event) => {
+          const recordId = Number(event.currentTarget.value || 0);
+          if (!recordId) return;
+          if (event.currentTarget.checked) {
+            if (!state.invitations.selectedIds.includes(recordId)) {
+              state.invitations.selectedIds.push(recordId);
+            }
+          } else {
+            state.invitations.selectedIds = state.invitations.selectedIds.filter((value) => value !== recordId);
+          }
+          document.getElementById("send-selected-btn").disabled = state.invitations.selectedIds.length === 0;
+        });
+      }
+
+      document.getElementById("send-selected-btn").disabled = state.invitations.selectedIds.length === 0;
+    }
+
+    function updateReminderPanel() {
+      const reminderRows = reminderInvitationRows();
+      const count = reminderRows.length;
+      document.getElementById("reminder-send-count").textContent = count;
+      document.getElementById("reminder-send-label").textContent = count > 1
+        ? "invitations à relancer"
+        : "invitation à relancer";
+      document.getElementById("send-reminders-btn").disabled = count === 0;
+    }
+
+    function renderInvitations() {
+      const list = document.getElementById("invitation-list");
+      const search = normalizeText(document.getElementById("invite-filter-search").value.trim());
+      const statusFilter = document.getElementById("invite-filter-status").value;
+      const filtered = state.invitations.rows.filter((row) => {
+        if (statusFilter === "duplicate_followup_pending") {
+          return row.duplicate_followup_status === "pending";
+        }
+        if (statusFilter === "reminder_due" && !row.needs_reminder) {
+          return false;
+        }
+        if (statusFilter === "invitation_a_envoyer") {
+          if (row.invitation_status !== "invitation_a_envoyer" || row.duplicate_followup_status === "pending") {
+            return false;
+          }
+        }
+        if (statusFilter !== "all" && statusFilter !== "reminder_due" && statusFilter !== "duplicate_followup_pending" && row.invitation_status !== statusFilter) {
+          return false;
+        }
+        if (!search) return true;
+        const haystack = [
+          row.email,
+          row.first_name,
+          row.last_name,
+          row.company_name,
+          row.external_ref,
+          row.source,
+          Array.isArray(row.target_job_labels) ? row.target_job_labels.join(" ") : "",
+          row.notes,
+        ].map(normalizeText).join(" ");
+        return haystack.includes(search);
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">Aucune invitation ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((row) => {
+        const title = row.role === "employer"
+          ? (row.company_name || row.email || "Employeur")
+          : ([row.first_name, row.last_name].filter(Boolean).join(" ") || row.email || "Candidat");
+        const subtitleBits = [
+          row.role === "employer" ? "Employeur" : "Candidat",
+          row.language ? row.language.toUpperCase() : "",
+          row.email || "",
+        ].filter(Boolean);
+        return `
+          <article class="invitation-card" data-record-id="${esc(row.record_id)}">
+            <div class="invitation-head">
+              <div>
+                <h3>${esc(title)}</h3>
+                <p>${esc(subtitleBits.join(" · "))}</p>
+              </div>
+              <div class="summary-tags">
+                <span class="pill ${invitationStatusClass(row.invitation_status)}">${esc(invitationStatusLabel(row.invitation_status))}</span>
+                ${row.duplicate_followup_status ? `<span class="pill">${esc(duplicateFollowupLabel(row.duplicate_followup_status))}</span>` : ""}
+              </div>
+            </div>
+            <div class="invitation-meta">
+              <div class="meta-box">
+                <strong>Source</strong>
+                <span>${esc(row.source || "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Référence</strong>
+                <span>${esc(row.external_ref || "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Envoyée le</strong>
+                <span>${esc(row.sent_at || "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Questionnaire reçu</strong>
+                <span>${esc(row.answered_at || "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Jours depuis envoi</strong>
+                <span>${esc(row.days_since_sent ?? "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Relances</strong>
+                <span>${esc(row.reminder_count ?? 0)}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Dernière relance</strong>
+                <span>${esc(row.last_reminder_at || "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Record lié</strong>
+                <span>${esc(row.linked_record_key || row.linked_record_id || "-")}</span>
+              </div>
+              <div class="meta-box">
+                <strong>Matching</strong>
+                <span>${esc(row.matching_status || "-")}</span>
+              </div>
+              ${row.role === "candidate" ? `
+                <div class="meta-box">
+                  <strong>Métiers ciblés</strong>
+                  <span>${esc((row.target_job_labels || []).join(" · ") || "-")}</span>
+                </div>
+              ` : ""}
+            </div>
+            ${row.duplicate_followup_status === "pending" ? `
+              <section class="notes-box" style="margin-top:0.9rem;">
+                <h4>Arbitrage doublon</h4>
+                <p style="margin:0 0 0.8rem; line-height:1.7;">${esc(row.duplicate_followup_message || "Cette adresse existe déjà dans le suivi.")}</p>
+                <div class="compare-grid">
+                  <section class="compare-card">
+                    <h3>Invitation actuelle</h3>
+                    <dl class="detail-list">
+                      <div class="detail-row"><dt>Adresse</dt><dd>${esc(row.email || "-")}</dd></div>
+                      <div class="detail-row"><dt>Type</dt><dd>${esc(row.role === "employer" ? "Employeur" : "Candidat")}</dd></div>
+                      <div class="detail-row"><dt>Référence</dt><dd>${esc(row.external_ref || "-")}</dd></div>
+                    </dl>
+                  </section>
+                  <section class="compare-card">
+                    <h3>Conflit détecté</h3>
+                    <dl class="detail-list">
+                      <div class="detail-row"><dt>Nature</dt><dd>${esc(row.duplicate_followup_type === "existing_questionnaire" ? "Questionnaire déjà reçu" : "Invitation déjà envoyée")}</dd></div>
+                      <div class="detail-row"><dt>Record cible</dt><dd>${esc(row.duplicate_followup_target_record_id || "-")}</dd></div>
+                      <div class="detail-row"><dt>Statut cible</dt><dd>${esc(invitationStatusLabel(row.duplicate_followup_target_status || "-"))}</dd></div>
+                    </dl>
+                  </section>
+                </div>
+                <textarea id="duplicate-followup-note-${esc(row.record_id)}" placeholder="Note interne optionnelle">${esc(row.duplicate_followup_note || "")}</textarea>
+                <div class="hero-actions">
+                  ${row.duplicate_followup_type === "existing_invitation" && row.duplicate_followup_target_status === "invitation_envoyee" ? `<button type="button" data-duplicate-followup-action="remind" data-record-id="${esc(row.record_id)}">Envoyer la relance</button>` : ""}
+                  <button class="btn-refuse" type="button" data-duplicate-followup-action="ignore" data-record-id="${esc(row.record_id)}">Ignorer</button>
+                </div>
+              </section>
+            ` : ""}
+            ${row.invitation_status === "erreur_envoi" ? `
+              <div class="inline-actions" style="margin-top:0.9rem;">
+                <button class="btn-refuse" type="button" data-delete-invitation="${esc(row.record_id)}">Supprimer cette erreur</button>
+              </div>
+            ` : ""}
+            ${row.invitation_status === "invitation_envoyee" && !row.answered_at && row.duplicate_followup_status !== "pending" ? `
+              <div class="inline-actions" style="margin-top:0.9rem;">
+                <button type="button" data-remind-invitation="${esc(row.record_id)}">${row.needs_reminder ? "Relancer maintenant" : "Envoyer une relance"}</button>
+              </div>
+            ` : ""}
+            ${row.invite_link ? `<pre class="code-block">${esc(row.invite_link)}</pre>` : ""}
+          </article>
+        `;
+      }).join("");
+
+      for (const button of list.querySelectorAll("[data-delete-invitation]")) {
+        button.addEventListener("click", async (event) => {
+          const recordId = event.currentTarget.dataset.deleteInvitation;
+          if (!recordId) return;
+          const confirmed = window.confirm("Supprimer définitivement cette invitation en erreur d’envoi ?");
+          if (!confirmed) return;
+          await deleteInvitationError(recordId);
+        });
+      }
+      for (const button of list.querySelectorAll("[data-remind-invitation]")) {
+        button.addEventListener("click", async (event) => {
+          const recordId = Number(event.currentTarget.dataset.remindInvitation || 0);
+          if (!recordId) return;
+          await sendInvitationReminders([recordId]);
+        });
+      }
+      for (const button of list.querySelectorAll("[data-duplicate-followup-action]")) {
+        button.addEventListener("click", async (event) => {
+          const recordId = Number(event.currentTarget.dataset.recordId || 0);
+          const action = event.currentTarget.dataset.duplicateFollowupAction || "";
+          const note = document.getElementById(`duplicate-followup-note-${recordId}`)?.value || "";
+          if (!recordId || !action) return;
+          await submitDuplicateFollowup(recordId, action, note);
+        });
+      }
+      updatePendingSendPanel();
+      updateReminderPanel();
+    }
+
+    function questionnaireResponseMatchesSearch(row, search) {
+      if (!search) return true;
+      const haystack = [
+        row.title,
+        row.subtitle,
+        row.summary,
+        row.record_key,
+        ...(Array.isArray(row.fields) ? row.fields.flatMap((field) => [field.label, field.value]) : []),
+      ].map(normalizeText).join(" ");
+      return haystack.includes(search);
+    }
+
+    function optionLabelForCandidate(row) {
+      const parts = [row.title, row.subtitle, row.summary].filter(Boolean);
+      return parts.join(" · ") || row.record_key || "Candidat";
+    }
+
+    function optionLabelForEmployer(row) {
+      const parts = [row.title, row.subtitle, row.summary].filter(Boolean);
+      return parts.join(" · ") || row.record_key || "Employeur";
+    }
+
+    function renderManualMatchingOptions() {
+      const candidateSelect = document.getElementById("manual-match-candidate");
+      const employerSelect = document.getElementById("manual-match-employer");
+      const currentCandidate = candidateSelect.value;
+      const currentEmployer = employerSelect.value;
+      const activeCandidateRows = state.candidateResponses.rows.filter((row) => row.is_active !== false);
+      const activeEmployerRows = state.employerResponses.rows.filter((row) => row.is_active !== false);
+
+      candidateSelect.innerHTML = `<option value="">Sélectionner un candidat</option>` + activeCandidateRows.map((row) => `
+        <option value="${esc(row.record_id)}">${esc(optionLabelForCandidate(row))}</option>
+      `).join("");
+      employerSelect.innerHTML = `<option value="">Sélectionner un besoin employeur</option>` + activeEmployerRows.map((row) => `
+        <option value="${esc(row.record_id)}">${esc(optionLabelForEmployer(row))}</option>
+      `).join("");
+
+      if (activeCandidateRows.some((row) => String(row.record_id) === currentCandidate)) {
+        candidateSelect.value = currentCandidate;
+      }
+      if (activeEmployerRows.some((row) => String(row.record_id) === currentEmployer)) {
+        employerSelect.value = currentEmployer;
+      }
+      renderManualMatchingPreview();
+    }
+
+    function renderQuestionnairePreviewFields(fields, limit = 999) {
+      const rows = Array.isArray(fields) ? fields.slice(0, limit) : [];
+      if (!rows.length) {
+        return `<div class="detail-row"><dt>Aperçu</dt><dd>Aucune donnée disponible</dd></div>`;
+      }
+      return rows.map((field) => `
+        <div class="detail-row">
+          <dt>${esc(field.label || field.key || "-")}</dt>
+          <dd>${esc(field.value || "-")}</dd>
+        </div>
+      `).join("");
+    }
+
+    function renderManualMatchingPreview() {
+      const candidateRecordId = String(document.getElementById("manual-match-candidate").value || "");
+      const employerRecordId = String(document.getElementById("manual-match-employer").value || "");
+      const preview = document.getElementById("manual-match-preview");
+      const candidateTarget = document.getElementById("manual-match-candidate-preview");
+      const employerTarget = document.getElementById("manual-match-employer-preview");
+      const candidateRow = state.candidateResponses.rows.find((row) => String(row.record_id) === candidateRecordId);
+      const employerRow = state.employerResponses.rows.find((row) => String(row.record_id) === employerRecordId);
+
+      if (!candidateRow && !employerRow) {
+        preview.hidden = true;
+        candidateTarget.innerHTML = "";
+        employerTarget.innerHTML = "";
+        return;
+      }
+
+      preview.hidden = false;
+      candidateTarget.innerHTML = candidateRow
+        ? renderQuestionnairePreviewFields(candidateRow.fields)
+        : `<div class="detail-row"><dt>Sélection</dt><dd>Aucun candidat sélectionné</dd></div>`;
+      employerTarget.innerHTML = employerRow
+        ? renderQuestionnairePreviewFields(employerRow.fields)
+        : `<div class="detail-row"><dt>Sélection</dt><dd>Aucun besoin employeur sélectionné</dd></div>`;
+    }
+
+    function renderQuestionnaireResponses(role) {
+      const isCandidate = role === "candidate";
+      const stateKey = isCandidate ? "candidateResponses" : "employerResponses";
+      const listId = isCandidate ? "candidate-response-list" : "employer-response-list";
+      const searchId = isCandidate ? "candidate-response-filter-search" : "employer-response-filter-search";
+      const list = document.getElementById(listId);
+      const search = normalizeText(document.getElementById(searchId).value.trim());
+      const filtered = state[stateKey].rows.filter((row) => questionnaireResponseMatchesSearch(row, search));
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">Aucune réponse ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((row) => `
+        <article class="matching-card" data-role="${esc(role)}">
+          <div class="matching-summary">
+            <div>
+              <h2>${esc(row.title || (isCandidate ? "Candidat" : "Employeur"))}</h2>
+              <p>${esc(row.subtitle || (isCandidate ? "Réponse candidat" : "Réponse employeur"))}</p>
+              <div class="summary-tags">
+                <span class="pill ${isCandidate ? "role-candidate" : "role-employer"}">${esc(isCandidate ? "Candidat" : "Employeur")}</span>
+                <span class="pill ${row.is_active === false ? "refused" : "accepted"}">${esc(row.is_active === false ? "Désactivée" : "Active")}</span>
+                <span class="pill">Réponse reçue le : ${esc(row.response_received_at || row.submitted_at || "-")}</span>
+                <span class="pill">Clé : ${esc(row.record_key || row.record_id || "-")}</span>
+                <span class="pill">${esc(row.matching_count || 0)} matching(s)</span>
+                ${row.cv_download_url ? `<span class="pill accepted">CV disponible</span>` : ""}
+              </div>
+              ${row.summary ? `<div class="detail-tags"><span class="pill">${esc(row.summary)}</span></div>` : ""}
+            </div>
+            <div class="summary-score">
+              <div class="score-box">
+                <strong>${esc(Array.isArray(row.fields) ? row.fields.length : 0)}</strong>
+                <span>champs non vides</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="matching-body">
+            <section class="compare-card" style="grid-column: 1 / -1;">
+              <section class="notes-box" style="margin-bottom:1rem;">
+                <h4>${esc(isCandidate ? "Matchings avec des employeurs" : "Matchings avec des candidats")}</h4>
+                ${Array.isArray(row.matchings) && row.matchings.length ? `
+                  <div class="detail-list">
+                    ${row.matchings.map((matching) => `
+                      <div class="detail-row" style="grid-template-columns:minmax(0, 1fr) auto; align-items:center;">
+                        <div>
+                          <strong>${esc(matching.counterpart_name || "-")}</strong>
+                          <div style="color:var(--muted); margin-top:0.2rem;">${esc(matching.counterpart_subtitle || "-")}</div>
+                          <div class="summary-tags" style="margin-top:0.45rem;">
+                            <span class="pill">Score : ${esc(matching.score ?? 0)}</span>
+                            <span class="pill">${esc(matching.workflow_status || "-")}</span>
+                          </div>
+                        </div>
+                        <button class="btn-neutral" type="button" data-open-matching="${esc(matching.matching_record_id)}">Voir le matching</button>
+                      </div>
+                    `).join("")}
+                  </div>
+                ` : `<p style="margin:0; color:var(--muted);">Aucun matching lié pour le moment.</p>`}
+              </section>
+              ${row.cv_download_url ? `
+                <section class="notes-box" style="margin-bottom:1rem;">
+                  <h4>CV du candidat</h4>
+                  <p style="margin:0; color:var(--muted); line-height:1.7;">${esc(row.cv_file_name || "CV")}</p>
+                  <div class="hero-actions" style="margin-top:0.8rem;">
+                    <a class="btn-neutral" href="${esc(row.cv_download_url)}" target="_blank" rel="noopener noreferrer">Télécharger le CV</a>
+                  </div>
+                </section>
+              ` : ""}
+              ${row.response_disabled_reason ? `<p style="margin:0 0 0.8rem; line-height:1.7;"><strong>Motif de désactivation :</strong> ${esc(row.response_disabled_reason)}</p>` : ""}
+              <details>
+                <summary style="cursor:pointer; font-weight:700; margin-bottom:0.9rem;">
+                  ${esc(isCandidate ? "Afficher la réponse complète du candidat" : "Afficher la réponse complète de l’employeur")}
+                </summary>
+                <dl class="detail-list">
+                  ${(Array.isArray(row.fields) ? row.fields : []).map((field) => `
+                    <div class="detail-row">
+                      <dt>${esc(field.label || field.key || "-")}</dt>
+                      <dd>${esc(field.value || "-")}</dd>
+                    </div>
+                  `).join("")}
+                </dl>
+              </details>
+              <section class="notes-box" style="margin-top:1rem;">
+                <h4>Gestion de la réponse</h4>
+                <div class="compact-response-actions">
+                  <input id="response-note-${esc(role)}-${esc(row.record_id)}" type="text" placeholder="Motif optionnel" value="${esc(row.response_disabled_reason || "")}">
+                  <div class="hero-actions">
+                    ${row.is_active === false
+                      ? `<button type="button" data-response-status-action="active" data-role="${esc(role)}" data-record-id="${esc(row.record_id)}">Réactiver</button>`
+                      : `<button class="btn-refuse" type="button" data-response-status-action="disabled" data-role="${esc(role)}" data-record-id="${esc(row.record_id)}">Désactiver</button>`
+                    }
+                    <button class="btn-refuse" type="button" data-response-delete="${esc(row.record_id)}" data-role="${esc(role)}">Supprimer</button>
+                  </div>
+                </div>
+              </section>
+            </section>
+          </div>
+        </article>
+      `).join("");
+
+      for (const button of list.querySelectorAll("[data-response-status-action]")) {
+        button.addEventListener("click", async (event) => {
+          const recordId = Number(event.currentTarget.dataset.recordId || 0);
+          const roleValue = event.currentTarget.dataset.role || "";
+          const status = event.currentTarget.dataset.responseStatusAction || "";
+          const note = document.getElementById(`response-note-${roleValue}-${recordId}`)?.value || "";
+          if (!recordId || !roleValue || !status) return;
+          await updateQuestionnaireResponseStatus(roleValue, recordId, status, note);
+        });
+      }
+      for (const button of list.querySelectorAll("[data-response-delete]")) {
+        button.addEventListener("click", async (event) => {
+          const recordId = Number(event.currentTarget.dataset.responseDelete || 0);
+          const roleValue = event.currentTarget.dataset.role || "";
+          if (!recordId || !roleValue) return;
+          const confirmed = window.confirm("Supprimer définitivement cette réponse et les matchings associés ?");
+          if (!confirmed) return;
+          await deleteQuestionnaireResponse(roleValue, recordId);
+        });
+      }
+      for (const button of list.querySelectorAll("[data-open-matching]")) {
+        button.addEventListener("click", async (event) => {
+          const matchingRecordId = Number(event.currentTarget.dataset.openMatching || 0);
+          if (!matchingRecordId) return;
+          await openMatchingRecord(matchingRecordId);
+        });
+      }
+    }
+
+    async function loadQuestionnaireResponses(role, options = {}) {
+      const isCandidate = role === "candidate";
+      const stateKey = isCandidate ? "candidateResponses" : "employerResponses";
+      const statusId = isCandidate ? "candidate-response-status-line" : "employer-response-status-line";
+      const listId = isCandidate ? "candidate-response-list" : "employer-response-list";
+      const kpiId = isCandidate ? "candidate-response-kpi-total" : "employer-response-kpi-total";
+      const kpiActiveId = isCandidate ? "candidate-response-kpi-active" : "employer-response-kpi-active";
+      const kpiDisabledId = isCandidate ? "candidate-response-kpi-disabled" : "employer-response-kpi-disabled";
+      const label = isCandidate ? "candidats" : "employeurs";
+      const silent = Boolean(options.silent);
+      const shouldClearUnseen = Boolean(options.clearUnseen);
+
+      if (state[stateKey].loading) return;
+      state[stateKey].loading = true;
+      if (!silent) {
+        setStatus(statusId, `Chargement des réponses ${label}...`);
+      }
+
+      try {
+        const response = await fetch(apiUrl(`/admin/questionnaires/${role}`), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        const nextRows = Array.isArray(payload.rows) ? payload.rows : [];
+        const previousSignature = state[stateKey].signature || "";
+        const nextSignature = questionnaireResponseSignature(nextRows);
+        const previousCount = Array.isArray(state[stateKey].rows) ? state[stateKey].rows.length : 0;
+        const nextCount = nextRows.length;
+        const hasChanged = previousSignature !== nextSignature;
+        const initialized = Boolean(state[stateKey].initialized);
+
+        state[stateKey].rows = nextRows;
+        state[stateKey].signature = nextSignature;
+        state[stateKey].initialized = true;
+        document.getElementById(kpiId).textContent = payload.stats?.total ?? 0;
+        document.getElementById(kpiActiveId).textContent = payload.stats?.active ?? 0;
+        document.getElementById(kpiDisabledId).textContent = payload.stats?.disabled ?? 0;
+        if (shouldClearUnseen) {
+          state[stateKey].unseenCount = 0;
+        } else if (silent && initialized && hasChanged && nextCount > previousCount) {
+          state[stateKey].unseenCount += nextCount - previousCount;
+        }
+        if (!silent || hasChanged) {
+          renderQuestionnaireResponses(role);
+          renderManualMatchingOptions();
+        }
+        renderGlobalResponseWatch();
+        if (!silent) {
+          setStatus(statusId, `${state[stateKey].rows.length} réponse(s) ${label} chargée(s).`);
+        } else if (hasChanged && nextCount > previousCount) {
+          setStatus(statusId, `${nextCount - previousCount} nouvelle(s) réponse(s) ${label} détectée(s).`);
+        }
+      } catch (error) {
+        if (!silent) {
+          document.getElementById(listId).innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+          setStatus(statusId, `Erreur : ${error.message || "chargement impossible"}`);
+        }
+      } finally {
+        state[stateKey].loading = false;
+      }
+    }
+
+    function startQuestionnaireAutoRefresh() {
+      if (state.questionnaireAutoRefreshTimer) {
+        window.clearInterval(state.questionnaireAutoRefreshTimer);
+      }
+      state.questionnaireAutoRefreshTimer = window.setInterval(() => {
+        if (document.hidden) return;
+        loadQuestionnaireResponses("candidate", { silent: true });
+        loadQuestionnaireResponses("employer", { silent: true });
+      }, 30000);
+    }
+
+    async function updateQuestionnaireResponseStatus(role, recordId, status, reason) {
+      const isCandidate = role === "candidate";
+      const statusId = isCandidate ? "candidate-response-status-line" : "employer-response-status-line";
+      setStatus(statusId, status === "disabled" ? "Désactivation de la réponse..." : "Réactivation de la réponse...");
+      try {
+        const response = await fetch(apiUrl(`/admin/questionnaires/${role}/${recordId}/status`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ status, reason }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        await loadQuestionnaireResponses(role);
+        await loadMatchings();
+        await loadTasks();
+        await loadCockpit();
+        setStatus(statusId, status === "disabled" ? "Réponse désactivée." : "Réponse réactivée.");
+      } catch (error) {
+        setStatus(statusId, `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    async function deleteQuestionnaireResponse(role, recordId) {
+      const isCandidate = role === "candidate";
+      const statusId = isCandidate ? "candidate-response-status-line" : "employer-response-status-line";
+      setStatus(statusId, "Suppression de la réponse...");
+      try {
+        const response = await fetch(apiUrl(`/admin/questionnaires/${role}/${recordId}`), {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: {
+            "Accept": "application/json",
+          },
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        await loadQuestionnaireResponses(role);
+        await loadMatchings();
+        await loadTasks();
+        await loadCockpit();
+        setStatus(statusId, `Réponse supprimée. ${payload.deleted_matchings || 0} matching(s) associé(s) supprimé(s).`);
+      } catch (error) {
+        setStatus(statusId, `Erreur : ${error.message || "suppression impossible"}`);
+      }
+    }
+
+    async function createManualMatching(sendDirectly = false) {
+      const candidateRecordId = Number(document.getElementById("manual-match-candidate").value || 0);
+      const employerRecordId = Number(document.getElementById("manual-match-employer").value || 0);
+      const employerEmailComment = document.getElementById("manual-match-employer-comment").value.trim();
+      const candidateEmailComment = document.getElementById("manual-match-candidate-comment").value.trim();
+      if (!candidateRecordId || !employerRecordId) {
+        setStatus("manual-match-status-line", "Erreur : sélectionnez un candidat et un besoin employeur.");
+        return;
+      }
+
+      setStatus("manual-match-status-line", sendDirectly ? "Création et envoi du matching..." : "Création du matching manuel...");
+      try {
+        const response = await fetch(apiUrl("/admin/matchings/manual"), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            candidate_record_id: candidateRecordId,
+            employer_record_id: employerRecordId,
+            employer_email_comment: employerEmailComment,
+            candidate_email_comment: candidateEmailComment,
+            send_directly: sendDirectly,
+          }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus(
+          "manual-match-status-line",
+          sendDirectly
+            ? `Matching créé et envoyé : score ${payload.score ?? 0}, statut ${payload.statut || "-"}.`
+            : `Matching créé : score ${payload.score ?? 0}, statut ${payload.statut || "-"}.`
+        );
+        await loadMatchings();
+        await loadTasks();
+        await loadCockpit();
+      } catch (error) {
+        setStatus("manual-match-status-line", `Erreur : ${error.message || (sendDirectly ? "création / envoi impossible" : "création impossible")}`);
+      }
+    }
+
+    function openAdminList(target) {
+      if (target === "invitations") {
+        activateTab("invitations");
+        loadInvitations();
+        return;
+      }
+      if (target === "candidate-responses") {
+        activateTab("candidate-responses");
+        loadQuestionnaireResponses("candidate");
+        return;
+      }
+      if (target === "employer-responses") {
+        activateTab("employer-responses");
+        loadQuestionnaireResponses("employer");
+        return;
+      }
+      if (target === "matchings-all") {
+        document.getElementById("filter-status").value = "all";
+        document.getElementById("filter-source").value = "all";
+        activateTab("matchings");
+        loadMatchings();
+        return;
+      }
+      if (target === "matchings-pending") {
+        document.getElementById("filter-status").value = "pending";
+        document.getElementById("filter-source").value = "all";
+        activateTab("matchings");
+        loadMatchings();
+        return;
+      }
+      if (target === "matchings-accepted") {
+        document.getElementById("filter-status").value = "accepted";
+        document.getElementById("filter-source").value = "all";
+        activateTab("matchings");
+        loadMatchings();
+        return;
+      }
+      if (target === "matchings-manual-sent") {
+        document.getElementById("filter-status").value = "accepted";
+        document.getElementById("filter-source").value = "manual";
+        activateTab("matchings");
+        loadMatchings();
+        return;
+      }
+      if (target === "matchings-manual-builder") {
+        activateTab("matchings");
+        window.setTimeout(() => {
+          document.getElementById("manual-match-candidate")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 60);
+        return;
+      }
+      if (target === "tasks") {
+        activateTab("tasks");
+        loadTasks();
+        return;
+      }
+    }
+
+    async function openMatchingRecord(recordId) {
+      if (!recordId) return;
+      document.getElementById("filter-status").value = "all";
+      document.getElementById("filter-source").value = "all";
+      activateTab("matchings");
+      await loadMatchings();
+      const card = document.querySelector(`#matching-list .matching-card[data-record-id="${CSS.escape(String(recordId))}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.style.outline = "3px solid rgba(22, 95, 190, 0.28)";
+        card.style.outlineOffset = "6px";
+        window.setTimeout(() => {
+          card.style.outline = "";
+          card.style.outlineOffset = "";
+        }, 2200);
+      }
+    }
+
+    async function loadCockpit() {
+      if (state.cockpit.loading) return;
+      state.cockpit.loading = true;
+      setStatus("cockpit-status-line", "Chargement du cockpit...");
+      try {
+        const response = await fetch(apiUrl("/admin/cockpit"), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        state.cockpit.data = payload.cockpit || null;
+        renderCockpit();
+        setStatus("cockpit-status-line", "Cockpit chargé.");
+      } catch (error) {
+        document.getElementById("cockpit-grid").innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+        setStatus("cockpit-status-line", `Erreur : ${error.message || "chargement impossible"}`);
+      } finally {
+        state.cockpit.loading = false;
+      }
+    }
+
+    async function loadTasks() {
+      if (state.tasks.loading) return;
+      state.tasks.loading = true;
+      setStatus("task-status-line", "Chargement des tâches...");
+      const status = document.getElementById("task-filter-status").value;
+      const url = new URL(apiUrl("/admin/tasks"), window.location.origin);
+      if (status) url.searchParams.set("status", status);
+      try {
+        const response = await fetch(url.toString(), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        state.tasks.rows = Array.isArray(payload.rows) ? payload.rows : [];
+        document.getElementById("task-kpi-total").textContent = payload.stats?.total ?? 0;
+        document.getElementById("task-kpi-pending").textContent = payload.stats?.pending ?? 0;
+        document.getElementById("task-kpi-done").textContent = payload.stats?.done ?? 0;
+        document.getElementById("task-kpi-dismissed").textContent = payload.stats?.dismissed ?? 0;
+        renderTaskRows();
+        setStatus("task-status-line", `${state.tasks.rows.length} tâche(s) chargée(s).`);
+      } catch (error) {
+        document.getElementById("task-list").innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+        setStatus("task-status-line", `Erreur : ${error.message || "chargement impossible"}`);
+      } finally {
+        state.tasks.loading = false;
+      }
+    }
+
+    async function loadInvitations() {
+      if (state.invitations.loading) return;
+      state.invitations.loading = true;
+      setStatus("invite-status-line", "Chargement des invitations...");
+
+      const status = document.getElementById("invite-filter-status").value;
+      const url = new URL(apiUrl("/admin/invitations"), window.location.origin);
+      if (status && status !== "all" && status !== "reminder_due" && status !== "duplicate_followup_pending") {
+        url.searchParams.set("status", status);
+      }
+
+      try {
+        const response = await fetch(url.toString(), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        state.invitations.rows = Array.isArray(payload.rows) ? payload.rows : [];
+        state.invitations.selectedIds = state.invitations.selectedIds.filter((recordId) =>
+          state.invitations.rows.some((row) =>
+            Number(row.record_id) === Number(recordId)
+            && row.invitation_status === "invitation_a_envoyer"
+            && row.duplicate_followup_status !== "pending"
+          )
+        );
+        updateInvitationKpis(payload.stats || {});
+        renderInvitations();
+        setStatus("invite-status-line", `${state.invitations.rows.length} invitation(s) chargée(s).`);
+      } catch (error) {
+        document.getElementById("invitation-list").innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+        setStatus("invite-status-line", `Erreur : ${error.message || "chargement impossible"}`);
+      } finally {
+        state.invitations.loading = false;
+      }
+    }
+
+    async function importInvitations(payload) {
+      setStatus("invite-status-line", "Import des invitations en cours...");
+      try {
+        const response = await fetch(apiUrl("/admin/invitations/import"), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || `Erreur API (${response.status})`);
+        }
+        const skippedCount = Array.isArray(result.skipped) ? result.skipped.length : 0;
+        const skippedNote = skippedCount ? `, ${skippedCount} ignorée(s)` : "";
+        setStatus("invite-status-line", `Import terminé : ${result.created || 0} créée(s), ${result.updated || 0} mise(s) à jour${skippedNote}.`);
+        await loadInvitations();
+      } catch (error) {
+        setStatus("invite-status-line", `Erreur : ${error.message || "import impossible"}`);
+      }
+    }
+
+    async function sendInvitations(recordIds = []) {
+      setStatus("invite-status-line", "Envoi des invitations en cours...");
+      try {
+        const response = await fetch(apiUrl("/admin/invitations/send"), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(recordIds.length ? { record_ids: recordIds } : {}),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        const sentCount = Array.isArray(payload.sent) ? payload.sent.length : 0;
+        const errorCount = Array.isArray(payload.errors) ? payload.errors.length : 0;
+        const followupCount = Array.isArray(payload.skipped)
+          ? payload.skipped.filter((row) => row.followup_created).length
+          : 0;
+        const followupNote = followupCount ? `, ${followupCount} relance(s) à arbitrer` : "";
+        setStatus("invite-status-line", `Envoi terminé : ${sentCount} envoyé(s), ${errorCount} erreur(s)${followupNote}.`);
+        await loadInvitations();
+        await loadCockpit();
+        await loadTasks();
+      } catch (error) {
+        setStatus("invite-status-line", `Erreur : ${error.message || "envoi impossible"}`);
+      }
+    }
+
+    async function sendInvitationReminders(recordIds = []) {
+      setStatus("invite-status-line", "Envoi des relances en cours...");
+      try {
+        const response = await fetch(apiUrl("/admin/invitations/remind"), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(recordIds.length ? { record_ids: recordIds } : {}),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        const remindedCount = Array.isArray(payload.reminded) ? payload.reminded.length : 0;
+        const errorCount = Array.isArray(payload.errors) ? payload.errors.length : 0;
+        setStatus("invite-status-line", `Relance terminée : ${remindedCount} relancée(s), ${errorCount} erreur(s).`);
+        await loadInvitations();
+        await loadCockpit();
+      } catch (error) {
+        setStatus("invite-status-line", `Erreur : ${error.message || "relance impossible"}`);
+      }
+    }
+
+    async function deleteInvitationError(recordId) {
+      setStatus("invite-status-line", "Suppression de l’invitation en erreur...");
+      try {
+        const response = await fetch(apiUrl(`/admin/invitations/${recordId}`), {
+          method: "DELETE",
+          credentials: "same-origin",
+          headers: {
+            "Accept": "application/json",
+          },
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("invite-status-line", "Invitation en erreur supprimée.");
+        await loadInvitations();
+        await loadCockpit();
+        await loadTasks();
+      } catch (error) {
+        setStatus("invite-status-line", `Erreur : ${error.message || "suppression impossible"}`);
+      }
+    }
+
+    async function submitDuplicateFollowup(recordId, action, note) {
+      setStatus("invite-status-line", action === "remind" ? "Envoi de la relance..." : "Clôture de la proposition...");
+      try {
+        const response = await fetch(apiUrl(`/admin/invitations/${recordId}/duplicate-followup`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ action, note }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("invite-status-line", action === "remind" ? "Relance envoyée." : "Proposition ignorée.");
+        await loadInvitations();
+        await loadCockpit();
+        await loadTasks();
+      } catch (error) {
+        setStatus("invite-status-line", `Erreur : ${error.message || "action impossible"}`);
+      }
+    }
+
+    function buildSingleInvitationPayload() {
+      const role = document.getElementById("single-role").value;
+      const email = document.getElementById("single-email").value.trim();
+      if (!email) {
+        throw new Error("Email requis");
+      }
+      const selectedTargetJob = role === "candidate"
+        ? document.getElementById("single-target-job").value.trim()
+        : "";
+      return {
+        rows: [{
+          role,
+          email,
+          first_name: document.getElementById("single-first-name").value.trim(),
+          last_name: document.getElementById("single-last-name").value.trim(),
+          company_name: document.getElementById("single-company").value.trim(),
+          language: document.getElementById("single-language").value.trim() || "fr",
+          source: document.getElementById("single-source").value.trim() || "admin_manual",
+          external_ref: document.getElementById("single-external-ref").value.trim(),
+          target_job_keys: selectedTargetJob ? [selectedTargetJob] : [],
+          notes: document.getElementById("single-notes").value.trim(),
+          invitation_status: "invitation_a_envoyer",
+        }],
+      };
+    }
+
+    function updateSingleInvitationRoleUI() {
+      const role = document.getElementById("single-role").value;
+      const targetBlock = document.getElementById("candidate-target-jobs-block");
+      if (!targetBlock) return;
+      const isCandidate = role === "candidate";
+      targetBlock.hidden = !isCandidate;
+      if (!isCandidate) {
+        const select = document.getElementById("single-target-job");
+        if (select) select.value = "";
+      }
+    }
+
+    function sampleCsv() {
+      return document.getElementById("csv-example").textContent.trim();
+    }
+
+    function renderCockpit() {
+      const container = document.getElementById("cockpit-grid");
+      const data = state.cockpit.data;
+      if (!data) {
+        container.innerHTML = `<div class="empty-state">Aucune donnée cockpit disponible.</div>`;
+        return;
+      }
+
+      const priorities = data.priorities || {};
+      const todayFlow = data.today_flow || {};
+      const funnel = data.funnel || {};
+      const delays = data.delays || {};
+      const activity = Array.isArray(data.recent_activity) ? data.recent_activity : [];
+      const brevo = state.brevo || null;
+      const unseenCandidate = Number(state.candidateResponses.unseenCount || 0);
+      const unseenEmployer = Number(state.employerResponses.unseenCount || 0);
+      const pendingDecisions =
+        Number(priorities.matching_review || 0) +
+        Number(priorities.no_match_followup || 0) +
+        Number(priorities.new_job_request || 0) +
+        Number(priorities.new_employer_alert || 0) +
+        Number(priorities.duplicate_invitation_followup || 0);
+      const alertCount =
+        Number(priorities.invitation_errors || 0) +
+        Number(priorities.duplicate_invitation_followup || 0) +
+        Number(priorities.new_employer_alert || 0);
+      const responseSignals = unseenCandidate + unseenEmployer;
+
+      function formatHours(value) {
+        return value != null ? `${value} h` : "-";
+      }
+
+      function signalTone(count, warningThreshold = 1) {
+        if (count >= warningThreshold && count > 0) return "warning";
+        return "success";
+      }
+
+      function healthTone() {
+        if (!brevo?.configured) return "danger";
+        if (brevo?.api_ok === false) return "danger";
+        if (brevo?.api_ok === true) return "success";
+        return "warning";
+      }
+
+      function healthLabel() {
+        if (!brevo?.configured) return "Brevo non configuré";
+        if (brevo?.api_ok === false) return "Brevo en incident";
+        if (brevo?.api_ok === true) return "Brevo opérationnel";
+        return "Brevo à vérifier";
+      }
+
+      const metricRows = (rows, options = {}) => rows.map((row) => `
+        <div class="metric-row ${options.actionable ? "actionable" : ""}" ${options.actionable ? `data-${esc(options.targetAttr || "priority-target")}="${esc(row.target || "")}"` : ""}>
+          <span>${esc(row.label)}</span>
+          <strong>${esc(row.value)}</strong>
+        </div>
+      `).join("");
+
+      const activityRows = activity.length
+        ? activity.map((row) => `
+            <div class="activity-row">
+              <span>
+                ${esc(row.label || "-")}
+                ${row.detail ? `<small>${esc(row.detail)}</small>` : ""}
+              </span>
+              <strong>${esc(row.at || "-")}</strong>
+            </div>
+          `).join("")
+        : `<div class="empty-state">Aucune activité récente.</div>`;
+
+      container.innerHTML = `
+        <article class="cockpit-card cockpit-hero-card">
+          <div class="cockpit-hero-grid">
+            <div class="cockpit-hero-main">
+              <span class="cockpit-hero-eyebrow">Pilotage quotidien</span>
+              <h2>Agir vite sur ce qui compte aujourd’hui</h2>
+              <p>Ce cockpit met en avant les arbitrages à prendre, les nouvelles entrées à surveiller et la santé du service. L’idée est de vous permettre de piloter l’expérimentation sans chercher l’information dans plusieurs onglets.</p>
+              <div class="cockpit-hero-kpis">
+                <div class="cockpit-hero-kpi">
+                  <strong>${esc(pendingDecisions)}</strong>
+                  <span>décision(s) en attente</span>
+                </div>
+                <div class="cockpit-hero-kpi">
+                  <strong>${esc(responseSignals)}</strong>
+                  <span>nouvelle(s) réponse(s) détectée(s)</span>
+                </div>
+                <div class="cockpit-hero-kpi">
+                  <strong>${esc(alertCount)}</strong>
+                  <span>signal(s) de vigilance</span>
+                </div>
+              </div>
+              <div class="cockpit-hero-actions">
+                <button class="cockpit-primary-btn" type="button" data-open-list="tasks">Ouvrir les décisions à traiter</button>
+                <button class="cockpit-secondary-btn" type="button" data-open-list="matchings-pending">Voir les matchings à valider</button>
+                <button class="cockpit-secondary-btn" type="button" data-open-list="matchings-manual-builder">Créer un matching manuel</button>
+              </div>
+            </div>
+            <div class="cockpit-side-stack">
+              <article class="cockpit-signal-card ${signalTone(responseSignals)}">
+                <div class="cockpit-signal-head">
+                  <div>
+                    <strong>Nouvelles réponses</strong>
+                    <p>Candidats : ${esc(unseenCandidate)} · Employeurs : ${esc(unseenEmployer)}</p>
+                  </div>
+                  <div class="cockpit-signal-count">
+                    <strong>${esc(responseSignals)}</strong>
+                    <span>à ouvrir</span>
+                  </div>
+                </div>
+              </article>
+              <article class="cockpit-signal-card ${signalTone(priorities.matching_review ?? 0)}">
+                <div class="cockpit-signal-head">
+                  <div>
+                    <strong>Matchings à arbitrer</strong>
+                    <p>Décisions humaines à prendre avant envoi ou clôture.</p>
+                  </div>
+                  <div class="cockpit-signal-count">
+                    <strong>${esc(priorities.matching_review ?? 0)}</strong>
+                    <span>en attente</span>
+                  </div>
+                </div>
+              </article>
+              <article class="cockpit-signal-card ${healthTone()}">
+                <div class="cockpit-signal-head">
+                  <div>
+                    <strong>${esc(healthLabel())}</strong>
+                    <p>${esc(brevo?.message || "Aucune information de santé disponible pour le moment.")}</p>
+                  </div>
+                  <div class="cockpit-signal-count">
+                    <strong>${esc(Number(priorities.invitation_errors || 0))}</strong>
+                    <span>erreur(s)</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </article>
+
+        <article class="cockpit-card">
+          <h3>Décisions à prendre maintenant</h3>
+          <p class="cockpit-section-intro">Les tâches les plus sensibles sont isolées ici pour éviter de naviguer dans plusieurs écrans avant d’agir.</p>
+          <div class="cockpit-priority-list">
+            ${[
+              {
+                title: "Valider les matchings",
+                count: priorities.matching_review ?? 0,
+                detail: "Arbitrages sur les rapprochements calculés ou créés manuellement.",
+                action: "Ouvrir la file de validation",
+                targetType: "priority",
+                target: "matching_review",
+              },
+              {
+                title: "Notifier l’absence de matching",
+                count: priorities.no_match_followup ?? 0,
+                detail: "Entrées qui nécessitent un retour explicite au candidat ou à l’employeur.",
+                action: "Ouvrir les cas sans matching",
+                targetType: "priority",
+                target: "no_match_followup",
+              },
+              {
+                title: "Surveiller les nouveaux employeurs",
+                count: priorities.new_employer_alert ?? 0,
+                detail: "Demandes déposées par de nouvelles structures à examiner avec plus de vigilance.",
+                action: "Ouvrir ces alertes",
+                targetType: "priority",
+                target: "new_employer_alert",
+              },
+            ].map((item) => `
+              <article class="cockpit-priority-item">
+                <div class="cockpit-priority-head">
+                  <div>
+                    <strong>${esc(item.title)}</strong>
+                    <p>${esc(item.detail)}</p>
+                  </div>
+                  <div class="cockpit-priority-count">
+                    <strong>${esc(item.count)}</strong>
+                    <span>cas</span>
+                  </div>
+                </div>
+                <footer>
+                  <button class="cockpit-secondary-btn" type="button" data-priority-target="${esc(item.target)}">${esc(item.action)}</button>
+                </footer>
+              </article>
+            `).join("")}
+          </div>
+        </article>
+
+        <article class="cockpit-card">
+          <h3>Raccourcis opérationnels</h3>
+          <p class="cockpit-section-intro">Accès direct aux vues les plus utilisées dans le pilotage quotidien.</p>
+          <div class="cockpit-quick-grid">
+            ${[
+              {
+                title: "Réponses candidats",
+                detail: `Consulter les questionnaires reçus et leurs matchings liés. ${unseenCandidate ? `${unseenCandidate} nouvelle(s) réponse(s).` : ""}`.trim(),
+                target: "candidate-responses",
+                action: "Ouvrir les réponses candidats",
+              },
+              {
+                title: "Réponses employeurs",
+                detail: `Consulter les besoins reçus et leur prise en compte dans le matching. ${unseenEmployer ? `${unseenEmployer} nouvelle(s) réponse(s).` : ""}`.trim(),
+                target: "employer-responses",
+                action: "Ouvrir les réponses employeurs",
+              },
+              {
+                title: "Invitations et relances",
+                detail: "Gérer les invitations à envoyer, les relances et les erreurs d’envoi.",
+                target: "invitations",
+                action: "Ouvrir les invitations",
+              },
+              {
+                title: "Matchings manuels",
+                detail: "Créer rapidement un rapprochement manuel quand l’automatique ne suffit pas.",
+                target: "matchings-manual-builder",
+                action: "Créer un matching manuel",
+              },
+            ].map((item) => `
+              <article class="cockpit-quick-card">
+                <div class="cockpit-quick-head">
+                  <strong>${esc(item.title)}</strong>
+                </div>
+                <p>${esc(item.detail)}</p>
+                <footer>
+                  <button class="cockpit-secondary-btn" type="button" data-open-list="${esc(item.target)}">${esc(item.action)}</button>
+                </footer>
+              </article>
+            `).join("")}
+          </div>
+        </article>
+
+        <article class="cockpit-card full">
+          <h3>Suivi opérationnel</h3>
+          <p class="cockpit-section-intro">Vue consolidée du pipeline et des délais pour suivre la progression réelle de l’expérimentation.</p>
+          <div class="cockpit-operations-grid">
+            <section class="notes-box">
+              <h4>Flux du jour</h4>
+              <div class="metric-list">
+                ${metricRows([
+                  { label: "Matchings calculés", value: todayFlow.matchings_calcules ?? 0, target: "matchings-all" },
+                  { label: "Matchings manuels envoyés", value: todayFlow.matchings_manuels_envoyes ?? 0, target: "matchings-manual-sent" },
+                  { label: "Emails envoyés", value: todayFlow.emails_envoyes ?? 0, target: "invitations" },
+                  { label: "Cas sans matching", value: todayFlow.sans_matching_crees ?? 0, target: "tasks" },
+                  { label: "Nouveaux métiers demandés", value: todayFlow.nouveaux_metiers_recus ?? 0, target: "tasks" },
+                ], { actionable: true, targetAttr: "open-list" })}
+              </div>
+            </section>
+            <section class="notes-box">
+              <h4>Entonnoir</h4>
+              <div class="metric-list">
+                ${metricRows([
+                  { label: "Besoins reçus", value: funnel.besoins_recus ?? 0, target: "employer-responses" },
+                  { label: "Candidats contactés", value: funnel.candidats_contactes ?? 0, target: "invitations" },
+                  { label: "Candidats reçus", value: funnel.candidats_recus ?? 0, target: "candidate-responses" },
+                  { label: "Matchings exploitables", value: funnel.matchings_exploitables ?? 0, target: "matchings-all" },
+                  { label: "Matchings validés", value: funnel.matchings_valides ?? 0, target: "matchings-accepted" },
+                  { label: "Envoyés aux employeurs", value: funnel.envoyes_employeurs ?? 0, target: "matchings-accepted" },
+                  { label: "Mises en relation", value: funnel.mises_en_relation ?? 0, target: "matchings-accepted" },
+                  { label: "Embauches confirmées", value: funnel.embauches_confirmees ?? 0, target: "matchings-accepted" },
+                ], { actionable: true, targetAttr: "open-list" })}
+              </div>
+            </section>
+          </div>
+        </article>
+
+        <article class="cockpit-card full">
+          <h3>Santé du service</h3>
+          <p class="cockpit-section-intro">Indicateurs à surveiller pour éviter les angles morts techniques ou métier.</p>
+          <div class="cockpit-health-grid">
+            <article class="cockpit-health-item ${healthTone()}">
+              <div class="cockpit-health-head">
+                <strong>Envoi des emails</strong>
+                <span class="pill ${healthTone() === "success" ? "accepted" : healthTone() === "danger" ? "refused" : "pending"}">${esc(healthLabel())}</span>
+              </div>
+              <p>${esc(brevo?.message || "Le statut Brevo sera affiché ici dès qu’un contrôle aura été fait.")}</p>
+              <footer>
+                <button class="cockpit-secondary-btn" type="button" data-open-list="invitations">Voir les invitations</button>
+              </footer>
+            </article>
+            <article class="cockpit-health-item ${Number(priorities.invitation_errors || 0) > 0 ? "danger" : "success"}">
+              <div class="cockpit-health-head">
+                <strong>Erreurs d’envoi</strong>
+                <span class="pill ${Number(priorities.invitation_errors || 0) > 0 ? "refused" : "accepted"}">${esc(priorities.invitation_errors ?? 0)} erreur(s)</span>
+              </div>
+              <p>Les envois qui ont échoué doivent être supprimés ou retraités pour garder un suivi propre.</p>
+              <footer>
+                <button class="cockpit-secondary-btn" type="button" data-priority-target="invitation_errors">Ouvrir les erreurs</button>
+              </footer>
+            </article>
+            <article class="cockpit-health-item ${Number(priorities.duplicate_invitation_followup || 0) > 0 ? "warning" : "success"}">
+              <div class="cockpit-health-head">
+                <strong>Doublons à arbitrer</strong>
+                <span class="pill ${Number(priorities.duplicate_invitation_followup || 0) > 0 ? "pending" : "accepted"}">${esc(priorities.duplicate_invitation_followup ?? 0)} cas</span>
+              </div>
+              <p>Ces invitations nécessitent une décision pour éviter une relance inutile ou contradictoire.</p>
+              <footer>
+                <button class="cockpit-secondary-btn" type="button" data-priority-target="duplicate_invitation_followup">Traiter les doublons</button>
+              </footer>
+            </article>
+            <article class="cockpit-health-item ${Number(priorities.new_employer_alert || 0) > 0 ? "warning" : "success"}">
+              <div class="cockpit-health-head">
+                <strong>Nouveaux employeurs</strong>
+                <span class="pill ${Number(priorities.new_employer_alert || 0) > 0 ? "pending" : "accepted"}">${esc(priorities.new_employer_alert ?? 0)} alerte(s)</span>
+              </div>
+              <p>Ces demandes viennent de nouvelles structures et méritent un regard renforcé avant traitement complet.</p>
+              <footer>
+                <button class="cockpit-secondary-btn" type="button" data-priority-target="new_employer_alert">Voir les alertes</button>
+              </footer>
+            </article>
+          </div>
+        </article>
+
+        <article class="cockpit-card">
+          <h3>Délais moyens</h3>
+          <div class="metric-list">
+            ${metricRows([
+              { label: "Matching -> validation admin", value: formatHours(delays.matching_to_validation_hours) },
+              { label: "Validation -> envoi employeur", value: formatHours(delays.validation_to_send_hours) },
+              { label: "Envoi -> retour employeur", value: formatHours(delays.send_to_response_hours) },
+              { label: "Retour -> mise en relation", value: formatHours(delays.response_to_relation_hours) },
+            ])}
+          </div>
+        </article>
+
+        <article class="cockpit-card">
+          <h3>Charge à venir</h3>
+          <div class="metric-list">
+            ${metricRows([
+              { label: "Demandes de nouveaux métiers", value: priorities.new_job_request ?? 0, target: "new_job_request" },
+              { label: "Cas sans matching à notifier", value: priorities.no_match_followup ?? 0, target: "no_match_followup" },
+              { label: "Doublons à arbitrer", value: priorities.duplicate_invitation_followup ?? 0, target: "duplicate_invitation_followup" },
+            ], { actionable: true })}
+          </div>
+        </article>
+
+        <article class="cockpit-card full">
+          <h3>Activité récente</h3>
+          <div class="activity-list">${activityRows}</div>
+        </article>
+      `;
+
+      for (const row of container.querySelectorAll("[data-priority-target]")) {
+        row.addEventListener("click", async (event) => {
+          const target = event.currentTarget.dataset.priorityTarget || "";
+          await openPriorityTarget(target);
+        });
+      }
+      for (const row of container.querySelectorAll("[data-open-list]")) {
+        row.addEventListener("click", async (event) => {
+          const target = event.currentTarget.dataset.openList || "";
+          openAdminList(target);
+        });
+      }
+    }
+
+    async function openPriorityTarget(target) {
+      if (target === "invitation_errors") {
+        activateTab("invitations");
+        document.getElementById("invite-filter-status").value = "erreur_envoi";
+        await loadInvitations();
+        return;
+      }
+      activateTab("tasks");
+      document.getElementById("task-filter-status").value = "pending";
+      const searchMap = {
+        matching_review: "matching",
+        no_match_followup: "sans matching",
+        new_job_request: "nouveau métier",
+        new_employer_alert: "nouvel employeur",
+        duplicate_invitation_followup: "invitation en doublon",
+      };
+      document.getElementById("task-filter-search").value = searchMap[target] || "";
+      await loadTasks();
+    }
+
+    function renderTaskRows() {
+      const list = document.getElementById("task-list");
+      const search = normalizeText(document.getElementById("task-filter-search").value.trim());
+      const filtered = state.tasks.rows.filter((row) => taskMatchesSearch(row, search));
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">Aucune tâche ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((row) => {
+        const statusClass = row.status === "done" ? "accepted" : row.status === "dismissed" ? "refused" : "pending";
+        const priorityLabel = row.priority === "high" ? "priorité haute" : "priorité normale";
+        let body = "";
+        let actions = "";
+        let noteId = `task-note-${row.task_type}-${row.record_id}`;
+
+        if (row.task_type === "matching_review") {
+          const matching = row.matching || {};
+          body = `
+            <div class="compare-grid">
+              <section class="compare-card">
+                <h3>Candidat</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Nom</dt><dd>${esc(matching.candidat?.nom || "-")}</dd></div>
+                  <div class="detail-row"><dt>Email</dt><dd>${esc(matching.candidat?.email || "-")}</dd></div>
+                  <div class="detail-row"><dt>Métiers</dt><dd>${esc(matching.candidat?.metier || "-")}</dd></div>
+                  <div class="detail-row"><dt>Langues</dt><dd>${esc(matching.candidat?.langues || "-")}</dd></div>
+                </dl>
+              </section>
+              <section class="compare-card">
+                <h3>Besoin</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Entreprise</dt><dd>${esc(matching.employeur?.employeur || "-")}</dd></div>
+                  <div class="detail-row"><dt>Poste</dt><dd>${esc(matching.employeur?.poste || "-")}</dd></div>
+                  <div class="detail-row"><dt>Pays</dt><dd>${esc(matching.employeur?.pays || "-")}</dd></div>
+                  <div class="detail-row"><dt>Score</dt><dd>${esc(matching.score ?? 0)}</dd></div>
+                </dl>
+              </section>
+            </div>
+          `;
+          actions = `
+            <button class="btn-accept" type="button" data-task-matching-action="accepted">Accepter</button>
+            <button class="btn-refuse" type="button" data-task-matching-action="refused">Refuser</button>
+          `;
+        } else if (row.task_type === "no_match_followup") {
+          const noMatch = row.no_match || {};
+          body = `
+            <div class="compare-grid">
+              <section class="compare-card">
+                <h3>Entrée</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Type</dt><dd>${esc(noMatch.role === "candidate" ? "Candidat" : "Employeur")}</dd></div>
+                  <div class="detail-row"><dt>Nom / Structure</dt><dd>${esc(noMatch.title || "-")}</dd></div>
+                  <div class="detail-row"><dt>Email</dt><dd>${esc(noMatch.recipient_email || "-")}</dd></div>
+                </dl>
+              </section>
+              <section class="compare-card">
+                <h3>Action attendue</h3>
+                <p style="margin:0; line-height:1.7;">Notification manuelle à envoyer pour signaler qu’aucun matching immédiat n’a été trouvé.</p>
+              </section>
+            </div>
+          `;
+          actions = `
+            <button class="btn-accept" type="button" data-task-no-match-action="send" data-role="${esc(noMatch.role)}">Envoyer l’email</button>
+            <button class="btn-refuse" type="button" data-task-no-match-action="dismiss" data-role="${esc(noMatch.role)}">Ignorer</button>
+          `;
+        } else if (row.task_type === "new_job_request") {
+          const newJob = row.new_job || {};
+          body = `
+            <div class="compare-grid">
+              <section class="compare-card">
+                <h3>Employeur</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Entreprise</dt><dd>${esc(newJob.employeur || "-")}</dd></div>
+                  <div class="detail-row"><dt>Poste</dt><dd>${esc(newJob.poste || "-")}</dd></div>
+                  <div class="detail-row"><dt>Email</dt><dd>${esc(newJob.email || "-")}</dd></div>
+                </dl>
+              </section>
+              <section class="compare-card">
+                <h3>Nouveaux métiers souhaités</h3>
+                <p style="margin:0; line-height:1.7;">${esc(newJob.requested_jobs || "-")}</p>
+              </section>
+            </div>
+          `;
+          actions = `
+            <button class="btn-accept" type="button" data-task-new-job-action="processed">Marquer traité</button>
+            <button class="btn-refuse" type="button" data-task-new-job-action="dismissed">Ignorer</button>
+          `;
+        } else if (row.task_type === "new_employer_alert") {
+          const newEmployer = row.new_employer || {};
+          body = `
+            <div class="compare-grid">
+              <section class="compare-card">
+                <h3>Employeur déposant</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Entreprise</dt><dd>${esc(newEmployer.employeur || "-")}</dd></div>
+                  <div class="detail-row"><dt>Contact</dt><dd>${esc(newEmployer.contact || "-")}</dd></div>
+                  <div class="detail-row"><dt>Email</dt><dd>${esc(newEmployer.email || "-")}</dd></div>
+                  <div class="detail-row"><dt>Poste</dt><dd>${esc(newEmployer.poste || "-")}</dd></div>
+                </dl>
+              </section>
+              <section class="compare-card">
+                <h3>Entreprise marraine</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Entreprise source</dt><dd>${esc(newEmployer.sponsor_company_name || newEmployer.source_invitation_company || "-")}</dd></div>
+                  <div class="detail-row"><dt>Email source</dt><dd>${esc(newEmployer.sponsor_email || newEmployer.source_invitation_email || "-")}</dd></div>
+                  <div class="detail-row"><dt>Type d’invitation</dt><dd>${esc(newEmployer.source_invitation_scope === "same_company" ? "Collaborateur" : "Autre entreprise")}</dd></div>
+                </dl>
+              </section>
+            </div>
+          `;
+          actions = `
+            <button class="btn-accept" type="button" data-task-new-employer-action="reviewed">Marquer surveillé</button>
+            <button class="btn-refuse" type="button" data-task-new-employer-action="dismissed">Ignorer</button>
+          `;
+        } else if (row.task_type === "duplicate_invitation_followup") {
+          const duplicate = row.duplicate_followup || {};
+          body = `
+            <div class="compare-grid">
+              <section class="compare-card">
+                <h3>Invitation actuelle</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Adresse</dt><dd>${esc(duplicate.email || "-")}</dd></div>
+                  <div class="detail-row"><dt>Type</dt><dd>${esc(duplicate.role === "employer" ? "Employeur" : "Candidat")}</dd></div>
+                  <div class="detail-row"><dt>Structure</dt><dd>${esc(duplicate.company_name || "-")}</dd></div>
+                </dl>
+              </section>
+              <section class="compare-card">
+                <h3>Conflit détecté</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Nature</dt><dd>${esc(duplicate.duplicate_followup_type === "existing_questionnaire" ? "Questionnaire déjà reçu" : "Invitation déjà envoyée")}</dd></div>
+                  <div class="detail-row"><dt>Record cible</dt><dd>${esc(duplicate.duplicate_followup_target_record_id || "-")}</dd></div>
+                  <div class="detail-row"><dt>Statut cible</dt><dd>${esc(invitationStatusLabel(duplicate.duplicate_followup_target_status || "-"))}</dd></div>
+                  <div class="detail-row"><dt>Message</dt><dd>${esc(duplicate.duplicate_followup_message || "-")}</dd></div>
+                </dl>
+              </section>
+            </div>
+          `;
+          actions = `
+            ${duplicate.can_remind ? `<button class="btn-accept" type="button" data-task-duplicate-action="remind">Envoyer la relance</button>` : ""}
+            <button class="btn-refuse" type="button" data-task-duplicate-action="ignore">Ignorer</button>
+          `;
+        }
+
+        return `
+          <article class="matching-card" data-task-type="${esc(row.task_type)}" data-record-id="${esc(row.record_id)}">
+            <div class="matching-summary">
+              <div>
+                <div class="task-type-label">${esc(taskTypeLabel(row.task_type))}</div>
+                <h2>${esc(row.title || "-")}</h2>
+                <p>${esc(row.subtitle || "-")}</p>
+                <div class="summary-tags">
+                  <span class="pill ${statusClass}">Statut : ${esc(taskStatusLabel(row.status))}</span>
+                  <span class="pill">${esc(priorityLabel)}</span>
+                  <span class="pill">Créé le : ${esc(row.created_at || "-")}</span>
+                </div>
+              </div>
+            </div>
+            <div class="matching-body">
+              <p style="margin:0; line-height:1.7;">${esc(row.summary || "-")}</p>
+              ${body}
+              <section class="notes-box">
+                <h4>Note admin</h4>
+                <textarea id="${esc(noteId)}" placeholder="Ajouter une note interne...">${esc(row.matching?.admin_decision_note || row.no_match?.note || row.new_job?.note || row.new_employer?.note || row.duplicate_followup?.duplicate_followup_note || "")}</textarea>
+                ${row.task_type === "matching_review" ? `
+                <div class="notes-grid" style="margin-top:0.9rem;">
+                  <section class="notes-box" style="margin:0;">
+                    <h4>Commentaire employeur</h4>
+                    <textarea id="task-employer-comment-matching_review-${esc(row.record_id)}" placeholder="Optionnel. Ajouté uniquement au mail employeur.">${esc(row.matching?.employer_email_comment || "")}</textarea>
+                  </section>
+                  <section class="notes-box" style="margin:0;">
+                    <h4>Commentaire candidat</h4>
+                    <textarea id="task-candidate-comment-matching_review-${esc(row.record_id)}" placeholder="Optionnel. Ajouté uniquement au mail candidat.">${esc(row.matching?.candidate_email_comment || "")}</textarea>
+                  </section>
+                </div>` : ""}
+                <div class="hero-actions">${actions}</div>
+              </section>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      for (const button of list.querySelectorAll("[data-task-matching-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const decision = event.currentTarget.dataset.taskMatchingAction;
+          const note = document.getElementById(`task-note-matching_review-${recordId}`)?.value || "";
+          const employerEmailComment = document.getElementById(`task-employer-comment-matching_review-${recordId}`)?.value || "";
+          const candidateEmailComment = document.getElementById(`task-candidate-comment-matching_review-${recordId}`)?.value || "";
+          if (!recordId || !decision) return;
+          await submitDecision(recordId, decision, note, employerEmailComment, candidateEmailComment);
+          await loadTasks();
+          await loadCockpit();
+        });
+      }
+      for (const button of list.querySelectorAll("[data-task-no-match-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const role = event.currentTarget.dataset.role;
+          const action = event.currentTarget.dataset.taskNoMatchAction;
+          const note = document.getElementById(`task-note-no_match_followup-${recordId}`)?.value || "";
+          if (!recordId || !role || !action) return;
+          if (action === "send") {
+            await submitNoMatchSend(role, recordId, note);
+          } else {
+            await submitNoMatchDismiss(role, recordId, note);
+          }
+          await loadTasks();
+          await loadCockpit();
+        });
+      }
+      for (const button of list.querySelectorAll("[data-task-new-job-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const status = event.currentTarget.dataset.taskNewJobAction;
+          const note = document.getElementById(`task-note-new_job_request-${recordId}`)?.value || "";
+          if (!recordId || !status) return;
+          await submitNewJobStatus(recordId, status, note);
+          await loadTasks();
+          await loadCockpit();
+        });
+      }
+      for (const button of list.querySelectorAll("[data-task-new-employer-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const status = event.currentTarget.dataset.taskNewEmployerAction;
+          const note = document.getElementById(`task-note-new_employer_alert-${recordId}`)?.value || "";
+          if (!recordId || !status) return;
+          await submitNewEmployerAlertStatus(recordId, status, note);
+          await loadTasks();
+          await loadCockpit();
+        });
+      }
+      for (const button of list.querySelectorAll("[data-task-duplicate-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const action = event.currentTarget.dataset.taskDuplicateAction;
+          const note = document.getElementById(`task-note-duplicate_invitation_followup-${recordId}`)?.value || "";
+          if (!recordId || !action) return;
+          await submitDuplicateFollowup(recordId, action, note);
+        });
+      }
+    }
+
+    function renderMatchingRows() {
+      const list = document.getElementById("matching-list");
+      const search = normalizeText(document.getElementById("filter-search").value.trim());
+      const sourceFilter = document.getElementById("filter-source").value;
+      const filtered = state.matchings.rows.filter((row) => {
+        if (!matchesSearch(row, search)) {
+          return false;
+        }
+        const isManual = String(row.manual_matching_source || "").trim().toLowerCase() === "admin_manual";
+        if (sourceFilter === "manual" && !isManual) {
+          return false;
+        }
+        if (sourceFilter === "auto" && isManual) {
+          return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">Aucun matching ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((row) => {
+        const reasonsHtml = bulletList(row.raisons, "Aucun point fort détaillé");
+        const weaknessesHtml = bulletList(row.points_faibles, "Aucun point faible majeur détecté");
+        const decisionMeta = row.admin_decision_at
+          ? `<div class="decision-meta">Dernière décision : <strong>${esc(adminStatusLabel(row.admin_status))}</strong><br>Par : ${esc(row.admin_decision_by || "-")}<br>Le : ${esc(row.admin_decision_at || "-")}<br>Note : ${esc(row.admin_decision_note || "-")}</div>`
+          : "";
+        const employerMeta = row.employer_response
+          ? `<div class="decision-meta">Retour employeur : <strong>${esc(employerResponseLabel(row.employer_response))}</strong><br>Le : ${esc(row.employer_response_at || "-")}</div>`
+          : `<div class="decision-meta">Retour employeur : <strong>aucun retour</strong></div>`;
+        const workflowMeta = `<div class="decision-meta">Workflow : <strong>${esc(workflowStatusLabel(row.workflow_status))}</strong><br>Maj : ${esc(row.workflow_status_updated_at || "-")}<br>Par : ${esc(row.workflow_status_updated_by || "-")}</div>`;
+
+        return `
+          <article class="matching-card" data-record-id="${esc(row.record_id)}">
+            <div class="matching-summary">
+              <div>
+                <h2>${esc(row.employeur?.poste || "Poste non renseigné")} · ${esc(row.candidat?.nom || "Candidat non renseigné")}</h2>
+                <p>${esc(row.employeur?.employeur || "Entreprise non renseignée")} · ${esc(row.employeur?.pays || "Lieu non renseigné")}</p>
+                <div class="summary-tags">
+                  <span class="pill">Workflow : ${esc(workflowStatusLabel(row.workflow_status))}</span>
+                  <span class="pill ${esc(row.admin_status)}">Décision admin : ${esc(adminStatusLabel(row.admin_status))}</span>
+                  <span class="pill ${row.scoring_status === "auto_envoyable" ? "auto" : "pending"}">Statut scoring : ${esc(scoreStatusLabel(row))}</span>
+                  <span class="pill ${row.employer_response === "contact" ? "response-yes" : row.employer_response === "not_contact" ? "response-no" : ""}">Employeur : ${esc(employerResponseLabel(row.employer_response))}</span>
+                  <span class="pill">besoin_id : ${esc(row.besoin_id)}</span>
+                  <span class="pill">candidat_id : ${esc(row.candidat_id)}</span>
+                </div>
+              </div>
+
+              <div class="summary-score">
+                <div class="score-box">
+                  <strong>${esc(row.score)}</strong>
+                  <span>score global / 100</span>
+                </div>
+                <div class="decision-actions">
+                  <button class="btn-accept" type="button" data-action="accepted">Accepter</button>
+                  <button class="btn-refuse" type="button" data-action="refused">Refuser</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="matching-body">
+              <div class="compare-grid">
+                <section class="compare-card">
+                  <h3>Candidat</h3>
+                  <dl class="detail-list">
+                    <div class="detail-row"><dt>Nom</dt><dd>${esc(row.candidat?.nom || "-")}</dd></div>
+                    <div class="detail-row"><dt>Email</dt><dd>${esc(row.candidat?.email || "-")}</dd></div>
+                    <div class="detail-row"><dt>Pays</dt><dd>${esc(row.candidat?.pays || "-")}</dd></div>
+                    <div class="detail-row"><dt>Métiers</dt><dd>${esc(row.candidat?.metier || "-")}</dd></div>
+                    <div class="detail-row"><dt>Intitulés visés</dt><dd>${esc(row.candidat?.intitules_poste || "-")}</dd></div>
+                    <div class="detail-row"><dt>Compétences</dt><dd>${esc(row.candidat?.competences || "-")}</dd></div>
+                    <div class="detail-row"><dt>Langues</dt><dd>${esc(row.candidat?.langues || "-")}</dd></div>
+                    <div class="detail-row"><dt>Mobilité</dt><dd>${esc(row.candidat?.mobilite || "-")}</dd></div>
+                    <div class="detail-row"><dt>Disponibilité</dt><dd>${esc(row.candidat?.disponibilite || "-")}</dd></div>
+                  </dl>
+                </section>
+
+                <section class="compare-card">
+                  <h3>Employeur / besoin</h3>
+                  <dl class="detail-list">
+                    <div class="detail-row"><dt>Entreprise</dt><dd>${esc(row.employeur?.employeur || "-")}</dd></div>
+                    <div class="detail-row"><dt>Contact</dt><dd>${esc(row.employeur?.contact || "-")}</dd></div>
+                    <div class="detail-row"><dt>Pays / lieu</dt><dd>${esc(row.employeur?.pays || "-")}</dd></div>
+                    <div class="detail-row"><dt>Poste</dt><dd>${esc(row.employeur?.poste || "-")}</dd></div>
+                    <div class="detail-row"><dt>Intitulés proposés</dt><dd>${esc(row.employeur?.intitules_poste || "-")}</dd></div>
+                    <div class="detail-row"><dt>Compétences clés</dt><dd>${esc(row.employeur?.competences_clefs || "-")}</dd></div>
+                    <div class="detail-row"><dt>Langues requises</dt><dd>${esc(row.employeur?.langues_requises || "-")}</dd></div>
+                    <div class="detail-row"><dt>Date de début</dt><dd>${esc(row.employeur?.date_debut || "-")}</dd></div>
+                    <div class="detail-row"><dt>Contraintes</dt><dd>${esc(row.employeur?.contraintes_travail || "-")}</dd></div>
+                  </dl>
+                </section>
+              </div>
+
+              <section class="subscores-grid">
+                <div class="subscore-card"><strong>${esc(row.score_metier)}</strong><span>Métier / 25</span></div>
+                <div class="subscore-card"><strong>${esc(row.score_competences ?? 0)}</strong><span>Compétences / 20</span></div>
+                <div class="subscore-card"><strong>${esc(row.score_langues)}</strong><span>Langues / 20</span></div>
+                <div class="subscore-card"><strong>${esc(row.score_mobilite)}</strong><span>Mobilité / 15</span></div>
+                <div class="subscore-card"><strong>${esc(row.score_disponibilite)}</strong><span>Disponibilité / 10</span></div>
+                <div class="subscore-card"><strong>${esc(row.score_salaire)}</strong><span>Salaire / 10</span></div>
+              </section>
+
+              <div class="notes-grid">
+                <section class="notes-box">
+                  <h4>Points forts</h4>
+                  ${reasonsHtml}
+                </section>
+                <section class="notes-box">
+                  <h4>Points faibles</h4>
+                  ${weaknessesHtml}
+                </section>
+              </div>
+
+              <section class="notes-box">
+                <h4>Commentaires sortants</h4>
+                <div class="notes-grid">
+                  <section class="notes-box" style="margin:0;">
+                    <h4>Commentaire employeur</h4>
+                    <textarea id="employer-comment-${esc(row.record_id)}" placeholder="Optionnel. Ajouté uniquement au mail employeur.">${esc(row.employer_email_comment || "")}</textarea>
+                  </section>
+                  <section class="notes-box" style="margin:0;">
+                    <h4>Commentaire candidat</h4>
+                    <textarea id="candidate-comment-${esc(row.record_id)}" placeholder="Optionnel. Ajouté uniquement au mail candidat.">${esc(row.candidate_email_comment || "")}</textarea>
+                  </section>
+                </div>
+                <h4 style="margin-top:1rem;">Note interne / workflow</h4>
+                <textarea id="note-${esc(row.record_id)}" placeholder="Optionnel. Note interne conservée dans l’admin.">${esc(row.admin_decision_note || "")}</textarea>
+                <div class="hero-actions">
+                  <button class="btn-neutral" type="button" data-action="accepted">Enregistrer comme accepté</button>
+                  <button class="btn-refuse" type="button" data-action="refused">Enregistrer comme refusé</button>
+                  <button class="btn-neutral" type="button" data-workflow="mise_en_relation_faite">Mise en relation faite</button>
+                  <button class="btn-neutral" type="button" data-workflow="embauche_confirmee">Embauche confirmée</button>
+                </div>
+                ${decisionMeta}
+                ${workflowMeta}
+                ${employerMeta}
+              </section>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      for (const button of list.querySelectorAll("[data-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const decision = event.currentTarget.dataset.action;
+          const note = document.getElementById(`note-${recordId}`)?.value || "";
+          const employerEmailComment = document.getElementById(`employer-comment-${recordId}`)?.value || "";
+          const candidateEmailComment = document.getElementById(`candidate-comment-${recordId}`)?.value || "";
+          if (!recordId || !decision) return;
+          await submitDecision(recordId, decision, note, employerEmailComment, candidateEmailComment);
+        });
+      }
+      for (const button of list.querySelectorAll("[data-workflow]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const workflowStatus = event.currentTarget.dataset.workflow;
+          const note = document.getElementById(`note-${recordId}`)?.value || "";
+          if (!recordId || !workflowStatus) return;
+          await submitWorkflow(recordId, workflowStatus, note);
+        });
+      }
+    }
+
+    function renderNoMatchRows() {
+      const list = document.getElementById("no-match-list");
+      const search = normalizeText(document.getElementById("no-match-filter-search").value.trim());
+      const filtered = state.noMatch.rows.filter((row) => noMatchSearch(row, search));
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">Aucune entrée ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((row) => {
+        const payload = row.payload || {};
+        const note = row.note || "";
+        const isCandidate = row.role === "candidate";
+        const details = isCandidate ? `
+          <div class="compare-grid">
+            <section class="compare-card">
+              <h3>Candidat</h3>
+              <dl class="detail-list">
+                <div class="detail-row"><dt>Nom</dt><dd>${esc(payload.nom || "-")}</dd></div>
+                <div class="detail-row"><dt>Email</dt><dd>${esc(payload.email || "-")}</dd></div>
+                <div class="detail-row"><dt>Pays</dt><dd>${esc(payload.pays || "-")}</dd></div>
+                <div class="detail-row"><dt>Métiers</dt><dd>${esc(payload.metier || "-")}</dd></div>
+                <div class="detail-row"><dt>Langues</dt><dd>${esc(payload.langues || "-")}</dd></div>
+                <div class="detail-row"><dt>Mobilité</dt><dd>${esc(payload.mobilite || "-")}</dd></div>
+                <div class="detail-row"><dt>Disponibilité</dt><dd>${esc(payload.disponibilite || "-")}</dd></div>
+              </dl>
+            </section>
+            <section class="compare-card">
+              <h3>Message prévu</h3>
+              <p>Aucun matching n’a pu être réalisé immédiatement selon ses critères. Le candidat sera recontacté dès qu’une mise en relation pertinente pourra être opérée.</p>
+            </section>
+          </div>
+        ` : `
+          <div class="compare-grid">
+            <section class="compare-card">
+              <h3>Employeur / besoin</h3>
+              <dl class="detail-list">
+                <div class="detail-row"><dt>Entreprise</dt><dd>${esc(payload.employeur || "-")}</dd></div>
+                <div class="detail-row"><dt>Contact</dt><dd>${esc(payload.contact || "-")}</dd></div>
+                <div class="detail-row"><dt>Poste</dt><dd>${esc(payload.poste || "-")}</dd></div>
+                <div class="detail-row"><dt>Pays</dt><dd>${esc(payload.pays || "-")}</dd></div>
+                <div class="detail-row"><dt>Langues requises</dt><dd>${esc(payload.langues_requises || "-")}</dd></div>
+                <div class="detail-row"><dt>Date de début</dt><dd>${esc(payload.date_debut || "-")}</dd></div>
+              </dl>
+            </section>
+            <section class="compare-card">
+              <h3>Message prévu</h3>
+              <p>Aucun matching n’a pu être généré immédiatement. Une nouvelle recherche de profils sera menée dans la base EURES et l’employeur sera recontacté dès qu’une candidature adaptée pourra être proposée.</p>
+            </section>
+          </div>
+        `;
+
+        return `
+          <article class="matching-card" data-role="${esc(row.role)}" data-record-id="${esc(row.record_id)}">
+            <div class="matching-summary">
+              <div>
+                <h2>${esc(row.title || (isCandidate ? "Candidat" : "Employeur"))}</h2>
+                <p>${esc((isCandidate ? "Candidat" : "Employeur") + (row.subtitle ? ` · ${row.subtitle}` : ""))}</p>
+                <div class="summary-tags">
+                  <span class="pill ${isCandidate ? "role-candidate" : "role-employer"}">${esc(isCandidate ? "Candidat" : "Employeur")}</span>
+                  <span class="pill ${row.notification_status === "sent" ? "accepted" : row.notification_status === "dismissed" ? "refused" : "pending"}">Statut : ${esc(noMatchStatusLabel(row.notification_status))}</span>
+                  <span class="pill">Destinataire : ${esc(row.recipient_email || "email manquant")}</span>
+                </div>
+              </div>
+
+              <div class="summary-score">
+                <div class="score-box">
+                  <strong>${esc(row.notification_status === "sent" ? "OK" : row.notification_status === "dismissed" ? "N/A" : "0")}</strong>
+                  <span>matching immédiat</span>
+                </div>
+                <div class="decision-actions">
+                  <button class="btn-accept" type="button" data-no-match-action="send">Envoyer l’email</button>
+                  <button class="btn-refuse" type="button" data-no-match-action="dismiss">Ignorer</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="matching-body">
+              ${details}
+              <section class="notes-box">
+                <h4>Note admin</h4>
+                <textarea id="no-match-note-${esc(row.role)}-${esc(row.record_id)}" placeholder="Ajouter une note interne...">${esc(note)}</textarea>
+                <div class="decision-meta">Créé le : ${esc(row.created_at || "-")}<br>Par : ${esc(row.created_by || "-")}<br>Dernier envoi : ${esc(row.sent_at || "-")}</div>
+              </section>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      for (const button of list.querySelectorAll("[data-no-match-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const role = card?.dataset.role;
+          const action = event.currentTarget.dataset.noMatchAction;
+          const note = document.getElementById(`no-match-note-${role}-${recordId}`)?.value || "";
+          if (!recordId || !role || !action) return;
+          if (action === "send") {
+            await submitNoMatchSend(role, recordId, note);
+          } else {
+            await submitNoMatchDismiss(role, recordId, note);
+          }
+        });
+      }
+    }
+
+    function renderNewJobRows() {
+      const list = document.getElementById("new-job-list");
+      const search = normalizeText(document.getElementById("new-job-filter-search").value.trim());
+      const filtered = state.newJobs.rows.filter((row) => newJobSearch(row, search));
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty-state">Aucune demande ne correspond aux filtres actuels.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((row) => `
+        <article class="matching-card" data-record-id="${esc(row.record_id)}">
+          <div class="matching-summary">
+            <div>
+              <h2>${esc(row.employeur || "Entreprise non renseignée")}</h2>
+              <p>${esc(row.poste || "Poste non renseigné")} · ${esc(row.pays || "Lieu non renseigné")}</p>
+              <div class="summary-tags">
+                <span class="pill role-employer">Employeur</span>
+                <span class="pill ${row.request_status === "processed" ? "accepted" : row.request_status === "dismissed" ? "refused" : "pending"}">Statut : ${esc(newJobStatusLabel(row.request_status))}</span>
+                <span class="pill">Contact : ${esc(row.email || row.contact || "non renseigné")}</span>
+              </div>
+            </div>
+
+            <div class="summary-score">
+              <div class="score-box">
+                <strong>+</strong>
+                <span>métier demandé</span>
+              </div>
+              <div class="decision-actions">
+                <button class="btn-accept" type="button" data-new-job-action="processed">Marquer traité</button>
+                <button class="btn-refuse" type="button" data-new-job-action="dismissed">Ignorer</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="matching-body">
+            <div class="compare-grid">
+              <section class="compare-card">
+                <h3>Besoin employeur</h3>
+                <dl class="detail-list">
+                  <div class="detail-row"><dt>Entreprise</dt><dd>${esc(row.employeur || "-")}</dd></div>
+                  <div class="detail-row"><dt>Contact</dt><dd>${esc(row.contact || "-")}</dd></div>
+                  <div class="detail-row"><dt>Email</dt><dd>${esc(row.email || "-")}</dd></div>
+                  <div class="detail-row"><dt>Poste</dt><dd>${esc(row.poste || "-")}</dd></div>
+                  <div class="detail-row"><dt>Pays</dt><dd>${esc(row.pays || "-")}</dd></div>
+                </dl>
+              </section>
+
+              <section class="compare-card">
+                <h3>Nouveaux métiers souhaités</h3>
+                <p style="margin:0; line-height:1.7;">${esc(row.requested_jobs || "-")}</p>
+              </section>
+            </div>
+
+            <section class="notes-box">
+              <h4>Note admin</h4>
+              <textarea id="new-job-note-${esc(row.record_id)}" placeholder="Ajouter une note interne...">${esc(row.note || "")}</textarea>
+              <div class="decision-meta">Créé le : ${esc(row.created_at || "-")}<br>Par : ${esc(row.created_by || "-")}<br>Traité le : ${esc(row.processed_at || "-")}<br>Par : ${esc(row.processed_by || "-")}</div>
+            </section>
+          </div>
+        </article>
+      `).join("");
+
+      for (const button of list.querySelectorAll("[data-new-job-action]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          const status = event.currentTarget.dataset.newJobAction;
+          const note = document.getElementById(`new-job-note-${recordId}`)?.value || "";
+          if (!recordId || !status) return;
+          await submitNewJobStatus(recordId, status, note);
+        });
+      }
+    }
+
+    async function loadMatchings() {
+      if (state.matchings.loading) return;
+      state.matchings.loading = true;
+      setStatus("status-line", "Chargement des matchings...");
+
+      const status = document.getElementById("filter-status").value;
+      const url = new URL(apiUrl("/admin/matchings"), window.location.origin);
+      if (status) url.searchParams.set("status", status);
+
+      try {
+        const response = await fetch(url.toString(), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+
+        state.matchings.rows = Array.isArray(payload.rows) ? payload.rows : [];
+        document.getElementById("kpi-total").textContent = payload.stats?.total ?? 0;
+        document.getElementById("kpi-pending").textContent = payload.stats?.pending ?? 0;
+        document.getElementById("kpi-accepted").textContent = payload.stats?.accepted ?? 0;
+        document.getElementById("kpi-refused").textContent = payload.stats?.refused ?? 0;
+        renderMatchingRows();
+        setStatus("status-line", `${state.matchings.rows.length} matching(s) chargés.`);
+      } catch (error) {
+        document.getElementById("matching-list").innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+        setStatus("status-line", `Erreur : ${error.message || "chargement impossible"}`);
+      } finally {
+        state.matchings.loading = false;
+      }
+    }
+
+    async function loadBrevoHealth() {
+      try {
+        const response = await fetch(`${apiUrl("/admin/brevo-health")}?check=1`, { credentials: "same-origin" });
+        const payload = await response.json();
+        const health = payload?.brevo || null;
+        state.brevo = health;
+        renderBrevoStatus(health);
+        if (state.cockpit.data) {
+          renderCockpit();
+        }
+      } catch (error) {
+        setStatus("brevo-status-line", `Brevo : vérification impossible. ${error.message || "erreur réseau"}`);
+      }
+    }
+
+    async function loadNoMatch() {
+      if (state.noMatch.loading) return;
+      state.noMatch.loading = true;
+      setStatus("no-match-status-line", "Chargement des entrées sans matching...");
+
+      const status = document.getElementById("no-match-filter-status").value;
+      const url = new URL(apiUrl("/admin/no-match"), window.location.origin);
+      if (status) url.searchParams.set("status", status);
+
+      try {
+        const response = await fetch(url.toString(), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        state.noMatch.rows = Array.isArray(payload.rows) ? payload.rows : [];
+        document.getElementById("no-match-kpi-total").textContent = payload.stats?.total ?? 0;
+        document.getElementById("no-match-kpi-pending").textContent = payload.stats?.pending ?? 0;
+        document.getElementById("no-match-kpi-sent").textContent = payload.stats?.sent ?? 0;
+        document.getElementById("no-match-kpi-dismissed").textContent = payload.stats?.dismissed ?? 0;
+        renderNoMatchRows();
+        setStatus("no-match-status-line", `${state.noMatch.rows.length} entrée(s) chargée(s).`);
+      } catch (error) {
+        document.getElementById("no-match-list").innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+        setStatus("no-match-status-line", `Erreur : ${error.message || "chargement impossible"}`);
+      } finally {
+        state.noMatch.loading = false;
+      }
+    }
+
+    async function loadNewJobs() {
+      if (state.newJobs.loading) return;
+      state.newJobs.loading = true;
+      setStatus("new-job-status-line", "Chargement des demandes de nouveaux métiers...");
+
+      const status = document.getElementById("new-job-filter-status").value;
+      const url = new URL(apiUrl("/admin/new-job-requests"), window.location.origin);
+      if (status) url.searchParams.set("status", status);
+
+      try {
+        const response = await fetch(url.toString(), { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        state.newJobs.rows = Array.isArray(payload.rows) ? payload.rows : [];
+        document.getElementById("new-job-kpi-total").textContent = payload.stats?.total ?? 0;
+        document.getElementById("new-job-kpi-pending").textContent = payload.stats?.pending ?? 0;
+        document.getElementById("new-job-kpi-processed").textContent = payload.stats?.processed ?? 0;
+        document.getElementById("new-job-kpi-dismissed").textContent = payload.stats?.dismissed ?? 0;
+        renderNewJobRows();
+        setStatus("new-job-status-line", `${state.newJobs.rows.length} demande(s) chargée(s).`);
+      } catch (error) {
+        document.getElementById("new-job-list").innerHTML = `<div class="empty-state">${esc(error.message || "Erreur de chargement")}</div>`;
+        setStatus("new-job-status-line", `Erreur : ${error.message || "chargement impossible"}`);
+      } finally {
+        state.newJobs.loading = false;
+      }
+    }
+
+    async function submitDecision(recordId, decision, note, employerEmailComment = "", candidateEmailComment = "") {
+      setStatus("status-line", `Enregistrement de la décision ${decision}...`);
+      try {
+        const response = await fetch(apiUrl(`/admin/matchings/${recordId}/decision`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ decision, note, employer_email_comment: employerEmailComment, candidate_email_comment: candidateEmailComment }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("status-line", `Décision enregistrée : ${decision}.`);
+        await loadMatchings();
+        await loadTasks();
+        await loadCockpit();
+      } catch (error) {
+        setStatus("status-line", `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    async function submitWorkflow(recordId, workflowStatus, note) {
+      setStatus("status-line", `Mise à jour du workflow ${workflowStatus}...`);
+      try {
+        const response = await fetch(apiUrl(`/admin/matchings/${recordId}/workflow`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ workflow_status: workflowStatus, note }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("status-line", `Workflow enregistré : ${workflowStatusLabel(payload.workflow_status)}.`);
+        await loadMatchings();
+      } catch (error) {
+        setStatus("status-line", `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    async function submitNoMatchSend(role, recordId, note) {
+      setStatus("no-match-status-line", "Envoi de l’email en cours...");
+      try {
+        const response = await fetch(apiUrl(`/admin/no-match/${role}/${recordId}/send`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ note }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("no-match-status-line", `Email envoyé à ${payload.email || "le destinataire"}.`);
+        await loadNoMatch();
+        await loadTasks();
+        await loadCockpit();
+      } catch (error) {
+        setStatus("no-match-status-line", `Erreur : ${error.message || "envoi impossible"}`);
+      }
+    }
+
+    async function submitNoMatchDismiss(role, recordId, note) {
+      setStatus("no-match-status-line", "Mise à jour en cours...");
+      try {
+        const response = await fetch(apiUrl(`/admin/no-match/${role}/${recordId}/dismiss`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ note }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("no-match-status-line", "Entrée ignorée.");
+        await loadNoMatch();
+        await loadTasks();
+        await loadCockpit();
+      } catch (error) {
+        setStatus("no-match-status-line", `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    async function submitNewJobStatus(recordId, status, note) {
+      setStatus("new-job-status-line", "Mise à jour en cours...");
+      try {
+        const response = await fetch(apiUrl(`/admin/new-job-requests/${recordId}/status`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ status, note }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("new-job-status-line", `Demande marquée comme ${newJobStatusLabel(payload.status)}.`);
+        await loadNewJobs();
+        await loadTasks();
+        await loadCockpit();
+      } catch (error) {
+        setStatus("new-job-status-line", `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    async function submitNewEmployerAlertStatus(recordId, status, note) {
+      setStatus("task-status-line", "Mise à jour en cours...");
+      try {
+        const response = await fetch(apiUrl(`/admin/new-employer-alerts/${recordId}/status`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({ status, note }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("task-status-line", `Alerte nouvel employeur marquée comme ${status === "reviewed" ? "surveillée" : "ignorée"}.`);
+      } catch (error) {
+        setStatus("task-status-line", `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    function activateTab(tabName) {
+      state.activeTab = tabName;
+      document.getElementById("panel-cockpit").hidden = tabName !== "cockpit";
+      document.getElementById("panel-tasks").hidden = tabName !== "tasks";
+      document.getElementById("panel-invitations").hidden = tabName !== "invitations";
+      document.getElementById("panel-candidate-responses").hidden = tabName !== "candidate-responses";
+      document.getElementById("panel-employer-responses").hidden = tabName !== "employer-responses";
+      document.getElementById("panel-matchings").hidden = tabName !== "matchings";
+      document.getElementById("panel-no-match").hidden = tabName !== "no-match";
+      document.getElementById("panel-new-jobs").hidden = tabName !== "new-jobs";
+      for (const button of document.querySelectorAll("[data-tab]")) {
+        button.classList.toggle("active", button.dataset.tab === tabName);
+      }
+      if (tabName === "candidate-responses") {
+        clearResponseWatch("candidate");
+        loadQuestionnaireResponses("candidate", { clearUnseen: true });
+      }
+      if (tabName === "employer-responses") {
+        clearResponseWatch("employer");
+        loadQuestionnaireResponses("employer", { clearUnseen: true });
+      }
+    }
+
+    document.getElementById("single-save-btn").addEventListener("click", async () => {
+      try {
+        await importInvitations(buildSingleInvitationPayload());
+      } catch (error) {
+        setStatus("invite-status-line", `Erreur : ${error.message || "création impossible"}`);
+      }
+    });
+    document.getElementById("single-role").addEventListener("change", updateSingleInvitationRoleUI);
+    document.getElementById("csv-sample-btn").addEventListener("click", () => {
+      document.getElementById("csv-text").value = sampleCsv();
+    });
+    document.getElementById("csv-import-btn").addEventListener("click", async () => {
+      const csvText = document.getElementById("csv-text").value.trim();
+      if (!csvText) {
+        setStatus("invite-status-line", "Erreur : aucun CSV fourni.");
+        return;
+      }
+      await importInvitations({ csv_text: csvText });
+    });
+    document.getElementById("send-pending-btn").addEventListener("click", async () => {
+      await sendInvitations([]);
+    });
+    document.getElementById("send-reminders-btn").addEventListener("click", async () => {
+      await sendInvitationReminders([]);
+    });
+    document.getElementById("toggle-selection-btn").addEventListener("click", () => {
+      state.invitations.selectionMode = true;
+      state.invitations.selectedIds = [];
+      updatePendingSendPanel();
+    });
+    document.getElementById("cancel-selection-btn").addEventListener("click", () => {
+      state.invitations.selectionMode = false;
+      state.invitations.selectedIds = [];
+      updatePendingSendPanel();
+    });
+    document.getElementById("send-selected-btn").addEventListener("click", async () => {
+      if (!state.invitations.selectedIds.length) {
+        setStatus("invite-status-line", "Erreur : aucune invitation sélectionnée.");
+        return;
+      }
+      await sendInvitations(state.invitations.selectedIds);
+      state.invitations.selectionMode = false;
+      state.invitations.selectedIds = [];
+    });
+    document.getElementById("csv-file").addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      document.getElementById("csv-text").value = text;
+      setStatus("invite-status-line", `Fichier chargé : ${file.name}`);
+    });
+    document.getElementById("cockpit-reload-btn").addEventListener("click", async () => {
+      await loadCockpit();
+      await loadTasks();
+    });
+    updateSingleInvitationRoleUI();
+    document.getElementById("task-reload-btn").addEventListener("click", loadTasks);
+    document.getElementById("task-filter-status").addEventListener("change", loadTasks);
+    document.getElementById("task-filter-search").addEventListener("input", renderTaskRows);
+    document.getElementById("invite-reload-btn").addEventListener("click", loadInvitations);
+    document.getElementById("invite-filter-status").addEventListener("change", loadInvitations);
+    document.getElementById("invite-filter-search").addEventListener("input", renderInvitations);
+    document.getElementById("candidate-response-reload-btn").addEventListener("click", () => loadQuestionnaireResponses("candidate", { clearUnseen: true }));
+    document.getElementById("candidate-response-filter-search").addEventListener("input", () => renderQuestionnaireResponses("candidate"));
+    document.getElementById("employer-response-reload-btn").addEventListener("click", () => loadQuestionnaireResponses("employer", { clearUnseen: true }));
+    document.getElementById("employer-response-filter-search").addEventListener("input", () => renderQuestionnaireResponses("employer"));
+    document.getElementById("global-watch-open-candidates").addEventListener("click", () => activateTab("candidate-responses"));
+    document.getElementById("global-watch-open-employers").addEventListener("click", () => activateTab("employer-responses"));
+    document.getElementById("reload-btn").addEventListener("click", async () => {
+      await loadBrevoHealth();
+      await loadMatchings();
+    });
+    document.getElementById("manual-match-create-btn").addEventListener("click", () => createManualMatching(false));
+    document.getElementById("manual-match-send-btn").addEventListener("click", () => createManualMatching(true));
+    document.getElementById("manual-match-candidate").addEventListener("change", renderManualMatchingPreview);
+    document.getElementById("manual-match-employer").addEventListener("change", renderManualMatchingPreview);
+    document.getElementById("filter-status").addEventListener("change", loadMatchings);
+    document.getElementById("filter-source").addEventListener("change", renderMatchingRows);
+    document.getElementById("filter-search").addEventListener("input", renderMatchingRows);
+    document.getElementById("no-match-reload-btn").addEventListener("click", loadNoMatch);
+    document.getElementById("no-match-filter-status").addEventListener("change", loadNoMatch);
+    document.getElementById("no-match-filter-search").addEventListener("input", renderNoMatchRows);
+    document.getElementById("new-job-reload-btn").addEventListener("click", loadNewJobs);
+    document.getElementById("new-job-filter-status").addEventListener("change", loadNewJobs);
+    document.getElementById("new-job-filter-search").addEventListener("input", renderNewJobRows);
+    for (const button of document.querySelectorAll("[data-tab]")) {
+      button.addEventListener("click", () => activateTab(button.dataset.tab));
+    }
+    activateTab("cockpit");
+    startQuestionnaireAutoRefresh();
+    loadCockpit();
+    loadTasks();
+    loadInvitations();
+    loadQuestionnaireResponses("candidate");
+    loadQuestionnaireResponses("employer");
+    loadBrevoHealth();
+    loadMatchings();
+    loadNoMatch();
+    loadNewJobs();
+  </script>
+</body>
+</html>

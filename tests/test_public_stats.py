@@ -81,24 +81,23 @@ class PublicStatsTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         payload = response.get_json()
         self.assertTrue(payload['ok'])
-        self.assertEqual(payload['totals'], {
-            'candidats': 2,
-            'besoins_employeurs': 1,
-            'candidats_contactes': 3,
-            'candidatures_recues': 2,
-            'matchings': 2,
-            'candidatures_transmises_employeur': 2,
-            'embauches': 1,
-        })
+        self.assertEqual(payload['totals']['candidats'], 2)
+        self.assertEqual(payload['totals']['besoins_employeurs'], 1)
+        self.assertEqual(payload['totals']['candidats_contactes'], 3)
+        self.assertEqual(payload['totals']['matchings'], 2)
+        self.assertEqual(payload['totals']['candidatures_transmises_employeur'], 2)
+        self.assertEqual(payload['totals']['embauches'], 1)
         self.assertEqual(payload['monthly'], [
             {
                 'mois': '2026-01',
                 'candidats': 1,
                 'besoins_employeurs': 1,
                 'candidats_contactes': 3,
-                'candidatures_recues': 1,
                 'matchings': 1,
                 'candidatures_transmises_employeur': 2,
+                'contacts_acceptes_employeur': 0,
+                'contacts_refuses_employeur': 0,
+                'contacts_sans_reponse_employeur': 0,
                 'embauches': 1,
             },
             {
@@ -106,15 +105,17 @@ class PublicStatsTest(unittest.TestCase):
                 'candidats': 1,
                 'besoins_employeurs': 0,
                 'candidats_contactes': 0,
-                'candidatures_recues': 1,
                 'matchings': 1,
                 'candidatures_transmises_employeur': 0,
+                'contacts_acceptes_employeur': 0,
+                'contacts_refuses_employeur': 0,
+                'contacts_sans_reponse_employeur': 0,
                 'embauches': 0,
             },
         ])
         self.assertTrue(payload['manual_stats_table']['configured'])
         self.assertEqual(payload['breakdowns']['matchings_par_statut'], [
-            {'label': 'Autres', 'count': 2},
+            {'label': 'A valider admin', 'count': 2},
         ])
 
 
