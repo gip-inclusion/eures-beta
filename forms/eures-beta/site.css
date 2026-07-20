@@ -134,7 +134,7 @@ textarea {
   border-color: var(--accent);
 }
 
-.nav-pill-project {
+.nav-pill.is-active {
   background: var(--accent-soft);
   border-color: rgba(0, 68, 148, 0.22);
 }

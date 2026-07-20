@@ -2378,6 +2378,18 @@ function pageUrl(page, lang) {
 }
 
 function nav(page, lang, t) {
+  const activeGroupByPage = {
+    home: "home",
+    "candidate-landing": "candidate",
+    "candidate-questionnaire": "candidate",
+    "employer-landing": "employer",
+    "employer-questionnaire": "employer",
+    stat: "stat",
+    project: "project",
+    journal: "journal",
+  };
+  const activeGroup = activeGroupByPage[page] || "";
+  const navPillClass = (group) => `nav-pill${activeGroup === group ? " is-active" : ""}`;
   return `
     <header class="site-header">
       <div class="shell">
@@ -2389,14 +2401,14 @@ function nav(page, lang, t) {
         </a>
         <nav class="nav" aria-label="Primary">
           <div class="nav-links">
-            <a class="nav-pill" href="${pageUrl("home", lang)}">${t.common.navHome}</a>
-            <a class="nav-pill" href="${pageUrl("candidate-landing", lang)}">${t.common.navCandidate}</a>
-            <a class="nav-pill" href="${pageUrl("employer-landing", lang)}">${t.common.navEmployer}</a>
-            <a class="nav-pill" href="${pageUrl("stat", lang)}">${t.common.navStats}</a>
+            <a class="${navPillClass("home")}" href="${pageUrl("home", lang)}">${t.common.navHome}</a>
+            <a class="${navPillClass("candidate")}" href="${pageUrl("candidate-landing", lang)}">${t.common.navCandidate}</a>
+            <a class="${navPillClass("employer")}" href="${pageUrl("employer-landing", lang)}">${t.common.navEmployer}</a>
+            <a class="${navPillClass("stat")}" href="${pageUrl("stat", lang)}">${t.common.navStats}</a>
           </div>
           <div class="nav-links nav-links-secondary">
-            <a class="nav-pill nav-pill-project" href="${pageUrl("project", lang)}">${t.common.navProject}</a>
-            <a class="nav-pill" href="${pageUrl("journal", lang)}">${t.common.navJournal}</a>
+            <a class="${navPillClass("project")}" href="${pageUrl("project", lang)}">${t.common.navProject}</a>
+            <a class="${navPillClass("journal")}" href="${pageUrl("journal", lang)}">${t.common.navJournal}</a>
           </div>
           <div class="lang-switch" aria-label="${t.common.langLabel}">
             ${LANGS.map((choice) => `
@@ -2409,7 +2421,10 @@ function nav(page, lang, t) {
   `;
 }
 
-function footer(t) {
+function footer(page, t) {
+  const current = currentLang();
+  const isProjectPage = page === "project";
+  const isJournalPage = page === "journal";
   return `
     <footer class="footer">
       <div class="shell footer-grid">
@@ -2418,8 +2433,8 @@ function footer(t) {
           <strong>${t.common.footerProjectTitle}</strong>
           <p>${t.common.footerProjectText}</p>
           <div class="footer-actions">
-            <a class="nav-pill nav-pill-project" href="${pageUrl("project", currentLang())}">${t.common.navProject}</a>
-            <a class="nav-pill" href="${pageUrl("journal", currentLang())}">${t.common.navJournal}</a>
+            <a class="nav-pill${isProjectPage ? " is-active" : ""}" href="${pageUrl("project", current)}">${t.common.navProject}</a>
+            <a class="nav-pill${isJournalPage ? " is-active" : ""}" href="${pageUrl("journal", current)}">${t.common.navJournal}</a>
           </div>
         </div>
       </div>
@@ -2576,7 +2591,7 @@ function statTemplate(lang, t, data) {
         </div>
       </section>
     </main>
-    ${footer(t)}
+    ${footer("stat", t)}
   `;
 }
 
@@ -2685,7 +2700,7 @@ function homeTemplate(lang, t) {
         </div>
       </section>
     </main>
-    ${footer(t)}
+    ${footer("home", t)}
   `;
 }
 
@@ -2884,7 +2899,7 @@ function projectTemplate(lang, t) {
         </div>
       </section>
     </main>
-    ${footer(t)}
+    ${footer("project", t)}
   `;
 }
 
@@ -2902,7 +2917,7 @@ function journalTemplate(lang, t) {
         </div>
       </section>
     </main>
-    ${footer(t)}
+    ${footer("journal", t)}
   `;
 }
 
@@ -2968,7 +2983,7 @@ function landingTemplate(page, lang, t, data) {
           </aside>
         </div>
       </main>
-      ${footer(t)}
+      ${footer(page, t)}
     `;
   }
 
@@ -3011,7 +3026,7 @@ function landingTemplate(page, lang, t, data) {
         </article>
       </div>
     </main>
-    ${footer(t)}
+    ${footer(page, t)}
   `;
 }
 
@@ -3393,7 +3408,7 @@ function candidateTallyQuestionnaireTemplate(lang, t) {
         </aside>
       </div>
     </main>
-    ${footer(t)}
+    ${footer("candidate-questionnaire", t)}
   `;
 }
 
@@ -3459,7 +3474,7 @@ function employerLandingTemplate(lang, t) {
         </aside>
       </div>
     </main>
-    ${footer(t)}
+    ${footer("employer-landing", t)}
   `;
 }
 
@@ -3625,7 +3640,7 @@ function employerTallyQuestionnaireTemplate(lang, t) {
         </aside>
       </div>
     </main>
-    ${footer(t)}
+    ${footer("employer-questionnaire", t)}
   `;
 }
 
@@ -4428,7 +4443,7 @@ function questionnaireTemplate(page, lang, t, data) {
         </aside>
       </div>
     </main>
-    ${footer(t)}
+    ${footer(page, t)}
   `;
 }
 
@@ -4556,7 +4571,7 @@ function render() {
           <div class="panel"><p>${t.statPage.loading}</p></div>
         </div>
       </main>
-      ${footer(t)}
+      ${footer("stat", t)}
     `;
     loadPublicStats()
       .then((data) => {
@@ -4570,7 +4585,7 @@ function render() {
               <div class="panel"><p>${t.statPage.error}</p></div>
             </div>
           </main>
-          ${footer(t)}
+          ${footer("stat", t)}
         `;
       });
     return;
