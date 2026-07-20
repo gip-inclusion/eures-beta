@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin EURES beta - Match Europe</title>
+  <style>
+    :root {
+      --bg: #f4efe4;
+      --card: #fffdfa;
+      --text: #1f2f46;
+      --muted: #6c727d;
+      --blue: #0f4ea6;
+      --blue-deep: #173250;
+      --green: #2c8f53;
+      --orange: #c77717;
+      --border: #e4d8bf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(244, 205, 93, 0.24), transparent 30%),
+        linear-gradient(180deg, #f7f5ef 0%, var(--bg) 100%);
+    }
+    .wrap { max-width: 1360px; margin: 0 auto; }
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 18px 40px rgba(24, 43, 73, 0.08);
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+      color: white;
+      padding: 28px 30px;
+    }
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .eyebrow {
+      margin: 0 0 10px 0;
+      font-size: 0.92rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.82;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 0.95;
+    }
+    .subtitle {
+      margin: 0;
+      color: rgba(255,255,255,0.88);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .hero-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1px solid rgba(255,255,255,0.22);
+      color: white;
+      background: rgba(255,255,255,0.12);
+    }
+    .hero-actions a.secondary {
+      background: rgba(255,255,255,0.04);
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .kpi {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      background: white;
+    }
+    .kpi .label { color: var(--muted); font-size: 0.95rem; }
+    .kpi .value { font-size: 2.4rem; font-weight: 800; margin-top: 6px; }
+    .kpi.total .value { color: var(--blue); }
+    .kpi.pending .value { color: var(--orange); }
+    .kpi.done .value { color: var(--green); }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) auto auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+    select, input, button {
+      height: 42px;
+      border: 1px solid #cfd7e1;
+      border-radius: 14px;
+      padding: 0 12px;
+      font-size: 0.96rem;
+      background: #fff;
+      color: var(--text);
+    }
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      border-color: #84b6e8;
+      background: #eef5ff;
+    }
+    button:hover { background: #e4efff; }
+    .muted-btn {
+      border-color: #d5dde8;
+      background: #f8fafc;
+    }
+    .status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1260px;
+    }
+    th, td {
+      border-bottom: 1px solid #e7edf5;
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 0.93rem;
+    }
+    th {
+      background: #f4f8fe;
+      color: #36506b;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tr:nth-child(even) td { background: #fcfdff; }
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .pill.pending {
+      color: #8a5100;
+      background: #fff2de;
+      border-color: #efc089;
+    }
+    .pill.done {
+      color: #1f6d34;
+      background: #effaf2;
+      border-color: #8ecb9f;
+    }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.84rem; }
+    .detail-toggle {
+      height: 32px;
+      min-width: 92px;
+      padding: 0 12px;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      border: 1px solid #d6deea;
+      background: #f5f8fc;
+      font-weight: 700;
+      color: #3f5268;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .detail-toggle:hover { background: #ebf1f8; }
+    th.col-detail, td.col-detail {
+      width: 120px;
+      text-align: center;
+    }
+    .detail-row td {
+      background: #f8fbff !important;
+      border-bottom: 1px solid #dfe8f2;
+      padding: 12px 10px;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .detail-box {
+      border: 1px solid #d9e4ef;
+      border-radius: 16px;
+      padding: 12px;
+      background: #ffffff;
+    }
+    .detail-box h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.86rem;
+      color: #38526b;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .chip.done {
+      color: #1f6d34;
+      background: #effaf2;
+      border-color: #8ecb9f;
+    }
+    .chip.remaining {
+      color: #8a5100;
+      background: #fff2de;
+      border-color: #efc089;
+    }
+    .chip.empty {
+      color: #4a5e74;
+      background: #f1f5f9;
+      border-color: #d2dbe5;
+    }
+    .progress-count {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #d2dbe5;
+      background: #f1f5f9;
+      color: #4a5e74;
+    }
+    .progress-count.done {
+      color: #1f6d34;
+      background: #effaf2;
+      border-color: #8ecb9f;
+    }
+    .progress-count.pending {
+      color: #8a5100;
+      background: #fff2de;
+      border-color: #efc089;
+    }
+    @media (max-width: 980px) {
+      body { padding: 12px; }
+      .kpis { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      table { min-width: 760px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card hero">
+      <div class="hero-top">
+        <div>
+          <p class="eyebrow">Administration securisee</p>
+          <h1>Console admin - EURES beta</h1>
+          <p class="subtitle">Suivi des candidatures et employeurs collectes pour Match Europe.</p>
+        </div>
+        <div class="hero-actions">
+          <a href="/forms/eures-beta/" class="secondary">Retour au site</a>
+          <a href="/admin/eures-beta/logout">Se deconnecter</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="kpis">
+        <div class="kpi total">
+          <div class="label">Total questionnaires</div>
+          <div class="value" id="kpi-total">0</div>
+        </div>
+        <div class="kpi pending">
+          <div class="label">En cours de remplissage</div>
+          <div class="value" id="kpi-pending">0</div>
+        </div>
+        <div class="kpi done">
+          <div class="label">Saisie terminee</div>
+          <div class="value" id="kpi-done">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <select id="filter-status">
+          <option value="all">Tous les statuts</option>
+          <option value="en_cours">En cours</option>
+          <option value="termines">Termines</option>
+        </select>
+        <input type="text" id="search-input" placeholder="Rechercher (structure, FINESS, email, departement, UUID)">
+        <button id="refresh-btn" type="button">Actualiser</button>
+        <button id="clear-btn" type="button" class="muted-btn">Reinitialiser</button>
+        <button id="toggle-all-details-btn" type="button" class="muted-btn">Voir tout</button>
+      </div>
+      <div class="status" id="status">Chargement...</div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Statut</th>
+              <th>Structure</th>
+              <th>Departement</th>
+              <th>FINESS</th>
+              <th>Referent validation</th>
+              <th>Email</th>
+              <th>Etapes principales</th>
+              <th>Etapes conditionnelles</th>
+              <th class="col-detail">Detail des etapes</th>
+              <th>UUID</th>
+              <th>ID Grist</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const expandedRows = new Set();
+    let lastLoadedRowKeys = [];
+
+    function currentFormId() {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      return parts[1] || 'eures-beta';
+    }
+
+    function esc(v) {
+      return String(v ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    async function loadOverview() {
+      const formId = currentFormId();
+      const status = document.getElementById('filter-status').value;
+      const search = document.getElementById('search-input').value.trim();
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = 'Chargement...';
+
+      const url = new URL(`/api/forms/${formId}/admin/overview`, window.location.origin);
+      if (status) url.searchParams.set('status', status);
+      if (search) url.searchParams.set('search', search);
+
+      try {
+        const resp = await fetch(url.toString(), { credentials: 'same-origin' });
+        const data = await resp.json();
+        if (!resp.ok || !data.ok) {
+          throw new Error(data.error || 'Erreur de chargement');
+        }
+
+        document.getElementById('kpi-total').textContent = data.stats.total_questionnaires;
+        document.getElementById('kpi-pending').textContent = data.stats.en_cours;
+        document.getElementById('kpi-done').textContent = data.stats.termines;
+
+        const tbody = document.getElementById('rows');
+        if (!Array.isArray(data.rows) || data.rows.length === 0) {
+          lastLoadedRowKeys = [];
+          tbody.innerHTML = '<tr><td colspan="12">Aucun questionnaire trouve.</td></tr>';
+        } else {
+          lastLoadedRowKeys = data.rows
+            .map((r) => String(r.uuid || r.record_id || ''))
+            .filter((k) => k !== '');
+          tbody.innerHTML = data.rows.map((r) => {
+            const shortId = String(r.uuid || '').trim();
+            const displayId = shortId ? shortId.slice(0, 8) : String(r.record_id || '');
+            const rowKey = String(r.uuid || r.record_id || '');
+            const isExpanded = expandedRows.has(rowKey);
+            const statut = r.saisie_terminee
+              ? '<span class="pill done">Termine</span>'
+              : '<span class="pill pending">En cours</span>';
+            const referent = `${esc(r.validateur_prenom || '')} ${esc(r.validateur_nom || '')}`.trim();
+            const qp = r.quick_progress || {
+              main: { done: 0, total: 0, done_labels: [], remaining_labels: [] },
+              conditional: { done: 0, total: 0, done_labels: [], remaining_labels: [] },
+            };
+            const mainTxt = `${qp.main.done}/${qp.main.total}`;
+            const condTxt = `${qp.conditional.done}/${qp.conditional.total}`;
+            const mainClass = qp.main.total > 0 && qp.main.done === qp.main.total
+              ? 'progress-count done'
+              : (qp.main.done > 0 ? 'progress-count pending' : 'progress-count');
+            const condClass = qp.conditional.total > 0 && qp.conditional.done === qp.conditional.total
+              ? 'progress-count done'
+              : (qp.conditional.done > 0 ? 'progress-count pending' : 'progress-count');
+            const doneMain = (qp.main.done_labels || []).map((x) => `Principal: ${x}`);
+            const doneCond = (qp.conditional.done_labels || []).map((x) => `Conditionnel: ${x}`);
+            const doneAll = [...doneMain, ...doneCond];
+            const remaining = [
+              ...(qp.main.remaining_labels || []),
+              ...(qp.conditional.remaining_labels || []),
+            ];
+            const doneHtml = doneAll.length
+              ? `<div class="chips">${doneAll.map((label) => `<span class="chip done">${esc(label)}</span>`).join('')}</div>`
+              : '<div class="chips"><span class="chip empty">Aucune etape completee</span></div>';
+            const remainingHtml = remaining.length
+              ? `<div class="chips">${remaining.map((label) => `<span class="chip remaining">${esc(label)}</span>`).join('')}</div>`
+              : '<div class="chips"><span class="chip empty">Aucune etape restante</span></div>';
+            const toggleLabel = isExpanded ? 'Masquer' : 'Voir';
+            const detailRow = isExpanded ? `
+              <tr class="detail-row">
+                <td colspan="12">
+                  <div class="detail-grid">
+                    <div class="detail-box">
+                      <h4>Etapes completees</h4>
+                      ${doneHtml}
+                    </div>
+                    <div class="detail-box">
+                      <h4>Reste a faire</h4>
+                      ${remainingHtml}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ` : '';
+            return `
+              <tr>
+                <td class="mono">${esc(displayId)}</td>
+                <td>${statut}</td>
+                <td>${esc(r.es_nom)}</td>
+                <td>${esc(r.departement)}</td>
+                <td class="mono">${esc(r.finess_main)}</td>
+                <td>${referent || '-'}</td>
+                <td>${esc(r.validateur_email)}</td>
+                <td><strong class="${mainClass}">${esc(mainTxt)}</strong></td>
+                <td><strong class="${condClass}">${esc(condTxt)}</strong></td>
+                <td class="col-detail">
+                  <button type="button" class="detail-toggle" data-toggle-progress-row="${esc(rowKey)}">${toggleLabel}</button>
+                </td>
+                <td class="mono">${esc(r.uuid)}</td>
+                <td>${esc(r.record_id)}</td>
+              </tr>
+              ${detailRow}
+            `;
+          }).join('');
+        }
+
+        const allVisibleExpanded = (
+          lastLoadedRowKeys.length > 0
+          && lastLoadedRowKeys.every((k) => expandedRows.has(k))
+        );
+        const toggleAllBtn = document.getElementById('toggle-all-details-btn');
+        if (toggleAllBtn) {
+          toggleAllBtn.textContent = allVisibleExpanded ? 'Masquer tout' : 'Voir tout';
+        }
+
+        statusEl.textContent = `${data.rows.length} resultat(s) affiche(s).`;
+      } catch (e) {
+        document.getElementById('rows').innerHTML = `<tr><td colspan="12">${esc(e.message)}</td></tr>`;
+        statusEl.textContent = 'Erreur';
+      }
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', loadOverview);
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      document.getElementById('filter-status').value = 'all';
+      document.getElementById('search-input').value = '';
+      loadOverview();
+    });
+    document.getElementById('toggle-all-details-btn').addEventListener('click', () => {
+      if (lastLoadedRowKeys.length === 0) return;
+      const allVisibleExpanded = lastLoadedRowKeys.every((k) => expandedRows.has(k));
+      if (allVisibleExpanded) {
+        lastLoadedRowKeys.forEach((k) => expandedRows.delete(k));
+      } else {
+        lastLoadedRowKeys.forEach((k) => expandedRows.add(k));
+      }
+      loadOverview();
+    });
+    document.getElementById('filter-status').addEventListener('change', loadOverview);
+    document.getElementById('search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loadOverview();
+    });
+    document.getElementById('rows').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-toggle-progress-row]');
+      if (!btn) return;
+      const key = String(btn.dataset.toggleProgressRow || '');
+      if (!key) return;
+      if (expandedRows.has(key)) {
+        expandedRows.delete(key);
+      } else {
+        expandedRows.add(key);
+      }
+      loadOverview();
+    });
+
+    loadOverview();
+  </script>
+</body>
+</html>
