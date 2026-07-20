@@ -49,6 +49,22 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {'ok': True})
 
+    def test_project_page_is_available_in_isolated_mode(self):
+        with patch.object(app, 'APP_MODE', 'eures-beta'):
+            response = self.client.get('/forms/eures-beta/le-projet/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Match Europe', response.data)
+        response.close()
+
+    def test_journal_page_is_available_in_isolated_mode(self):
+        with patch.object(app, 'APP_MODE', 'eures-beta'):
+            response = self.client.get('/forms/eures-beta/journal/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Journal du projet', response.data)
+        response.close()
+
 
 if __name__ == '__main__':
     unittest.main()

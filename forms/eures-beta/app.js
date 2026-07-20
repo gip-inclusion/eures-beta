@@ -2,31 +2,41 @@ const FORM_ID = "eures-beta";
 const BASE_PATH = `/forms/${FORM_ID}`;
 const LANGS = ["fr", "en", "de"];
 const DEFAULT_LANG = "fr";
+const PUBLIC_PROJECT_NAME = "Match Europe";
 
 const copy = {
   fr: {
     common: {
-      brandTitle: "EURES beta",
-      brandSubtitle: "Mobilité, matching et accompagnement transfrontalier",
+      brandTitle: PUBLIC_PROJECT_NAME,
+      brandSubtitle: "EURES beta - mobilité, matching et accompagnement transfrontalier",
       navHome: "Accueil",
       navCandidate: "Candidat",
       navEmployer: "Employeur",
       navStats: "Statistiques",
+      navProject: "Le projet",
+      navJournal: "Journal du projet",
       langLabel: "Langue",
-      footer: "Prototype de démarrage pour tester l’inscription, le matching et l’envoi structuré vers GRIST.",
+      footer: "Service en cours d’expérimentation pour structurer l’inscription, la qualification des besoins et l’organisation des mises en relation transfrontalières.",
+      footerProjectTitle: "Espace institutionnel",
+      footerProjectText: "Retrouver la présentation du projet, les enseignements de l’expérimentation et les principales étapes déjà franchies.",
       ctaStartCandidate: "Commencer côté candidat",
       ctaStartEmployer: "Commencer côté employeur",
       ctaBackHome: "Retour à l’accueil",
       ctaQuestionnaire: "Démarrer le questionnaire",
       ctaSeeCandidate: "Voir le parcours candidat",
       ctaSeeEmployer: "Voir le parcours employeur",
-      matchingTitle: "Comment le matching va fonctionner",
+      ctaSeeProject: "Découvrir le projet",
+      ctaSeeJournal: "Voir le journal",
+      institutionalKicker: "Repères institutionnels",
+      institutionalTitle: "Retrouver la présentation du projet sans quitter le parcours principal.",
+      institutionalText: "Un espace éditorial distinct permet de présenter Match Europe, ses enseignements, ses choix structurants et les prochaines étapes sans gêner les parcours candidat et employeur.",
+      matchingTitle: "Principes de mise en relation",
       matchingBullets: [
         "Chaque réponse est envoyée dans GRIST avec un rôle, une langue et un identifiant de reprise.",
         "Un score de compatibilité peut être calculé entre secteurs, mobilité, langues, disponibilités et conditions proposées.",
         "Si le score est élevé, la mise en relation peut être automatisée. Sinon, un contrôle humain peut valider ou corriger."
       ],
-      futureTitle: "Ce qui vient ensuite",
+      futureTitle: "Prochaines évolutions envisagées",
       futureBullets: [
         "Tableau de bord candidat pour suivre ses opportunités et son statut.",
         "Tableau de bord employeur pour suivre les profils proposés et les retours.",
@@ -41,45 +51,45 @@ const copy = {
       questionnaireNote: "Le questionnaire est volontairement resserré pour cette première version. Il reprend la logique des Tally de référence sans les recopier entièrement."
     },
     home: {
-      eyebrow: "Tester un service concret dans la Grande Région",
-      title: "Connecter les travailleurs mobiles et les offres qui restent hors radar.",
-      lede: "EURES beta vise un problème simple : le marché du travail est transfrontalier, mais la recherche d’emploi et le recrutement restent encore très nationaux. Le service veut capter les intentions, structurer les besoins et envoyer les bonnes opportunités plus vite.",
-      storyTitle: "Le point de départ",
-      storyText: "Des personnes ayant déjà travaillé au Luxembourg, en Allemagne ou dans un autre pays voisin cherchent souvent d’abord dans leur pays de résidence. En face, des employeurs ont des besoins réels mais peinent à toucher ces profils mobiles.",
+      eyebrow: "Une expérimentation conduite dans la Grande Région",
+      title: "Faciliter la rencontre entre candidats et employeurs à l’échelle d’un bassin d’emploi transfrontalier.",
+      lede: "Match Europe part d’un constat simple : le marché du travail fonctionne déjà à l’échelle transfrontalière, mais les parcours de retour à l’emploi, les premiers contacts et les outils de mise en relation ne suivent pas encore pleinement cette réalité. Le service combine qualification, matching explicable et accompagnement humain pour rapprocher les besoins de recrutement et les parcours de mobilité.",
+      storyTitle: "Le constat de départ",
+      storyText: "Des personnes ayant déjà travaillé de l’autre côté d’une frontière cherchent souvent un emploi avec des repères encore très nationaux. En face, des employeurs ont des besoins réels, mais le premier contact, la qualification des profils et la mise en confiance restent difficiles à organiser à l’échelle d’un bassin transfrontalier.",
       stats: [
         ["280 000", "travailleurs frontaliers circulent chaque jour dans la Grande Région."],
-        ["40–50 k", "personnes avec expérience transfrontalière pourraient rechercher un emploi."],
-        ["15 000+", "postes resteraient vacants dans le même bassin économique."]
+        ["Parcours dispersés", "les outils, offres et accompagnements restent encore largement organisés à l’échelle nationale."],
+        ["Confiance décisive", "la réussite du premier contact dépend d’une identité institutionnelle claire et d’un cadre rassurant."]
       ],
-      tracksTitle: "Deux portes d’entrée, un même moteur",
+      tracksTitle: "Deux parcours complémentaires",
       candidateTitle: "Parcours candidat",
       candidateText: "Comprendre le projet de mobilité, les secteurs visés, les langues, les disponibilités et les éléments concrets qui facilitent une mise en relation rapide.",
       employerTitle: "Parcours employeur",
       employerText: "Qualifier les besoins de recrutement, les langues, les contraintes de poste, les aides à l’installation et les critères déterminants côté entreprise.",
-      principlesTitle: "Principes produit",
+      principlesTitle: "Principes de conception",
       principles: [
-        ["Simple dès le départ", "Un premier parcours léger, multilingue, exploitable tout de suite."],
-        ["Data utile", "Des réponses structurées pour alimenter GRIST et préparer le scoring de matching."],
-        ["Validation humaine", "Quand le score est insuffisant ou ambigu, un opérateur EURES reprend la main."]
+        ["Simplicité d’accès", "Un premier parcours léger, multilingue et directement mobilisable dans le cadre de l’expérimentation."],
+        ["Données structurées", "Des réponses qualifiées pour faciliter l’analyse des besoins, la comparaison des profils et le suivi des mises en relation."],
+        ["Supervision humaine", "Lorsque le rapprochement reste incertain ou incomplet, une validation humaine intervient avant toute suite donnée."]
       ]
     },
     candidateLanding: {
       kicker: "Parcours candidat",
-      title: "Un questionnaire simple pour explorer des opportunités de mobilité en Europe.",
-      lede: "Cette démarche s’adresse aux personnes qui peuvent envisager une mobilité professionnelle européenne, soit en transfrontalier, soit en expatriation. En clair : travailler dans un pays voisin tout en vivant chez soi, ou partir vivre et travailler dans un autre pays européen.",
+      title: "Un questionnaire pour examiner des opportunités de mobilité professionnelle en Europe.",
+      lede: "Cette démarche s’adresse aux personnes pouvant envisager une mobilité professionnelle en Europe, soit en transfrontalier, soit en expatriation. Il peut s’agir de travailler dans un pays voisin tout en résidant chez soi, ou de partir vivre et travailler dans un autre pays européen.",
       messageTitle: "Pourquoi remplir ce questionnaire ?",
-      messageIntro: "Ce questionnaire nous aide à comprendre plus vite si votre profil peut correspondre à des opportunités liées à la mobilité européenne.",
+      messageIntro: "Ce questionnaire permet d’identifier plus clairement si votre profil peut correspondre à des opportunités liées à la mobilité européenne.",
       messageBody: [
-        "Aujourd’hui, le test est mené surtout avec des entreprises basées au Luxembourg, dans un cadre de mobilité transfrontalière ou de mobilité vers un autre pays européen.",
-        "Nous parlons ici d’une phase de test très concrète : on essaie, on regarde ce qui marche, puis on améliore.",
-        "Autrement dit, le service n’est pas encore finalisé, mais il sert déjà à faire remonter de vraies opportunités pour des personnes prêtes à bouger en Europe."
+        "À ce stade, l’expérimentation concerne principalement des entreprises basées au Luxembourg, dans un cadre de mobilité transfrontalière ou de mobilité vers un autre pays européen.",
+        "Le dispositif est encore en construction et continue d’évoluer à partir des situations rencontrées sur le terrain.",
+        "Il permet déjà de mieux qualifier les profils et de préparer des mises en relation pour des personnes prêtes à envisager une mobilité en Europe."
       ],
-      messageHighlight: "Vous répondez une fois, et cela nous permet de mieux voir si certaines offres en mobilité européenne peuvent vous convenir maintenant ou bientôt.",
-      messageOutcome: "Le service va ensuite s’ouvrir à d’autres employeurs en Allemagne, en Belgique et en France, ainsi qu’à davantage de métiers.",
-      signatureTitle: "En ce moment, les premiers tests concernent surtout :",
+      messageHighlight: "Une seule réponse permet de mieux apprécier si certaines opportunités en mobilité européenne peuvent correspondre à votre situation, dès maintenant ou à court terme.",
+      messageOutcome: "Le dispositif a vocation à s’ouvrir progressivement à d’autres employeurs en Allemagne, en Belgique et en France, ainsi qu’à un plus grand nombre de métiers.",
+      signatureTitle: "À ce stade, l’expérimentation concerne surtout :",
       signatureName: "le Luxembourg",
-      signatureRole: "et plusieurs secteurs qui recrutent",
-      bulletsTitle: "Métiers actuellement testés avec des employeurs luxembourgeois",
+      signatureRole: "et plusieurs secteurs en recrutement",
+      bulletsTitle: "Secteurs actuellement explorés avec des employeurs luxembourgeois",
       bullets: [
         "La vente et le commerce",
         "Le nettoyage et l’entretien",
@@ -89,8 +99,8 @@ const copy = {
       ],
       sideTitle: "Qui sommes-nous ?",
       sideText: "EURES est le réseau européen de coopération pour l’emploi. Il facilite les recrutements et les opportunités professionnelles en Europe, en particulier sur les parcours transfrontaliers où les candidatures et les offres se croisent difficilement.",
-      disclaimerTitle: "Ce qui va se passer ensuite",
-      disclaimerText: "Si votre profil correspond à des besoins en cours, il pourra être regardé pour une mise en relation. Et au fil du temps, d’autres entreprises, d’autres pays et d’autres métiers viendront enrichir le service.",
+      disclaimerTitle: "Suite du parcours",
+      disclaimerText: "Si votre profil correspond à des besoins identifiés, il pourra être étudié dans la perspective d’une mise en relation. Avec le temps, d’autres entreprises, d’autres pays et d’autres métiers pourront enrichir le dispositif.",
       tags: ["EURES", "France Travail", "Union européenne", "Luxembourg", "Vente & commerce"],
       logos: {
         eures: {
@@ -109,21 +119,21 @@ const copy = {
     },
     employerLanding: {
       kicker: "Parcours employeur",
-      title: "Un questionnaire simple pour faire remonter vos besoins de recrutement en mobilité européenne.",
-      lede: "Cette démarche s’adresse aux employeurs qui peuvent recruter au-delà de leur marché local, en transfrontalier ou avec des candidats venant d’un autre pays européen. L’objectif est simple : comprendre votre besoin plus clairement pour identifier plus vite des profils pouvant correspondre.",
+      title: "Un questionnaire pour qualifier vos besoins de recrutement en mobilité européenne.",
+      lede: "Cette démarche s’adresse aux employeurs susceptibles de recruter au-delà de leur marché local, en transfrontalier ou avec des candidats venant d’un autre pays européen. L’objectif est de comprendre plus précisément votre besoin afin d’identifier des profils pouvant correspondre.",
       messageTitle: "Pourquoi remplir ce questionnaire ?",
       messageIntro: "Ce questionnaire nous aide à comprendre votre besoin de recrutement, le contexte du poste et les conditions proposées.",
       messageBody: [
-        "Aujourd’hui, l’expérimentation est menée d’abord avec des entreprises basées au Luxembourg, sur des recrutements concrets et parfois difficiles à couvrir.",
-        "Nous sommes dans une phase de test très pratique : nous regardons ce qui aide vraiment à faire émerger des profils pertinents, puis nous améliorons le service.",
-        "En clair, vous décrivez votre besoin une fois, et cela nous permet de mieux repérer les candidatures qui peuvent être compatibles."
+        "À ce stade, l’expérimentation est conduite d’abord avec des entreprises basées au Luxembourg, sur des recrutements concrets parfois difficiles à pourvoir.",
+        "Le dispositif continue d’évoluer à partir des besoins observés et des retours issus des premières mises en relation.",
+        "Décrire votre besoin une fois permet de mieux repérer les candidatures susceptibles d’être compatibles."
       ],
-      messageHighlight: "Le but n’est pas de vous faire perdre du temps avec un formulaire de plus. Le but est de mieux qualifier votre besoin pour faciliter ensuite les mises en relation.",
-      messageOutcome: "Le service s’ouvrira progressivement à d’autres employeurs en Allemagne, en Belgique et en France, ainsi qu’à d’autres métiers.",
-      signatureTitle: "En ce moment, les premiers tests concernent surtout :",
+      messageHighlight: "L’objectif n’est pas d’ajouter une formalité supplémentaire, mais de mieux qualifier votre besoin pour faciliter ensuite les mises en relation.",
+      messageOutcome: "Le dispositif pourra s’ouvrir progressivement à d’autres employeurs en Allemagne, en Belgique et en France, ainsi qu’à d’autres métiers.",
+      signatureTitle: "À ce stade, l’expérimentation concerne surtout :",
       signatureName: "des employeurs luxembourgeois",
-      signatureRole: "et plusieurs secteurs qui recrutent",
-      bulletsTitle: "Ce que l’on va qualifier",
+      signatureRole: "et plusieurs secteurs en recrutement",
+      bulletsTitle: "Éléments qualifiés dans le cadre du besoin",
       bullets: [
         "La vente et le commerce",
         "Le nettoyage et l’entretien",
@@ -133,8 +143,8 @@ const copy = {
       ],
       sideTitle: "Ce que cela change pour vous",
       sideText: "Vous précisez le type de recrutement, les langues utiles, les contraintes du poste, le niveau attendu et les aides éventuelles à l’arrivée. Cela nous permet de comparer plus sérieusement les besoins côté employeur et les attentes côté candidat.",
-      disclaimerTitle: "Ce qui se passe ensuite",
-      disclaimerText: "Si des profils paraissent compatibles avec votre recherche, votre besoin peut être repris pour une mise en relation. Et si le besoin n’est pas encore assez clair, le questionnaire nous aide déjà à mieux préparer les prochains recrutements.",
+      disclaimerTitle: "Suite du parcours",
+      disclaimerText: "Si des profils paraissent compatibles avec votre recherche, votre besoin pourra être repris dans une perspective de mise en relation. Si le besoin reste encore partiellement défini, le questionnaire aide déjà à mieux préparer les étapes suivantes.",
       tags: ["EURES", "France Travail", "Union européenne", "Luxembourg", "Recrutement"]
     },
     candidateQuestionnaire: {
@@ -207,9 +217,9 @@ const copy = {
       helper: "Vous pourrez enrichir ensuite le scoring avec les exigences fines par métier et les validations humaines."
     },
     statPage: {
-      eyebrow: "Données publiques agrégées",
-      title: "Statistiques publiques EURES beta",
-      lede: "Cette page présente des indicateurs agrégés et non nominatifs sur l’activité du projet EURES beta.",
+      eyebrow: "Indicateurs publics agrégés",
+      title: "Statistiques publiques Match Europe",
+      lede: "Cette page présente des indicateurs agrégés et non nominatifs sur l’activité du projet Match Europe.",
       updatedPrefix: "Dernière mise à jour",
       methodology: "Les chiffres affichés proviennent des tables Grist du projet. Les données personnelles, identifiants et contenus libres ne sont jamais affichés.",
       manualNote: "Les indicateurs de contact, de transmission et d’embauche peuvent être complétés manuellement dans la table mensuelle de pilotage.",
@@ -245,31 +255,52 @@ const copy = {
       emptyBreakdown: "Aucune donnée exploitable pour le moment.",
       loading: "Chargement des statistiques...",
       error: "Impossible de charger les statistiques pour le moment."
+    },
+    projectPage: {
+      eyebrow: "Présentation institutionnelle",
+      title: PUBLIC_PROJECT_NAME,
+      subtitle: "Connecter les talents et les emplois d’un même bassin économique",
+      intro: "Match Europe est un dispositif public de mise en relation transfrontalière. Il s’appuie sur les services publics de l’emploi, un matching explicable et une validation humaine pour faciliter la rencontre entre candidats et employeurs à l’échelle d’un même bassin économique."
+    },
+    journalPage: {
+      eyebrow: "Suivi public",
+      title: "Journal du projet",
+      subtitle: "Les étapes franchies, les enseignements de l’expérimentation et les choix structurants.",
+      intro: "Cette page documente les évolutions significatives du projet pouvant être partagées avec des partenaires, des directions ou des acteurs institutionnels."
     }
   },
   en: {
     common: {
-      brandTitle: "EURES beta",
-      brandSubtitle: "Cross-border mobility, matching and follow-up",
+      brandTitle: PUBLIC_PROJECT_NAME,
+      brandSubtitle: "EURES beta - cross-border mobility, matching and follow-up",
       navHome: "Home",
       navCandidate: "Candidate",
       navEmployer: "Employer",
       navStats: "Stats",
+      navProject: "Project",
+      navJournal: "Project journal",
       langLabel: "Language",
-      footer: "Starter prototype to test sign-up, matching and structured delivery into GRIST.",
+      footer: "Service currently being tested to structure sign-up, needs qualification and the organisation of cross-border introductions.",
+      footerProjectTitle: "Institutional section",
+      footerProjectText: "Find the project presentation, the lessons from the experiment and the main milestones already reached.",
       ctaStartCandidate: "Start as candidate",
       ctaStartEmployer: "Start as employer",
       ctaBackHome: "Back to home",
       ctaQuestionnaire: "Start questionnaire",
       ctaSeeCandidate: "See candidate flow",
       ctaSeeEmployer: "See employer flow",
-      matchingTitle: "How matching will work",
+      ctaSeeProject: "See the project",
+      ctaSeeJournal: "See the journal",
+      institutionalKicker: "Institutional section",
+      institutionalTitle: "Find the project presentation without leaving the main journey.",
+      institutionalText: "The main candidate and employer flows stay unchanged. A dedicated section presents the project, its lessons and its next steps.",
+      matchingTitle: "Introduction principles",
       matchingBullets: [
         "Each answer is sent to GRIST with a role, a language and a reusable identifier.",
         "A compatibility score can be computed across sectors, mobility, languages, availability and job conditions.",
         "High scores can trigger automated matching. Lower scores can be reviewed by a human operator."
       ],
-      futureTitle: "What comes next",
+      futureTitle: "Planned next developments",
       futureBullets: [
         "Candidate dashboard to track opportunities and status.",
         "Employer dashboard to track suggested profiles and responses.",
@@ -284,45 +315,45 @@ const copy = {
       questionnaireNote: "This questionnaire is intentionally compact for the first version. It follows the logic of the reference Tally forms without copying them in full."
     },
     home: {
-      eyebrow: "Test a practical service in the Greater Region",
-      title: "Connect mobile workers with job opportunities that stay off their radar.",
-      lede: "EURES beta addresses a simple issue: the labour market is cross-border, while job search and hiring remain largely national. The service aims to capture intent, structure needs and send the right opportunities faster.",
-      storyTitle: "Starting point",
-      storyText: "People who already worked in Luxembourg, Germany or a neighbouring country often look first in their country of residence. At the same time, employers have real hiring needs but struggle to reach these mobile profiles.",
+      eyebrow: "An experiment conducted in the Greater Region",
+      title: "Make it easier for candidates and employers to meet across a cross-border labour market.",
+      lede: "Match Europe starts from a simple observation: the labour market already operates across borders, but return-to-work pathways, first contact and matching tools do not yet fully reflect that reality. The service combines qualification, explainable matching and human support in order to connect hiring needs with mobility pathways more effectively.",
+      storyTitle: "Initial observation",
+      storyText: "People with cross-border work experience often return to job-search pathways that remain mostly national. At the same time, employers have real hiring needs, but first contact, profile qualification and trust remain difficult to organize at the scale of a cross-border labour market.",
       stats: [
         ["280,000", "cross-border workers commute daily within the Greater Region."],
-        ["40–50k", "people with cross-border experience may be looking for work."],
-        ["15,000+", "vacancies remain open in the same labour basin."]
+        ["Fragmented pathways", "tools, vacancies and support are still largely organised within national boundaries."],
+        ["Trust matters", "successful first contact depends on a clear institutional identity and reassuring contact channels."]
       ],
-      tracksTitle: "Two entry points, one matching engine",
+      tracksTitle: "Two complementary journeys",
       candidateTitle: "Candidate flow",
       candidateText: "Capture mobility plans, target sectors, languages, availability and concrete signals that make matching faster.",
       employerTitle: "Employer flow",
       employerText: "Capture hiring demand, languages, work constraints, relocation support and the employer’s strongest criteria.",
-      principlesTitle: "Product principles",
+      principlesTitle: "Design principles",
       principles: [
-        ["Simple first", "A lightweight multilingual first flow that can be used immediately."],
-        ["Useful data", "Structured answers that feed GRIST and prepare matching scoring."],
-        ["Human validation", "If the score is weak or ambiguous, an EURES operator can review the match."]
+        ["Accessible from the outset", "A lightweight multilingual first journey that can already be used within the experiment."],
+        ["Structured information", "Qualified answers that help analyse needs, compare profiles and follow up on introductions."],
+        ["Human oversight", "When a proposed match remains uncertain or incomplete, a human review takes place before any next step."]
       ]
     },
     candidateLanding: {
       kicker: "Candidate flow",
-      title: "A simple questionnaire to explore mobility opportunities in Europe.",
-      lede: "This approach is for people who may consider European professional mobility, either as cross-border commuting or relocation. In simple terms: working in a neighbouring country while staying at home, or moving to live and work in another European country.",
+      title: "A questionnaire to review professional mobility opportunities in Europe.",
+      lede: "This approach is intended for people who may consider professional mobility in Europe, either as cross-border commuting or relocation. This may mean working in a neighbouring country while remaining at home, or moving to live and work in another European country.",
       messageTitle: "Why fill in this questionnaire?",
-      messageIntro: "This questionnaire helps us quickly understand whether your profile may match opportunities linked to European mobility.",
+      messageIntro: "This questionnaire helps clarify whether your profile may correspond to opportunities linked to European mobility.",
       messageBody: [
-        "At the moment, the test mainly involves companies based in Luxembourg, within a cross-border or broader European mobility framework.",
-        "This is a practical test phase: we try something real, we see what works, and then we improve it.",
-        "In other words, the service is not final yet, but it is already used to identify real opportunities for people ready to move within Europe."
+        "At this stage, the experiment mainly concerns companies based in Luxembourg, within a cross-border or broader European mobility framework.",
+        "The service is still evolving and continues to be adjusted on the basis of situations encountered in the field.",
+        "It already helps qualify profiles more effectively and prepare introductions for people who are ready to consider mobility in Europe."
       ],
-      messageHighlight: "You answer once, and it helps us see whether some current or upcoming European mobility opportunities may fit you.",
-      messageOutcome: "The service will then expand to other employers in Germany, Belgium and France, as well as more job families.",
-      signatureTitle: "At the moment, the first tests mainly cover:",
+      messageHighlight: "A single response helps assess whether some current or near-term European mobility opportunities may match your situation.",
+      messageOutcome: "The service is intended to open up progressively to other employers in Germany, Belgium and France, as well as to a wider range of occupations.",
+      signatureTitle: "At this stage, the experiment mainly concerns:",
       signatureName: "Luxembourg",
-      signatureRole: "and several hiring sectors",
-      bulletsTitle: "Jobs currently tested with employers in Luxembourg",
+      signatureRole: "and several recruiting sectors",
+      bulletsTitle: "Sectors currently explored with employers in Luxembourg",
       bullets: [
         "Retail and sales",
         "Cleaning and maintenance",
@@ -332,8 +363,8 @@ const copy = {
       ],
       sideTitle: "Who are we?",
       sideText: "EURES is the European employment cooperation network. It supports recruitment and professional opportunities across Europe, especially for cross-border mobility where candidates and vacancies often miss each other.",
-      disclaimerTitle: "What happens next",
-      disclaimerText: "If your profile matches ongoing needs, it may be reviewed for a possible introduction. Over time, more companies, more countries and more job families will be added.",
+      disclaimerTitle: "Next step",
+      disclaimerText: "If your profile matches identified needs, it may be reviewed with a view to a possible introduction. Over time, more companies, more countries and more occupations may enrich the service.",
       tags: ["EURES", "France Travail", "European Union", "Luxembourg", "Retail & sales"],
       logos: {
         eures: {
@@ -352,21 +383,21 @@ const copy = {
     },
     employerLanding: {
       kicker: "Employer flow",
-      title: "A simple questionnaire to surface your hiring needs in European mobility.",
-      lede: "This approach is for employers who can recruit beyond their local market, either cross-border or with candidates coming from another European country. The goal is simple: understand your need more clearly so we can identify matching profiles faster.",
+      title: "A questionnaire to qualify your hiring needs in European mobility.",
+      lede: "This approach is intended for employers who may recruit beyond their local market, either across borders or with candidates coming from another European country. The aim is to understand your need more precisely so that relevant profiles can be identified.",
       messageTitle: "Why fill in this questionnaire?",
       messageIntro: "This questionnaire helps us understand your hiring need, the role context and the conditions you offer.",
       messageBody: [
-        "At the moment, the experiment is first being carried out with companies based in Luxembourg, on concrete recruitments that can sometimes be difficult to fill.",
-        "We are in a very practical testing phase: we look at what really helps suitable profiles emerge, then we improve the service.",
-        "In simple terms, you describe your need once, and this helps us spot applications that may be compatible more effectively."
+        "At this stage, the experiment is first being conducted with companies based in Luxembourg, for concrete recruitments that can sometimes be difficult to fill.",
+        "The service continues to evolve on the basis of observed needs and feedback from the first introductions.",
+        "Describing your need once helps identify applications that may be compatible more effectively."
       ],
-      messageHighlight: "The point is not to waste your time with one more form. The point is to qualify your need better so future introductions are easier.",
-      messageOutcome: "The service will gradually open up to other employers in Germany, Belgium and France, as well as to more occupations.",
-      signatureTitle: "At the moment, the first tests mainly concern:",
+      messageHighlight: "The aim is not to add an extra formality, but to qualify your need more clearly so that future introductions are easier to organise.",
+      messageOutcome: "The service may gradually open up to other employers in Germany, Belgium and France, as well as to other occupations.",
+      signatureTitle: "At this stage, the experiment mainly concerns:",
       signatureName: "Luxembourg-based employers",
-      signatureRole: "and several sectors that are hiring",
-      bulletsTitle: "What we will qualify",
+      signatureRole: "and several recruiting sectors",
+      bulletsTitle: "What will be qualified",
       bullets: [
         "Sales and retail",
         "Cleaning and maintenance",
@@ -376,8 +407,8 @@ const copy = {
       ],
       sideTitle: "What this changes for you",
       sideText: "You clarify the type of recruitment, the useful languages, the job constraints, the expected level and any arrival support. This allows us to compare employer needs and candidate expectations more seriously.",
-      disclaimerTitle: "What happens next",
-      disclaimerText: "If some profiles appear compatible with your search, your need can be taken up for an introduction. And if the need is not yet clear enough, the questionnaire already helps us prepare the next recruitments better.",
+      disclaimerTitle: "Next step",
+      disclaimerText: "If some profiles appear compatible with your search, your need may be considered with a view to an introduction. If the need is still only partially defined, the questionnaire already helps prepare the next steps more effectively.",
       tags: ["EURES", "France Travail", "European Union", "Luxembourg", "Recruitment"]
     },
     candidateQuestionnaire: {
@@ -451,8 +482,8 @@ const copy = {
     },
     statPage: {
       eyebrow: "Public aggregated data",
-      title: "EURES beta public stats",
-      lede: "This page shows aggregated, non-identifying indicators about EURES beta activity.",
+      title: "Match Europe public stats",
+      lede: "This page shows aggregated, non-identifying indicators about Match Europe activity.",
       updatedPrefix: "Last updated",
       methodology: "Figures come from the project's Grist tables. Personal data, identifiers and free text are never displayed.",
       manualNote: "Contact, transmission and hiring indicators can be completed manually in the monthly steering table.",
@@ -488,31 +519,52 @@ const copy = {
       emptyBreakdown: "No usable data yet.",
       loading: "Loading statistics...",
       error: "Unable to load statistics right now."
+    },
+    projectPage: {
+      eyebrow: "Institutional presentation",
+      title: PUBLIC_PROJECT_NAME,
+      subtitle: "Connecting talent and jobs across a shared economic area",
+      intro: "Match Europe is a public cross-border introduction service. It relies on public employment services, explainable matching and human validation to make it easier for candidates and employers to connect across the same economic area."
+    },
+    journalPage: {
+      eyebrow: "Public updates",
+      title: "Project journal",
+      subtitle: "Key milestones, lessons from the experiment and major decisions.",
+      intro: "This page documents the project’s significant developments that can be shared with partners, leadership teams or institutional stakeholders."
     }
   },
   de: {
     common: {
-      brandTitle: "EURES beta",
-      brandSubtitle: "Grenzüberschreitende Mobilität, Matching und Begleitung",
+      brandTitle: PUBLIC_PROJECT_NAME,
+      brandSubtitle: "EURES beta - grenzüberschreitende Mobilität, Matching und Begleitung",
       navHome: "Start",
       navCandidate: "Kandidaten",
       navEmployer: "Arbeitgeber",
       navStats: "Statistik",
+      navProject: "Projekt",
+      navJournal: "Projektjournal",
       langLabel: "Sprache",
-      footer: "Startprototyp zum Testen von Erfassung, Matching und strukturierter Übergabe an GRIST.",
+      footer: "Dienst in der Erprobung, um Erfassung, Bedarfsqualifizierung und die Organisation grenzüberschreitender Vermittlungen zu strukturieren.",
+      footerProjectTitle: "Institutioneller Bereich",
+      footerProjectText: "Hier finden sich die Projektpräsentation, die Erkenntnisse aus der Erprobung und die wichtigsten bereits erreichten Etappen.",
       ctaStartCandidate: "Als Kandidat starten",
       ctaStartEmployer: "Als Arbeitgeber starten",
       ctaBackHome: "Zur Startseite",
       ctaQuestionnaire: "Fragebogen starten",
       ctaSeeCandidate: "Kandidatenweg ansehen",
       ctaSeeEmployer: "Arbeitgeberweg ansehen",
-      matchingTitle: "So soll das Matching funktionieren",
+      ctaSeeProject: "Projekt ansehen",
+      ctaSeeJournal: "Journal ansehen",
+      institutionalKicker: "Institutioneller Bereich",
+      institutionalTitle: "Die Projektpräsentation abrufen, ohne den Hauptpfad zu verlassen.",
+      institutionalText: "Die Hauptpfade für Kandidaten und Arbeitgeber bleiben unverändert. Ein eigener Bereich erläutert Projekt, Erkenntnisse und nächste Schritte.",
+      matchingTitle: "Grundsätze der Vermittlung",
       matchingBullets: [
         "Jede Antwort wird mit Rolle, Sprache und Wiederaufnahme-ID in GRIST gespeichert.",
         "Ein Kompatibilitätsscore kann aus Branche, Mobilität, Sprachen, Verfügbarkeit und Arbeitsbedingungen berechnet werden.",
         "Hohe Scores können automatisch gematcht werden. Niedrige Scores gehen in eine menschliche Prüfung."
       ],
-      futureTitle: "Nächste Ausbaustufen",
+      futureTitle: "Geplante nächste Entwicklungen",
       futureBullets: [
         "Kandidaten-Dashboard für Chancen und Status.",
         "Arbeitgeber-Dashboard für vorgeschlagene Profile und Rückmeldungen.",
@@ -527,45 +579,45 @@ const copy = {
       questionnaireNote: "Dieser Fragebogen ist für die erste Version bewusst kompakt. Er orientiert sich an den vorhandenen Tally-Formularen, ohne sie vollständig zu kopieren."
     },
     home: {
-      eyebrow: "Einen konkreten Dienst in der Großregion testen",
-      title: "Mobile Arbeitskräfte mit Stellen verbinden, die heute unter dem Radar bleiben.",
-      lede: "EURES beta adressiert ein einfaches Problem: Der Arbeitsmarkt ist grenzüberschreitend, Stellensuche und Rekrutierung bleiben aber weitgehend national. Der Dienst soll Absichten erfassen, Bedarfe strukturieren und passende Chancen schneller zuspielen.",
-      storyTitle: "Ausgangspunkt",
-      storyText: "Menschen, die bereits in Luxemburg, Deutschland oder einem Nachbarland gearbeitet haben, suchen oft zuerst im Wohnland. Gleichzeitig haben Arbeitgeber echte Bedarfe, erreichen diese mobilen Profile aber nur schwer.",
+      eyebrow: "Eine Erprobung in der Großregion",
+      title: "Begegnungen zwischen Kandidaten und Arbeitgebern in einem grenzüberschreitenden Arbeitsmarkt erleichtern.",
+      lede: "Match Europe geht von einer einfachen Beobachtung aus: Der Arbeitsmarkt funktioniert bereits grenzüberschreitend, doch Wege zurück in Beschäftigung, Erstkontakt und Vermittlungswerkzeuge bilden diese Realität noch nicht vollständig ab. Der Dienst verbindet Qualifizierung, nachvollziehbares Matching und menschliche Begleitung, um Personalbedarfe und Mobilitätswege besser zusammenzuführen.",
+      storyTitle: "Ausgangsbeobachtung",
+      storyText: "Menschen mit grenzüberschreitender Berufserfahrung kehren häufig in Suchwege zurück, die noch stark national organisiert sind. Gleichzeitig haben Arbeitgeber reale Bedarfe, doch Erstkontakt, Profilqualifizierung und Vertrauensaufbau lassen sich im grenzüberschreitenden Arbeitsraum nur schwer organisieren.",
       stats: [
         ["280.000", "Grenzpendler bewegen sich täglich in der Großregion."],
-        ["40–50 Tsd.", "Menschen mit grenzüberschreitender Erfahrung könnten Arbeit suchen."],
-        ["15.000+", "offene Stellen bleiben im selben Arbeitsraum unbesetzt."]
+        ["Verstreute Wege", "Werkzeuge, Stellenangebote und Begleitung bleiben noch weitgehend national organisiert."],
+        ["Vertrauen zählt", "ein erfolgreicher Erstkontakt braucht eine klare institutionelle Identität und verlässliche Kontaktkanäle."]
       ],
-      tracksTitle: "Zwei Einstiege, ein Matching-Motor",
+      tracksTitle: "Zwei ergänzende Wege",
       candidateTitle: "Kandidatenweg",
       candidateText: "Mobilitätspläne, Zielbranchen, Sprachen, Verfügbarkeit und konkrete Matching-Signale erfassen.",
       employerTitle: "Arbeitgeberweg",
       employerText: "Personalbedarf, Sprachen, Rahmenbedingungen, Unterstützung bei Ankunft und starke Kriterien erfassen.",
-      principlesTitle: "Produktprinzipien",
+      principlesTitle: "Gestaltungsprinzipien",
       principles: [
-        ["Einfach starten", "Ein leichtgewichtiger mehrsprachiger Erstfluss, sofort nutzbar."],
-        ["Nützliche Daten", "Strukturierte Antworten für GRIST und den späteren Matching-Score."],
-        ["Menschliche Prüfung", "Bei schwachem oder unklarem Score prüft ein EURES-Mitarbeiter."]
+        ["Niedrige Einstiegsschwelle", "Ein leichter mehrsprachiger Erstpfad, der bereits im Rahmen der Erprobung genutzt werden kann."],
+        ["Strukturierte Informationen", "Qualifizierte Antworten erleichtern die Analyse von Bedarfen, den Vergleich von Profilen und die Nachverfolgung von Vermittlungen."],
+        ["Menschliche Aufsicht", "Wenn ein Vermittlungsvorschlag unsicher oder unvollständig bleibt, erfolgt vor jedem nächsten Schritt eine menschliche Prüfung."]
       ]
     },
     candidateLanding: {
       kicker: "Kandidatenweg",
-      title: "Ein kurzer Fragebogen, um berufliche Mobilitätschancen in Europa zu erkunden.",
-      lede: "Dieses Angebot richtet sich an Menschen, die berufliche Mobilität in Europa in Betracht ziehen, entweder grenzüberschreitend oder durch einen Umzug. Einfach gesagt: in einem Nachbarland arbeiten und zu Hause wohnen bleiben, oder in ein anderes europäisches Land ziehen und dort arbeiten.",
+      title: "Ein Fragebogen, um berufliche Mobilitätsmöglichkeiten in Europa zu prüfen.",
+      lede: "Dieses Angebot richtet sich an Menschen, die berufliche Mobilität in Europa in Betracht ziehen, entweder grenzüberschreitend oder durch einen Umzug. Das kann bedeuten, in einem Nachbarland zu arbeiten und zu Hause wohnen zu bleiben, oder in ein anderes europäisches Land zu ziehen, um dort zu leben und zu arbeiten.",
       messageTitle: "Warum diesen Fragebogen ausfüllen?",
-      messageIntro: "Der Fragebogen hilft uns, schneller zu erkennen, ob Ihr Profil zu Chancen im Rahmen europäischer Mobilität passen könnte.",
+      messageIntro: "Der Fragebogen hilft dabei, klarer einzuschätzen, ob Ihr Profil zu Chancen im Rahmen europäischer Mobilität passen könnte.",
       messageBody: [
-        "Im Moment wird vor allem mit Unternehmen in Luxemburg getestet, in einem grenzüberschreitenden oder breiteren europäischen Mobilitätsrahmen.",
-        "Das ist eine ganz praktische Testphase: Wir probieren etwas Reales aus, schauen, was funktioniert, und verbessern es danach.",
-        "Mit anderen Worten: Der Dienst ist noch nicht fertig, wird aber bereits genutzt, um echte Chancen für Menschen sichtbar zu machen, die sich in Europa beruflich bewegen möchten."
+        "In dieser Phase betrifft die Erprobung vor allem Unternehmen mit Sitz in Luxemburg, in einem grenzüberschreitenden oder allgemein europäischen Mobilitätsrahmen.",
+        "Der Dienst entwickelt sich weiter und wird anhand der auf dem Feld beobachteten Situationen fortlaufend angepasst.",
+        "Er hilft bereits dabei, Profile besser zu qualifizieren und Vermittlungen für Menschen vorzubereiten, die berufliche Mobilität in Europa in Betracht ziehen."
       ],
-      messageHighlight: "Sie antworten einmal, und das hilft uns zu sehen, ob aktuelle oder kommende Chancen der europäischen Mobilität zu Ihnen passen könnten.",
-      messageOutcome: "Der Dienst soll danach auf weitere Arbeitgeber in Deutschland, Belgien und Frankreich sowie auf weitere Berufe ausgeweitet werden.",
-      signatureTitle: "Die ersten Tests betreffen im Moment vor allem:",
+      messageHighlight: "Eine einmalige Antwort hilft einzuschätzen, ob aktuelle oder kurzfristige Chancen der europäischen Mobilität zu Ihrer Situation passen könnten.",
+      messageOutcome: "Der Dienst soll schrittweise für weitere Arbeitgeber in Deutschland, Belgien und Frankreich sowie für weitere Berufe geöffnet werden.",
+      signatureTitle: "In dieser Phase betrifft die Erprobung vor allem:",
       signatureName: "Luxemburg",
-      signatureRole: "und mehrere Branchen mit Personalbedarf",
-      bulletsTitle: "Berufe, die aktuell mit Arbeitgebern in Luxemburg getestet werden",
+      signatureRole: "und mehrere rekrutierende Branchen",
+      bulletsTitle: "Bereiche, die derzeit mit Arbeitgebern in Luxemburg betrachtet werden",
       bullets: [
         "Verkauf und Handel",
         "Reinigung und Instandhaltung",
@@ -575,8 +627,8 @@ const copy = {
       ],
       sideTitle: "Wer sind wir?",
       sideText: "EURES ist das europäische Kooperationsnetzwerk für Beschäftigung. Es erleichtert Rekrutierung und berufliche Chancen in Europa, insbesondere in grenzüberschreitenden Arbeitsmärkten.",
-      disclaimerTitle: "Wie es danach weitergeht",
-      disclaimerText: "Wenn Ihr Profil zu laufenden Bedarfen passt, kann es für eine mögliche Vermittlung berücksichtigt werden. Mit der Zeit kommen weitere Unternehmen, weitere Länder und weitere Berufe hinzu.",
+      disclaimerTitle: "Nächster Schritt",
+      disclaimerText: "Wenn Ihr Profil zu identifizierten Bedarfen passt, kann es mit Blick auf eine mögliche Vermittlung geprüft werden. Mit der Zeit können weitere Unternehmen, Länder und Berufe den Dienst ergänzen.",
       tags: ["EURES", "France Travail", "Europäische Union", "Luxemburg", "Verkauf & Handel"],
       logos: {
         eures: {
@@ -595,21 +647,21 @@ const copy = {
     },
     employerLanding: {
       kicker: "Arbeitgeberweg",
-      title: "Ein einfacher Fragebogen, um Ihren Personalbedarf in der europäischen Mobilität sichtbar zu machen.",
-      lede: "Dieses Angebot richtet sich an Arbeitgeber, die über ihren lokalen Markt hinaus rekrutieren können, grenzüberschreitend oder mit Kandidaten aus einem anderen europäischen Land. Das Ziel ist einfach: Ihren Bedarf klarer verstehen, um schneller passende Profile zu erkennen.",
+      title: "Ein Fragebogen, um Ihren Personalbedarf in der europäischen Mobilität zu qualifizieren.",
+      lede: "Dieses Angebot richtet sich an Arbeitgeber, die über ihren lokalen Markt hinaus rekrutieren können, grenzüberschreitend oder mit Kandidaten aus einem anderen europäischen Land. Ziel ist es, Ihren Bedarf genauer zu verstehen, um passende Profile zu identifizieren.",
       messageTitle: "Warum diesen Fragebogen ausfüllen?",
       messageIntro: "Dieser Fragebogen hilft uns, Ihren Personalbedarf, den Kontext der Stelle und die angebotenen Bedingungen besser zu verstehen.",
       messageBody: [
-        "Zurzeit wird die Erprobung zunächst mit Unternehmen in Luxemburg durchgeführt, bei konkreten Einstellungen, die manchmal schwer zu besetzen sind.",
-        "Wir befinden uns in einer sehr praktischen Testphase: Wir schauen, was wirklich hilft, passende Profile sichtbar zu machen, und verbessern den Dienst danach.",
-        "Einfach gesagt: Sie beschreiben Ihren Bedarf einmal, und das hilft uns, kompatible Bewerbungen besser zu erkennen."
+        "In dieser Phase wird die Erprobung zunächst mit Unternehmen in Luxemburg durchgeführt, bei konkreten Einstellungen, die teilweise schwer zu besetzen sind.",
+        "Der Dienst entwickelt sich auf Grundlage beobachteter Bedarfe und der Rückmeldungen aus den ersten Vermittlungen weiter.",
+        "Wenn Sie Ihren Bedarf einmal beschreiben, lassen sich passende Bewerbungen gezielter identifizieren."
       ],
-      messageHighlight: "Es geht nicht darum, Ihnen ein weiteres Formular aufzubürden. Es geht darum, Ihren Bedarf besser zu qualifizieren, damit spätere Vermittlungen einfacher werden.",
-      messageOutcome: "Der Dienst wird schrittweise auch für andere Arbeitgeber in Deutschland, Belgien und Frankreich sowie für weitere Berufe geöffnet.",
-      signatureTitle: "Die ersten Tests betreffen im Moment vor allem:",
+      messageHighlight: "Es geht nicht darum, eine weitere Formalität hinzuzufügen, sondern Ihren Bedarf klarer zu qualifizieren, damit spätere Vermittlungen leichter organisiert werden können.",
+      messageOutcome: "Der Dienst kann schrittweise auch für andere Arbeitgeber in Deutschland, Belgien und Frankreich sowie für weitere Berufe geöffnet werden.",
+      signatureTitle: "In dieser Phase betrifft die Erprobung vor allem:",
       signatureName: "Arbeitgeber in Luxemburg",
-      signatureRole: "und mehrere Branchen mit Personalbedarf",
-      bulletsTitle: "Was wir qualifizieren",
+      signatureRole: "und mehrere rekrutierende Branchen",
+      bulletsTitle: "Welche Elemente qualifiziert werden",
       bullets: [
         "Verkauf und Handel",
         "Reinigung und Instandhaltung",
@@ -619,8 +671,8 @@ const copy = {
       ],
       sideTitle: "Was das für Sie verändert",
       sideText: "Sie präzisieren die Art der Rekrutierung, die nützlichen Sprachen, die Rahmenbedingungen der Stelle, das erwartete Niveau und mögliche Unterstützung bei der Ankunft. So können wir Arbeitgeberbedarfe und Kandidatenerwartungen fundierter vergleichen.",
-      disclaimerTitle: "Wie es danach weitergeht",
-      disclaimerText: "Wenn einige Profile mit Ihrer Suche vereinbar erscheinen, kann Ihr Bedarf für eine Vermittlung aufgegriffen werden. Und wenn der Bedarf noch nicht klar genug ist, hilft uns der Fragebogen bereits dabei, die nächsten Einstellungen besser vorzubereiten.",
+      disclaimerTitle: "Nächster Schritt",
+      disclaimerText: "Wenn einige Profile zu Ihrer Suche passen könnten, kann Ihr Bedarf mit Blick auf eine Vermittlung aufgegriffen werden. Wenn der Bedarf noch nicht vollständig geklärt ist, hilft der Fragebogen bereits dabei, die nächsten Schritte besser vorzubereiten.",
       tags: ["EURES", "France Travail", "Europäische Union", "Luxemburg", "Rekrutierung"]
     },
     candidateQuestionnaire: {
@@ -693,9 +745,9 @@ const copy = {
       helper: "Später kann das Scoring um feinere Kriterien je Branche und menschliche Validierung ergänzt werden."
     },
     statPage: {
-      eyebrow: "Öffentliche aggregierte Daten",
-      title: "Öffentliche EURES-beta-Statistiken",
-      lede: "Diese Seite zeigt aggregierte und nicht personenbezogene Kennzahlen zur Aktivität von EURES beta.",
+      eyebrow: "Öffentliche aggregierte Kennzahlen",
+      title: "Öffentliche Statistiken zu Match Europe",
+      lede: "Diese Seite zeigt aggregierte und nicht personenbezogene Kennzahlen zur Aktivität von Match Europe.",
       updatedPrefix: "Letzte Aktualisierung",
       methodology: "Die Zahlen stammen aus den Grist-Tabellen des Projekts. Personendaten, Kennungen und freie Texte werden nie angezeigt.",
       manualNote: "Kontakt-, Übermittlungs- und Einstellungsindikatoren können in der monatlichen Steuerungstabelle manuell ergänzt werden.",
@@ -731,8 +783,631 @@ const copy = {
       emptyBreakdown: "Noch keine auswertbaren Daten.",
       loading: "Statistiken werden geladen...",
       error: "Die Statistiken können derzeit nicht geladen werden."
+    },
+    projectPage: {
+      eyebrow: "Institutionelle Darstellung",
+      title: PUBLIC_PROJECT_NAME,
+      subtitle: "Talente und Arbeitsplätze in einem gemeinsamen Wirtschaftsraum zusammenführen",
+      intro: "Match Europe ist ein öffentlicher Dienst für grenzüberschreitende Vermittlung. Er stützt sich auf öffentliche Arbeitsverwaltungen, nachvollziehbares Matching und menschliche Validierung, um die Begegnung zwischen Kandidaten und Arbeitgebern in einem gemeinsamen Wirtschaftsraum zu erleichtern."
+    },
+    journalPage: {
+      eyebrow: "Öffentliche Entwicklung",
+      title: "Projektjournal",
+      subtitle: "Wichtige Etappen, Erkenntnisse aus der Erprobung und strukturierende Entscheidungen.",
+      intro: "Diese Seite dokumentiert die wichtigsten Entwicklungen des Projekts, die mit Partnern, Leitungen oder institutionellen Akteuren geteilt werden können."
     }
   }
+};
+
+const projectContentFR = {
+  summary: {
+    title: "Sommaire",
+    items: [
+      ["constat", "Le constat"],
+      ["situation", "Une situation concrète"],
+      ["probleme-public", "Le problème public"],
+      ["acquis", "Ce que l’expérimentation a validé"],
+      ["proposition", "La proposition de valeur"],
+      ["fonctionnement", "Comment fonctionne le service"],
+      ["pilote", "Un pilote sur trois versants"],
+      ["partenaires", "Le rôle des partenaires"],
+      ["vivier", "La stratégie de constitution du vivier"],
+      ["impasses", "Les situations d’impasse professionnelle"],
+      ["confiance", "Les conditions de confiance"],
+      ["impact", "La mesure de l’impact"],
+      ["methode", "La méthode Startup d’État"],
+      ["partenaires-suite", "Ce que nous proposons aux partenaires"],
+      ["sources", "Sources et données à consolider"]
+    ]
+  },
+  constats: {
+    title: "Le constat",
+    body: "La Grande Région constitue déjà un bassin d’emploi transfrontalier: environ 280 000 personnes franchissent quotidiennement une frontière pour travailler. Des personnes disposant d’une expérience transfrontalière recherchent un emploi, des entreprises rencontrent des difficultés de recrutement, mais les outils, les offres et les accompagnements restent encore largement organisés à l’échelle nationale.",
+    highlight: "Le marché du travail fonctionne déjà à l’échelle transfrontalière, mais les parcours de retour à l’emploi et les outils de mise en relation ne suivent pas encore pleinement cette réalité."
+  },
+  example: {
+    title: "Une situation concrète",
+    body: "Sophie habite à Thionville et a travaillé pendant huit ans au Luxembourg. À la suite d’une restructuration, elle perd son emploi. Son expérience peut correspondre à des besoins situés en France, au Luxembourg ou en Wallonie, mais elle ne dispose pas toujours des bons relais pour identifier ces opportunités et être mise en relation dans un cadre rassurant.",
+    note: "Cet exemple illustre une situation type. Il ne correspond pas à un cas réel identifié."
+  },
+  problem: {
+    title: "Le problème public",
+    items: [
+      "L’identification des candidats réellement intéressés par la mobilité.",
+      "La qualification des compétences, contraintes et attentes.",
+      "La compréhension des besoins employeurs.",
+      "La confiance accordée au premier contact.",
+      "L’accompagnement humain dans la mise en relation.",
+      "La coordination entre services publics de l’emploi."
+    ]
+  },
+  validation: {
+    title: "Ce que l’expérimentation a validé",
+    items: [
+      "La mobilisation d’employeurs.",
+      "Le recueil des besoins.",
+      "L’identification de candidats.",
+      "La qualification des profils.",
+      "Les propositions de matching pertinentes.",
+      "Les premières mises en relation."
+    ],
+    highlight: "Le principal frein n’est pas le matching. C’est la confiance au moment du premier contact."
+  },
+  value: {
+    title: "La proposition de valeur",
+    pillars: [
+      {
+        title: "La proximité des services publics de l’emploi",
+        text: "Les équipes locales présentent le service, expliquent son fonctionnement et contribuent à instaurer la confiance."
+      },
+      {
+        title: "Un matching transfrontalier explicable",
+        text: "Les rapprochements peuvent prendre en compte le métier, les compétences clés, les langues, la mobilité et la localisation, la disponibilité, les conditions de travail, les qualifications ou autorisations, ainsi que les attentes salariales. Les résultats doivent rester compréhensibles et validés humainement."
+      },
+      {
+        title: "Un accompagnement humain",
+        text: "La technologie facilite le rapprochement, mais la décision et la mise en relation restent humaines."
+      }
+    ]
+  },
+  journey: {
+    title: "Comment fonctionne le service",
+    steps: [
+      "Présentation du service",
+      "Inscription et consentement",
+      "Qualification du candidat ou du besoin employeur",
+      "Proposition de matching",
+      "Prise de contact par un canal identifié",
+      "Mise en relation et suivi"
+    ]
+  },
+  pilot: {
+    title: "Un pilote sur trois versants",
+    body: "Le pilote envisagé associe la France, la Wallonie et le Luxembourg. L’objectif n’est pas un déploiement immédiat à grande échelle, mais une coconstruction progressive pour adapter le parcours, préciser les rôles, identifier progressivement des équipes ou territoires volontaires, mobiliser des candidats, recueillir des besoins employeurs, tester les mises en relation et mesurer les résultats.",
+    territories: ["France", "Wallonie", "Luxembourg"]
+  },
+  partners: {
+    title: "Le rôle des partenaires",
+    body: "La première étape recherchée est l’identification, chez chaque partenaire, d’un interlocuteur susceptible de participer à la coconstruction.",
+    items: [
+      "Préciser les besoins du territoire.",
+      "Adapter le parcours candidat et employeur.",
+      "Définir les modalités de consentement.",
+      "Identifier les données et ressources disponibles.",
+      "Préparer progressivement l’implication des équipes locales.",
+      "Proposer des indicateurs communs.",
+      "Analyser les résultats."
+    ]
+  },
+  pool: {
+    title: "La stratégie de constitution du vivier",
+    body: "Un horizon expérimental d’environ 300 candidats qualifiés et informés du fonctionnement du service permettrait de disposer d’une diversité suffisante de profils, de mieux sécuriser le consentement, de produire des rapprochements plus pertinents et d’améliorer la réactivité face aux besoins employeurs.",
+    note: "Cet horizon n’est pas un quota imposé à chaque partenaire."
+  },
+  deadEnds: {
+    title: "Les situations d’impasse professionnelle",
+    body: "Le projet peut aussi aider à repérer les situations dans lesquelles un projet vers un marché donné devient durablement difficile.",
+    items: [
+      "Alerter un conseiller.",
+      "Proposer un diagnostic.",
+      "Identifier des besoins de formation.",
+      "Suggérer des métiers proches.",
+      "Proposer d’autres opportunités géographiques.",
+      "Éviter une recherche durablement sans issue."
+    ],
+    note: "Toute analyse doit rester explicable, contrôlée, utilisée comme aide à la décision et validée humainement."
+  },
+  trust: {
+    title: "Les conditions de confiance",
+    items: [
+      "Une identité institutionnelle claire du service.",
+      "Des canaux de contact maîtrisés.",
+      "Un consentement explicite.",
+      "Une protection des données adaptée.",
+      "Des habilitations définies.",
+      "Une validation humaine des décisions et des mises en relation."
+    ],
+    note: "WhatsApp Business peut constituer un canal envisagé, sans préjuger de son activation."
+  },
+  impact: {
+    title: "La mesure de l’impact",
+    categories: [
+      {
+        title: "Mobilisation",
+        items: ["Partenaires impliqués", "Interlocuteurs identifiés", "Équipes locales associées", "Candidats et employeurs informés"]
+      },
+      {
+        title: "Usage",
+        items: ["Inscriptions", "Profils qualifiés", "Besoins employeurs recueillis", "Taux de réponse"]
+      },
+      {
+        title: "Résultats",
+        items: ["Propositions de matching", "Mises en relation", "Entretiens", "Recrutements", "Délai entre besoin et mise en relation"]
+      },
+      {
+        title: "Accompagnement",
+        items: ["Situations d’impasse identifiées", "Diagnostics", "Alternatives ou réorientations proposées"]
+      }
+    ]
+  },
+  method: {
+    title: "La méthode Startup d’État",
+    items: [
+      "Partir du terrain.",
+      "Tester rapidement.",
+      "Progresser par itérations.",
+      "Mesurer l’impact réel.",
+      "Rester transparent.",
+      "Ajuster ou arrêter une hypothèse non concluante."
+    ]
+  },
+  proposal: {
+    title: "Ce que nous proposons aux partenaires",
+    body: "Examiner ensemble les conditions d’un pilote commun, identifier les interlocuteurs susceptibles de contribuer à sa conception et préparer progressivement l’implication d’équipes locales."
+  },
+  sources: {
+    title: "Sources et données à consolider",
+    items: [
+      "Le chiffre d’environ 280 000 travailleurs frontaliers dans la Grande Région est repris ici comme ordre de grandeur de cadrage déjà mobilisé dans le projet.",
+      "Les autres chiffres de cadrage mentionnés dans les documents de travail ne sont pas publiés dans cette version tant qu’ils ne sont pas consolidés, datés et vérifiables.",
+      "Cette section a vocation à être mise à jour au fil de la consolidation des données et des références publiables."
+    ]
+  }
+};
+
+const projectContentEN = {
+  summary: {
+    title: "Contents",
+    items: [
+      ["constat", "Observation"],
+      ["situation", "A practical situation"],
+      ["probleme-public", "The public challenge"],
+      ["acquis", "What the experiment validated"],
+      ["proposition", "Value proposition"],
+      ["fonctionnement", "How the service works"],
+      ["pilote", "A pilot across three sides"],
+      ["partenaires", "The role of partners"],
+      ["vivier", "Building the candidate pool"],
+      ["impasses", "Dead-end professional situations"],
+      ["confiance", "Conditions for trust"],
+      ["impact", "Measuring impact"],
+      ["methode", "The Startup d'Etat approach"],
+      ["partenaires-suite", "What we propose to partners"],
+      ["sources", "Sources and data still to be consolidated"]
+    ]
+  },
+  constats: {
+    title: "Observation",
+    body: "The Greater Region already functions as a cross-border labour market: around 280,000 people cross a border every day for work. People with cross-border experience are looking for jobs, companies face recruitment difficulties, yet tools, vacancies and support remain largely organised at national level.",
+    highlight: "The labour market already works across borders, but return-to-work pathways and introduction tools still do not fully reflect that reality."
+  },
+  example: {
+    title: "A practical situation",
+    body: "Sophie lives in Thionville and worked in Luxembourg for eight years. After a restructuring, she loses her job. Her experience could match needs in France, Luxembourg or Wallonia, but she does not always have the right channels to identify these opportunities and be introduced within a reassuring framework.",
+    note: "This example illustrates a typical situation. It does not refer to an identified real case."
+  },
+  problem: {
+    title: "The public challenge",
+    items: [
+      "Identifying candidates who are genuinely interested in mobility.",
+      "Qualifying skills, constraints and expectations.",
+      "Understanding employer needs.",
+      "Building trust at the time of first contact.",
+      "Providing human support during introductions.",
+      "Coordinating public employment services."
+    ]
+  },
+  validation: {
+    title: "What the experiment validated",
+    items: [
+      "Mobilising employers.",
+      "Collecting employer needs.",
+      "Identifying candidates.",
+      "Qualifying profiles.",
+      "Producing relevant matching proposals.",
+      "Organising first introductions."
+    ],
+    highlight: "The main obstacle is not matching. It is trust at the moment of first contact."
+  },
+  value: {
+    title: "Value proposition",
+    pillars: [
+      {
+        title: "Proximity of public employment services",
+        text: "Local teams present the service, explain how it works and help build trust."
+      },
+      {
+        title: "Explainable cross-border matching",
+        text: "Introductions may take into account occupation, key skills, languages, mobility and location, availability, working conditions, qualifications or authorisations, as well as salary expectations. Results must remain understandable and humanly validated."
+      },
+      {
+        title: "Human support",
+        text: "Technology facilitates introductions, but decisions and contacts remain human."
+      }
+    ]
+  },
+  journey: {
+    title: "How the service works",
+    steps: [
+      "Service presentation",
+      "Registration and consent",
+      "Qualification of the candidate or employer need",
+      "Matching proposal",
+      "Contact through an identified channel",
+      "Introduction and follow-up"
+    ]
+  },
+  pilot: {
+    title: "A pilot across three sides",
+    body: "The proposed pilot brings together France, Wallonia and Luxembourg. The aim is not immediate large-scale deployment, but gradual co-design in order to adapt the journey, clarify roles, progressively identify willing teams or territories, mobilise candidates, collect employer needs, test introductions and measure results.",
+    territories: ["France", "Wallonia", "Luxembourg"]
+  },
+  partners: {
+    title: "The role of partners",
+    body: "The first step sought is to identify, within each partner organisation, a contact person who could contribute to co-design.",
+    items: [
+      "Clarify territorial needs.",
+      "Adapt candidate and employer journeys.",
+      "Define consent arrangements.",
+      "Identify available data and resources.",
+      "Prepare the gradual involvement of local teams.",
+      "Suggest shared indicators.",
+      "Analyse results."
+    ]
+  },
+  pool: {
+    title: "Building the candidate pool",
+    body: "An experimental horizon of around 300 qualified candidates informed about how the service works would provide enough diversity of profiles, help secure consent, produce more relevant introductions and improve responsiveness to employer needs.",
+    note: "This horizon is not a quota imposed on each partner."
+  },
+  deadEnds: {
+    title: "Dead-end professional situations",
+    body: "The project may also help identify situations in which a plan focused on one labour market becomes durably difficult.",
+    items: [
+      "Alert an adviser.",
+      "Propose a diagnostic review.",
+      "Identify training needs.",
+      "Suggest adjacent occupations.",
+      "Propose other geographical opportunities.",
+      "Avoid a job search that remains blocked over time."
+    ],
+    note: "Any analysis must remain explainable, controlled, used as decision support and validated by a human."
+  },
+  trust: {
+    title: "Conditions for trust",
+    items: [
+      "A clear institutional identity for the service.",
+      "Well-managed contact channels.",
+      "Explicit consent.",
+      "Appropriate data protection.",
+      "Defined authorisations.",
+      "Human validation of decisions and introductions."
+    ],
+    note: "WhatsApp Business may be considered as a possible channel, without implying that it is already active."
+  },
+  impact: {
+    title: "Measuring impact",
+    categories: [
+      {
+        title: "Mobilisation",
+        items: ["Partners involved", "Contacts identified", "Local teams associated", "Candidates and employers informed"]
+      },
+      {
+        title: "Usage",
+        items: ["Registrations", "Qualified profiles", "Employer needs collected", "Response rate"]
+      },
+      {
+        title: "Results",
+        items: ["Matching proposals", "Introductions", "Interviews", "Hires", "Time between need and introduction"]
+      },
+      {
+        title: "Support",
+        items: ["Dead-end situations identified", "Diagnostic reviews", "Alternatives or reorientations proposed"]
+      }
+    ]
+  },
+  method: {
+    title: "The Startup d'Etat approach",
+    items: [
+      "Start from field realities.",
+      "Test quickly.",
+      "Progress through iterations.",
+      "Measure real impact.",
+      "Remain transparent.",
+      "Adjust or stop an unconvincing hypothesis."
+    ]
+  },
+  proposal: {
+    title: "What we propose to partners",
+    body: "Examine together the conditions for a shared pilot, identify the contacts who could contribute to its design and gradually prepare the involvement of local teams."
+  },
+  closingNote: "Candidate and employer journeys remain the operational entry points already open in this first version.",
+  sources: {
+    title: "Sources and data still to be consolidated",
+    items: [
+      "The figure of around 280,000 cross-border workers in the Greater Region is used here as a framing order of magnitude already referenced in the project.",
+      "Other contextual figures mentioned in working documents are not published in this version until they are consolidated, dated and verifiable.",
+      "This section is intended to be updated as data and publishable references are consolidated."
+    ]
+  }
+};
+
+const projectContentDE = {
+  summary: {
+    title: "Inhalt",
+    items: [
+      ["constat", "Beobachtung"],
+      ["situation", "Eine konkrete Situation"],
+      ["probleme-public", "Die öffentliche Herausforderung"],
+      ["acquis", "Was die Erprobung bestätigt hat"],
+      ["proposition", "Wertversprechen"],
+      ["fonctionnement", "Wie der Dienst funktioniert"],
+      ["pilote", "Ein Pilot auf drei Seiten"],
+      ["partenaires", "Die Rolle der Partner"],
+      ["vivier", "Aufbau des Kandidatenpools"],
+      ["impasses", "Berufliche Sackgassen"],
+      ["confiance", "Bedingungen des Vertrauens"],
+      ["impact", "Wirkungsmessung"],
+      ["methode", "Die Methode Startup d'Etat"],
+      ["partenaires-suite", "Was wir den Partnern vorschlagen"],
+      ["sources", "Quellen und noch zu konsolidierende Daten"]
+    ]
+  },
+  constats: {
+    title: "Beobachtung",
+    body: "Die Großregion funktioniert bereits als grenzüberschreitender Arbeitsmarkt: Rund 280.000 Menschen überschreiten täglich eine Grenze, um zu arbeiten. Menschen mit grenzüberschreitender Erfahrung suchen Arbeit, Unternehmen haben Rekrutierungsschwierigkeiten, doch Werkzeuge, Stellenangebote und Begleitung bleiben noch weitgehend national organisiert.",
+    highlight: "Der Arbeitsmarkt funktioniert bereits grenzüberschreitend, aber Wege zurück in Beschäftigung und Vermittlungsinstrumente folgen dieser Realität noch nicht vollständig."
+  },
+  example: {
+    title: "Eine konkrete Situation",
+    body: "Sophie lebt in Thionville und hat acht Jahre in Luxemburg gearbeitet. Nach einer Umstrukturierung verliert sie ihre Stelle. Ihre Erfahrung könnte zu Bedarfen in Frankreich, Luxemburg oder Wallonien passen, doch sie verfügt nicht immer über die richtigen Zugänge, um diese Chancen zu identifizieren und in einem verlässlichen Rahmen vermittelt zu werden.",
+    note: "Dieses Beispiel veranschaulicht eine typische Situation. Es bezieht sich nicht auf einen identifizierten realen Fall."
+  },
+  problem: {
+    title: "Die öffentliche Herausforderung",
+    items: [
+      "Kandidaten identifizieren, die tatsächlich an Mobilität interessiert sind.",
+      "Kompetenzen, Einschränkungen und Erwartungen qualifizieren.",
+      "Arbeitgeberbedarfe verstehen.",
+      "Vertrauen beim Erstkontakt schaffen.",
+      "Menschliche Begleitung bei der Vermittlung sicherstellen.",
+      "Öffentliche Arbeitsverwaltungen koordinieren."
+    ]
+  },
+  validation: {
+    title: "Was die Erprobung bestätigt hat",
+    items: [
+      "Arbeitgeber mobilisieren.",
+      "Bedarfe erfassen.",
+      "Kandidaten identifizieren.",
+      "Profile qualifizieren.",
+      "Relevante Matching-Vorschläge erstellen.",
+      "Erste Vermittlungen organisieren."
+    ],
+    highlight: "Das Haupthemmnis ist nicht das Matching. Es ist das Vertrauen im Moment des Erstkontakts."
+  },
+  value: {
+    title: "Wertversprechen",
+    pillars: [
+      {
+        title: "Nähe der öffentlichen Arbeitsverwaltungen",
+        text: "Lokale Teams stellen den Dienst vor, erklären seine Funktionsweise und tragen dazu bei, Vertrauen aufzubauen."
+      },
+      {
+        title: "Nachvollziehbares grenzüberschreitendes Matching",
+        text: "Vermittlungen können Beruf, Schlüsselkompetenzen, Sprachen, Mobilität und Standort, Verfügbarkeit, Arbeitsbedingungen, Qualifikationen oder Berechtigungen sowie Gehaltserwartungen berücksichtigen. Die Ergebnisse müssen verständlich und menschlich validiert bleiben."
+      },
+      {
+        title: "Menschliche Begleitung",
+        text: "Technologie erleichtert die Vermittlung, doch Entscheidung und Kontaktaufnahme bleiben menschlich."
+      }
+    ]
+  },
+  journey: {
+    title: "Wie der Dienst funktioniert",
+    steps: [
+      "Vorstellung des Dienstes",
+      "Registrierung und Einwilligung",
+      "Qualifizierung des Kandidaten oder des Arbeitgeberbedarfs",
+      "Matching-Vorschlag",
+      "Kontakt über einen identifizierten Kanal",
+      "Vermittlung und Nachverfolgung"
+    ]
+  },
+  pilot: {
+    title: "Ein Pilot auf drei Seiten",
+    body: "Der vorgeschlagene Pilot verbindet Frankreich, Wallonien und Luxemburg. Ziel ist keine sofortige großflächige Ausweitung, sondern eine schrittweise gemeinsame Ausgestaltung, um den Weg anzupassen, Rollen zu klären, schrittweise interessierte Teams oder Gebiete zu identifizieren, Kandidaten zu mobilisieren, Arbeitgeberbedarfe zu erfassen, Vermittlungen zu testen und Ergebnisse zu messen.",
+    territories: ["Frankreich", "Wallonien", "Luxemburg"]
+  },
+  partners: {
+    title: "Die Rolle der Partner",
+    body: "Der erste gesuchte Schritt ist die Identifikation einer Kontaktperson bei jedem Partner, die sich an der gemeinsamen Ausgestaltung beteiligen könnte.",
+    items: [
+      "Territoriale Bedarfe präzisieren.",
+      "Kandidaten- und Arbeitgeberwege anpassen.",
+      "Einwilligungsmodalitäten definieren.",
+      "Verfügbare Daten und Ressourcen identifizieren.",
+      "Die schrittweise Beteiligung lokaler Teams vorbereiten.",
+      "Gemeinsame Indikatoren vorschlagen.",
+      "Ergebnisse analysieren."
+    ]
+  },
+  pool: {
+    title: "Aufbau des Kandidatenpools",
+    body: "Ein experimenteller Horizont von rund 300 qualifizierten Kandidaten, die über die Funktionsweise des Dienstes informiert sind, würde eine ausreichende Vielfalt an Profilen ermöglichen, die Einwilligung besser absichern, relevantere Vermittlungen hervorbringen und die Reaktionsfähigkeit auf Arbeitgeberbedarfe verbessern.",
+    note: "Dieser Horizont ist keine jedem Partner auferlegte Quote."
+  },
+  deadEnds: {
+    title: "Berufliche Sackgassen",
+    body: "Das Projekt kann auch helfen, Situationen zu erkennen, in denen ein auf einen bestimmten Arbeitsmarkt ausgerichteter Plan dauerhaft schwierig wird.",
+    items: [
+      "Eine Beraterin oder einen Berater aufmerksam machen.",
+      "Eine Diagnose vorschlagen.",
+      "Weiterbildungsbedarfe identifizieren.",
+      "Nahe Berufsprofile vorschlagen.",
+      "Andere geografische Möglichkeiten vorschlagen.",
+      "Eine dauerhaft blockierte Arbeitssuche vermeiden."
+    ],
+    note: "Jede Analyse muss nachvollziehbar, kontrolliert, als Entscheidungshilfe genutzt und menschlich validiert bleiben."
+  },
+  trust: {
+    title: "Bedingungen des Vertrauens",
+    items: [
+      "Eine klare institutionelle Identität des Dienstes.",
+      "Kontrollierte Kontaktkanäle.",
+      "Eine ausdrückliche Einwilligung.",
+      "Ein angemessener Datenschutz.",
+      "Definierte Berechtigungen.",
+      "Menschliche Validierung von Entscheidungen und Vermittlungen."
+    ],
+    note: "WhatsApp Business kann als möglicher Kanal in Betracht kommen, ohne dass damit seine bereits aktive Nutzung behauptet wird."
+  },
+  impact: {
+    title: "Wirkungsmessung",
+    categories: [
+      {
+        title: "Mobilisierung",
+        items: ["Beteiligte Partner", "Identifizierte Kontakte", "Eingebundene lokale Teams", "Informierte Kandidaten und Arbeitgeber"]
+      },
+      {
+        title: "Nutzung",
+        items: ["Registrierungen", "Qualifizierte Profile", "Erfasste Arbeitgeberbedarfe", "Antwortquote"]
+      },
+      {
+        title: "Ergebnisse",
+        items: ["Matching-Vorschläge", "Vermittlungen", "Vorstellungsgespräche", "Einstellungen", "Zeit zwischen Bedarf und Vermittlung"]
+      },
+      {
+        title: "Begleitung",
+        items: ["Identifizierte Sackgassen", "Diagnosen", "Vorgeschlagene Alternativen oder Neuorientierungen"]
+      }
+    ]
+  },
+  method: {
+    title: "Die Methode Startup d'Etat",
+    items: [
+      "Vom Feld ausgehen.",
+      "Schnell testen.",
+      "In Iterationen vorankommen.",
+      "Die tatsächliche Wirkung messen.",
+      "Transparent bleiben.",
+      "Eine nicht überzeugende Hypothese anpassen oder beenden."
+    ]
+  },
+  proposal: {
+    title: "Was wir den Partnern vorschlagen",
+    body: "Gemeinsam die Bedingungen eines gemeinsamen Piloten prüfen, die Kontakte identifizieren, die zu seiner Konzeption beitragen könnten, und die Beteiligung lokaler Teams schrittweise vorbereiten."
+  },
+  closingNote: "Kandidaten- und Arbeitgeberwege bleiben die operativen Einstiegspunkte, die in dieser ersten Version bereits geöffnet sind.",
+  sources: {
+    title: "Quellen und noch zu konsolidierende Daten",
+    items: [
+      "Die Zahl von rund 280.000 Grenzpendlern in der Großregion wird hier als im Projekt bereits genutzte Einordnungsgröße verwendet.",
+      "Andere in Arbeitsdokumenten genannte Kontextzahlen werden in dieser Version nicht veröffentlicht, solange sie nicht konsolidiert, datiert und überprüfbar sind.",
+      "Dieser Abschnitt soll im Zuge der Konsolidierung von Daten und veröffentlichbaren Referenzen aktualisiert werden."
+    ]
+  }
+};
+
+const projectContentByLang = {
+  fr: projectContentFR,
+  en: projectContentEN,
+  de: projectContentDE,
+};
+
+const journalEntriesFR = [
+  {
+    date: "15 juillet 2026",
+    title: "La confiance devient le principal enjeu",
+    observed: "L’expérimentation confirme qu’il est possible de mobiliser des employeurs, d’identifier des candidats, de qualifier les profils et de réaliser des propositions de matching. Cependant, une partie des candidats hésite à répondre lorsqu’elle ne reconnaît pas immédiatement l’origine institutionnelle du service ou le cadre dans lequel ses données sont utilisées.",
+    decided: "Faire évoluer Match Europe vers un dispositif de mise en relation davantage incarné par les services publics de l’emploi et leurs relais locaux.",
+    changed: [
+      "La priorité n’est plus uniquement d’améliorer le matching.",
+      "Le projet doit aussi travailler la présentation du service par des acteurs connus.",
+      "Le consentement, l’identité institutionnelle et les canaux de contact deviennent des dimensions centrales.",
+      "L’accompagnement humain et l’implication progressive des équipes locales prennent davantage de place dans le dispositif."
+    ],
+    next: "Coconstruire avec les services publics de l’emploi français, wallon et luxembourgeois les conditions d’un pilote sur les trois versants."
+  }
+];
+
+const journalEntriesEN = [
+  {
+    date: "July 15, 2026",
+    title: "Trust becomes the main issue",
+    observed: "The experiment confirms that it is possible to mobilise employers, identify candidates, qualify profiles and produce matching proposals. However, some candidates hesitate to respond when they do not immediately recognise the institutional origin of the service or the framework in which their data is used.",
+    decided: "To evolve Match Europe towards an introduction service more clearly embodied by public employment services and their local relays.",
+    changed: [
+      "The priority is no longer only to improve matching.",
+      "The project must also work on how the service is presented by recognised actors.",
+      "Consent, institutional identity and contact channels become central dimensions.",
+      "Human support and the gradual involvement of local teams take a stronger place in the service."
+    ],
+    next: "Co-design with French, Walloon and Luxembourg public employment services the conditions for a pilot across the three sides."
+  }
+];
+
+const journalEntriesDE = [
+  {
+    date: "15. Juli 2026",
+    title: "Vertrauen wird zum zentralen Thema",
+    observed: "Die Erprobung bestätigt, dass es möglich ist, Arbeitgeber zu mobilisieren, Kandidaten zu identifizieren, Profile zu qualifizieren und Matching-Vorschläge zu erstellen. Ein Teil der Kandidaten zögert jedoch zu antworten, wenn die institutionelle Herkunft des Dienstes oder der Rahmen der Datennutzung nicht sofort erkennbar sind.",
+    decided: "Match Europe zu einem Vermittlungsdienst weiterzuentwickeln, der stärker von öffentlichen Arbeitsverwaltungen und ihren lokalen Anlaufstellen getragen wird.",
+    changed: [
+      "Die Priorität liegt nicht mehr allein in der Verbesserung des Matchings.",
+      "Das Projekt muss auch daran arbeiten, wie der Dienst durch bekannte Akteure vorgestellt wird.",
+      "Einwilligung, institutionelle Identität und Kontaktkanäle werden zu zentralen Dimensionen.",
+      "Menschliche Begleitung und die schrittweise Einbindung lokaler Teams erhalten ein größeres Gewicht im Dienst."
+    ],
+    next: "Mit den öffentlichen Arbeitsverwaltungen aus Frankreich, Wallonien und Luxemburg die Bedingungen eines Piloten auf den drei Seiten gemeinsam ausarbeiten."
+  }
+];
+
+const journalEntriesByLang = {
+  fr: journalEntriesFR,
+  en: journalEntriesEN,
+  de: journalEntriesDE,
+};
+
+const journalLabels = {
+  fr: {
+    observed: "Ce que nous avons observé",
+    decided: "Ce que nous avons décidé",
+    changed: "Ce que cela change",
+    next: "Prochaine étape",
+  },
+  en: {
+    observed: "What we observed",
+    decided: "What we decided",
+    changed: "What this changes",
+    next: "Next step",
+  },
+  de: {
+    observed: "Was wir beobachtet haben",
+    decided: "Was wir entschieden haben",
+    changed: "Was sich dadurch ändert",
+    next: "Nächster Schritt",
+  },
 };
 
 const candidateTallyMeta = {
@@ -797,7 +1472,7 @@ const candidateTallyMeta = {
 
 const candidateTallyCopy = {
   fr: {
-    eyebrow: "Questionnaire candidat EURES",
+    eyebrow: "Questionnaire candidat Match Europe",
     heroTitle: "Mobilité européenne, transfrontalière ou expatriation",
     heroLede: "Ce questionnaire nous aide à mieux comprendre votre projet de mobilité en Europe, que vous envisagiez de travailler dans un pays voisin ou de partir vivre et travailler dans un autre pays européen.",
     heroHighlight: "Quelques minutes suffisent. Vos réponses nous permettent de voir plus rapidement si des opportunités peuvent correspondre à votre situation, à vos disponibilités et à vos préférences.",
@@ -1421,11 +2096,12 @@ const employerTallyCopy = {
       q18: "Adresse e-mail",
       q19: "Téléphone",
       q20: "Lieux de travail",
+      q20Extra: "Quels autres métiers souhaiteriez-vous voir proposés ici à l'avenir ?",
       salaryType: "Sous quelle forme exprimez-vous le salaire proposé ?",
       salaryMin: "Montant minimum proposé, en euros bruts ou nets",
       salaryMax: "Montant maximum proposé, en euros bruts ou nets",
       q21Title: "Protection des données",
-      q21Text: "Les informations transmises permettront à l’équipe EURES beta de mieux comprendre votre besoin de recrutement et les conditions proposées afin d’identifier des profils susceptibles de correspondre.",
+      q21Text: "Les informations transmises permettront à l’équipe Match Europe de mieux comprendre votre besoin de recrutement et les conditions proposées afin d’identifier des profils susceptibles de correspondre.",
       q21Text2: "Si des profils compatibles avec votre recherche sont identifiés, vous pourrez être recontacté prochainement.",
       q21Text3: "Pensez à répondre aux appels masqués ou inconnus et à vérifier régulièrement vos courriers indésirables (spams).",
       consent: "J’accepte que les informations transmises soient utilisées par les équipes et partenaires EURES dans le cadre des mises en relation et des échanges liés au recrutement. Les données transmises seront utilisées uniquement dans le cadre des échanges liés au recrutement et conformément à la réglementation européenne sur la protection des données (RGPD)."
@@ -1502,11 +2178,12 @@ const employerTallyCopy = {
       q18: "Email address",
       q19: "Phone",
       q20: "Work locations",
+      q20Extra: "Which other occupations would you like to see included here in the future?",
       salaryType: "How do you express the salary offered?",
       salaryMin: "Minimum amount offered, in gross or net euros",
       salaryMax: "Maximum amount offered, in gross or net euros",
       q21Title: "Data protection",
-      q21Text: "The information provided will allow the EURES beta team to better understand your hiring need and the conditions offered in order to identify profiles that may match.",
+      q21Text: "The information provided will allow the Match Europe team to better understand your hiring need and the conditions offered in order to identify profiles that may match.",
       q21Text2: "If profiles compatible with your search are identified, you may be contacted again soon.",
       q21Text3: "Please remember to answer hidden or unknown calls and to check your junk mail regularly.",
       consent: "I agree that the information provided may be used by EURES teams and partners for introductions and exchanges related to recruitment. The data provided will only be used within the framework of recruitment exchanges and in accordance with European data protection rules (GDPR)."
@@ -1592,6 +2269,7 @@ const employerTallyCopy = {
       q18: "E-Mail-Adresse",
       q19: "Telefon",
       q20: "Arbeitsorte",
+      q20Extra: "Welche anderen Berufe würden Sie hier künftig gerne sehen?",
       salaryType: "In welcher Form geben Sie das angebotene Gehalt an?",
       salaryMin: "Angebotener Mindestbetrag in Euro brutto oder netto",
       salaryMax: "Angebotener Höchstbetrag in Euro brutto oder netto",
@@ -1691,6 +2369,8 @@ function pageUrl(page, lang) {
     "candidate-landing": `${BASE_PATH}/candidate`,
     "employer-landing": `${BASE_PATH}/employer`,
     stat: `${BASE_PATH}/stat`,
+    project: `${BASE_PATH}/le-projet`,
+    journal: `${BASE_PATH}/journal`,
     "candidate-questionnaire": `${BASE_PATH}/questionnaire-candidate`,
     "employer-questionnaire": `${BASE_PATH}/questionnaire-employer`
   };
@@ -1714,6 +2394,10 @@ function nav(page, lang, t) {
             <a class="nav-pill" href="${pageUrl("employer-landing", lang)}">${t.common.navEmployer}</a>
             <a class="nav-pill" href="${pageUrl("stat", lang)}">${t.common.navStats}</a>
           </div>
+          <div class="nav-links nav-links-secondary">
+            <a class="nav-pill nav-pill-project" href="${pageUrl("project", lang)}">${t.common.navProject}</a>
+            <a class="nav-pill" href="${pageUrl("journal", lang)}">${t.common.navJournal}</a>
+          </div>
           <div class="lang-switch" aria-label="${t.common.langLabel}">
             ${LANGS.map((choice) => `
               <a class="lang-link${choice === lang ? " is-active" : ""}" href="${pageUrl(page, choice)}">${choice.toUpperCase()}</a>
@@ -1726,7 +2410,21 @@ function nav(page, lang, t) {
 }
 
 function footer(t) {
-  return `<footer class="footer"><div class="shell">${t.common.footer}</div></footer>`;
+  return `
+    <footer class="footer">
+      <div class="shell footer-grid">
+        <div>${t.common.footer}</div>
+        <div class="footer-links">
+          <strong>${t.common.footerProjectTitle}</strong>
+          <p>${t.common.footerProjectText}</p>
+          <div class="footer-actions">
+            <a class="nav-pill nav-pill-project" href="${pageUrl("project", currentLang())}">${t.common.navProject}</a>
+            <a class="nav-pill" href="${pageUrl("journal", currentLang())}">${t.common.navJournal}</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  `;
 }
 
 function list(items) {
@@ -1968,6 +2666,239 @@ function homeTemplate(lang, t) {
             <h2>${t.common.futureTitle}</h2>
             ${list(t.common.futureBullets)}
           </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell">
+          <article class="panel institutional-panel">
+            <div class="institutional-copy">
+              <div class="eyebrow">${t.common.institutionalKicker}</div>
+              <h2>${t.common.institutionalTitle}</h2>
+              <p>${t.common.institutionalText}</p>
+            </div>
+            <div class="institutional-actions">
+              <a class="secondary-action" href="${pageUrl("project", lang)}">${t.common.ctaSeeProject}</a>
+              <a class="ghost-action" href="${pageUrl("journal", lang)}">${t.common.ctaSeeJournal}</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    ${footer(t)}
+  `;
+}
+
+function editorialHero(title, eyebrow, subtitle, intro) {
+  return `
+    <section class="section editorial-hero">
+      <div class="shell">
+        <article class="hero-card editorial-card">
+          <div class="eyebrow">${eyebrow}</div>
+          <h1>${title}</h1>
+          <p class="lede editorial-subtitle">${subtitle}</p>
+          <p class="lede">${intro}</p>
+        </article>
+      </div>
+    </section>
+  `;
+}
+
+function renderJournalEntry(entry, labels) {
+  return `
+    <article class="panel journal-entry">
+      <div class="journal-date">${entry.date}</div>
+      <h2>${entry.title}</h2>
+      <div class="journal-block">
+        <h3>${labels.observed}</h3>
+        <p>${entry.observed}</p>
+      </div>
+      <div class="journal-block">
+        <h3>${labels.decided}</h3>
+        <p>${entry.decided}</p>
+      </div>
+      <div class="journal-block">
+        <h3>${labels.changed}</h3>
+        ${Array.isArray(entry.changed) ? list(entry.changed) : `<p>${entry.changed}</p>`}
+      </div>
+      <div class="journal-block">
+        <h3>${labels.next}</h3>
+        <p>${entry.next}</p>
+      </div>
+    </article>
+  `;
+}
+
+function projectTemplate(lang, t) {
+  const content = projectContentByLang[lang] || projectContentFR;
+
+  return `
+    ${nav("project", lang, t)}
+    <main>
+      ${editorialHero(t.projectPage.title, t.projectPage.eyebrow, t.projectPage.subtitle, t.projectPage.intro)}
+      <section class="section" id="sommaire">
+        <div class="shell">
+          <article class="panel summary-panel">
+            <h2>${content.summary.title}</h2>
+            <nav aria-label="Sommaire de la page projet">
+              <div class="summary-grid">
+                ${content.summary.items.map(([anchor, label]) => `
+                  <a class="summary-link" href="#${anchor}">${label}</a>
+                `).join("")}
+              </div>
+            </nav>
+          </article>
+        </div>
+      </section>
+      <section class="section" id="constat">
+        <div class="shell editorial-grid">
+          <article class="panel">
+            <h2>${content.constats.title}</h2>
+            <p>${content.constats.body}</p>
+            <div class="candidate-highlight">${content.constats.highlight}</div>
+          </article>
+          <article class="panel" id="situation">
+            <h2>${content.example.title}</h2>
+            <p>${content.example.body}</p>
+            <p class="mini-note">${content.example.note}</p>
+          </article>
+        </div>
+      </section>
+      <section class="section" id="probleme-public">
+        <div class="shell editorial-grid">
+          <article class="panel">
+            <h2>${content.problem.title}</h2>
+            ${list(content.problem.items)}
+          </article>
+          <article class="panel" id="acquis">
+            <h2>${content.validation.title}</h2>
+            ${list(content.validation.items)}
+            <div class="candidate-highlight">${content.validation.highlight}</div>
+          </article>
+        </div>
+      </section>
+      <section class="section" id="proposition">
+        <div class="shell">
+          <div class="panel"><h2>${content.value.title}</h2></div>
+          <div class="principles-grid" style="margin-top: 1rem;">
+            ${content.value.pillars.map((pillar) => `
+              <article class="surface-card">
+                <h2>${pillar.title}</h2>
+                <p>${pillar.text}</p>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      </section>
+      <section class="section" id="fonctionnement">
+        <div class="shell">
+          <article class="panel">
+            <h2>${content.journey.title}</h2>
+            <div class="steps-grid">
+              ${content.journey.steps.map((step, index) => `
+                <div class="step-card">
+                  <strong>${index + 1}</strong>
+                  <span>${step}</span>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+        </div>
+      </section>
+      <section class="section" id="pilote">
+        <div class="shell editorial-grid">
+          <article class="panel">
+            <h2>${content.pilot.title}</h2>
+            <p>${content.pilot.body}</p>
+            <div class="tag-row">
+              ${content.pilot.territories.map((territory) => `<span class="tag">${territory}</span>`).join("")}
+            </div>
+          </article>
+          <article class="panel" id="partenaires">
+            <h2>${content.partners.title}</h2>
+            <p>${content.partners.body}</p>
+            ${list(content.partners.items)}
+          </article>
+        </div>
+      </section>
+      <section class="section" id="vivier">
+        <div class="shell editorial-grid">
+          <article class="panel">
+            <h2>${content.pool.title}</h2>
+            <p>${content.pool.body}</p>
+            <p class="mini-note">${content.pool.note}</p>
+          </article>
+          <article class="panel" id="impasses">
+            <h2>${content.deadEnds.title}</h2>
+            <p>${content.deadEnds.body}</p>
+            ${list(content.deadEnds.items)}
+            <p class="mini-note">${content.deadEnds.note}</p>
+          </article>
+        </div>
+      </section>
+      <section class="section" id="confiance">
+        <div class="shell editorial-grid">
+          <article class="panel">
+            <h2>${content.trust.title}</h2>
+            ${list(content.trust.items)}
+            <p class="mini-note">${content.trust.note}</p>
+          </article>
+          <article class="panel" id="methode">
+            <h2>${content.method.title}</h2>
+            ${list(content.method.items)}
+          </article>
+        </div>
+      </section>
+      <section class="section" id="impact">
+        <div class="shell">
+          <div class="panel"><h2>${content.impact.title}</h2></div>
+          <div class="dashboard-grid" style="margin-top: 1rem;">
+            ${content.impact.categories.map((category) => `
+              <article class="surface-card">
+                <h2>${category.title}</h2>
+                ${list(category.items)}
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      </section>
+      <section class="section" id="partenaires-suite">
+        <div class="shell">
+          <article class="panel closing-panel">
+            <h2>${content.proposal.title}</h2>
+            <p>${content.proposal.body}</p>
+            <p class="mini-note">${content.closingNote || "Les parcours candidat et employeur restent les portes d’entrée opérationnelles déjà ouvertes dans cette première version."}</p>
+            <div class="hero-actions">
+              <a class="secondary-action" href="${pageUrl("candidate-landing", lang)}">${t.common.navCandidate}</a>
+              <a class="ghost-action" href="${pageUrl("employer-landing", lang)}">${t.common.navEmployer}</a>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section class="section" id="sources">
+        <div class="shell">
+          <article class="panel">
+            <h2>${content.sources.title}</h2>
+            ${list(content.sources.items)}
+          </article>
+        </div>
+      </section>
+    </main>
+    ${footer(t)}
+  `;
+}
+
+function journalTemplate(lang, t) {
+  const entries = journalEntriesByLang[lang] || journalEntriesFR;
+  const labels = journalLabels[lang] || journalLabels.fr;
+
+  return `
+    ${nav("journal", lang, t)}
+    <main>
+      ${editorialHero(t.journalPage.title, t.journalPage.eyebrow, t.journalPage.subtitle, t.journalPage.intro)}
+      <section class="section">
+        <div class="shell journal-list">
+          ${entries.map((entry) => renderJournalEntry(entry, labels)).join("")}
         </div>
       </section>
     </main>
@@ -2620,6 +3551,13 @@ function employerTallyQuestionnaireTemplate(lang, t) {
             `).join("")}
 
             <section class="form-section">
+              <label class="field">
+                <span>${content.questions.q20Extra}</span>
+                <textarea name="tally_q20_extra" rows="3"></textarea>
+              </label>
+            </section>
+
+            <section class="form-section">
               <fieldset class="fieldset">
                 <legend>${content.questions.q15}</legend>
                 ${choicePills("tally_q15", content.optionGroups.q15)}
@@ -2937,7 +3875,8 @@ function humanizeEmployerRawAnswers(fields) {
       entreprise: fields.tally_q17 || "",
       email: fields.tally_q18 || "",
       telephone: fields.tally_q19 || "",
-      lieux_travail: fields.tally_q20 || ""
+      lieux_travail: fields.tally_q20 || "",
+      autres_metiers_souhaites: fields.tally_q20_extra || ""
     },
     consentement_rgpd: fields.tally_q21 || ""
   };
@@ -3639,6 +4578,16 @@ function render() {
 
   if (page === "candidate-landing") {
     root.innerHTML = landingTemplate(page, lang, t, t.candidateLanding);
+    return;
+  }
+
+  if (page === "project") {
+    root.innerHTML = projectTemplate(lang, t);
+    return;
+  }
+
+  if (page === "journal") {
+    root.innerHTML = journalTemplate(lang, t);
     return;
   }
 
