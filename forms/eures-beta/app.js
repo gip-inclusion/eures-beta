@@ -2713,7 +2713,6 @@ function footer(page, t) {
           <div class="footer-actions">
             <a class="nav-pill${isProjectPage ? " is-active" : ""}" href="${pageUrl("project", current)}">${t.common.navProject}</a>
             <a class="nav-pill${isJournalPage ? " is-active" : ""}" href="${pageUrl("journal", current)}">${t.common.navJournal}</a>
-            <a class="nav-pill" href="/admin/eures-beta/">${t.common.navAdmin}</a>
           </div>
         </div>
       </div>
