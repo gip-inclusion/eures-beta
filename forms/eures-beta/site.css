@@ -626,6 +626,10 @@ body[data-page="home"] .hero-card h1 {
   border-bottom: 1px solid rgba(0, 68, 148, 0.12);
 }
 
+.partner-logos {
+  margin-bottom: 1rem;
+}
+
 .candidate-logos img {
   display: block;
   max-width: 100%;

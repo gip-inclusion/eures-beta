@@ -2721,6 +2721,20 @@ function list(items) {
   return `<ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
 }
 
+function partnerLogosMarkup(lang) {
+  const logos = (copy[lang] || copy.fr).candidateLanding.logos;
+  return `
+    <div class="candidate-logos partner-logos" aria-label="Partners">
+      <img src="${logos.eures.src}" alt="${logos.eures.alt}" class="logo-eures">
+      <div class="candidate-badge">
+        <img src="${logos.franceTravail.src}" alt="${logos.franceTravail.alt}" class="logo-france-travail">
+        <span>France Travail</span>
+      </div>
+      <img src="${logos.europeanUnion.src}" alt="${logos.europeanUnion.alt}" class="logo-eu">
+    </div>
+  `;
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -2801,6 +2815,7 @@ function statTemplate(lang, t, data) {
       <section class="hero">
         <div class="shell hero-grid">
           <article class="hero-card hero">
+            ${partnerLogosMarkup(lang)}
             <div class="eyebrow">${t.statPage.eyebrow}</div>
             <h1>${t.statPage.title}</h1>
             <p class="lede">${t.statPage.lede}</p>
@@ -2887,6 +2902,7 @@ function homeTemplate(lang, t) {
       <section class="hero">
         <div class="shell hero-grid">
           <article class="hero-card hero">
+            ${partnerLogosMarkup(lang)}
             <div class="eyebrow">${t.home.eyebrow}</div>
             <h1>${t.home.title}</h1>
             <p class="lede">${t.home.lede}</p>
@@ -2979,11 +2995,12 @@ function homeTemplate(lang, t) {
   `;
 }
 
-function editorialHero(title, eyebrow, subtitle, intro) {
+function editorialHero(lang, title, eyebrow, subtitle, intro) {
   return `
     <section class="section editorial-hero">
       <div class="shell">
         <article class="hero-card editorial-card">
+          ${partnerLogosMarkup(lang)}
           <div class="eyebrow">${eyebrow}</div>
           <h1>${title}</h1>
           <p class="lede editorial-subtitle">${subtitle}</p>
@@ -3025,7 +3042,7 @@ function projectTemplate(lang, t) {
   return `
     ${nav("project", lang, t)}
     <main>
-      ${editorialHero(t.projectPage.title, t.projectPage.eyebrow, t.projectPage.subtitle, t.projectPage.intro)}
+      ${editorialHero(lang, t.projectPage.title, t.projectPage.eyebrow, t.projectPage.subtitle, t.projectPage.intro)}
       <section class="section" id="sommaire">
         <div class="shell">
           <article class="panel summary-panel">
@@ -3185,7 +3202,7 @@ function journalTemplate(lang, t) {
   return `
     ${nav("journal", lang, t)}
     <main>
-      ${editorialHero(t.journalPage.title, t.journalPage.eyebrow, t.journalPage.subtitle, t.journalPage.intro)}
+      ${editorialHero(lang, t.journalPage.title, t.journalPage.eyebrow, t.journalPage.subtitle, t.journalPage.intro)}
       <section class="section">
         <div class="shell journal-list">
           ${entries.map((entry) => renderJournalEntry(entry, labels)).join("")}
