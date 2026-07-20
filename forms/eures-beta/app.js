@@ -15,6 +15,7 @@ const copy = {
       navStats: "Statistiques",
       navProject: "Le projet",
       navJournal: "Journal du projet",
+      navAdmin: "Admin",
       langLabel: "Langue",
       footer: "Service en cours d’expérimentation pour structurer l’inscription, la qualification des besoins et l’organisation des mises en relation transfrontalières.",
       footerProjectTitle: "Espace institutionnel",
@@ -279,6 +280,7 @@ const copy = {
       navStats: "Stats",
       navProject: "Project",
       navJournal: "Project journal",
+      navAdmin: "Admin",
       langLabel: "Language",
       footer: "Service currently being tested to structure sign-up, needs qualification and the organisation of cross-border introductions.",
       footerProjectTitle: "Institutional section",
@@ -543,6 +545,7 @@ const copy = {
       navStats: "Statistik",
       navProject: "Projekt",
       navJournal: "Projektjournal",
+      navAdmin: "Admin",
       langLabel: "Sprache",
       footer: "Dienst in der Erprobung, um Erfassung, Bedarfsqualifizierung und die Organisation grenzüberschreitender Vermittlungen zu strukturieren.",
       footerProjectTitle: "Institutioneller Bereich",
@@ -2710,6 +2713,7 @@ function footer(page, t) {
           <div class="footer-actions">
             <a class="nav-pill${isProjectPage ? " is-active" : ""}" href="${pageUrl("project", current)}">${t.common.navProject}</a>
             <a class="nav-pill${isJournalPage ? " is-active" : ""}" href="${pageUrl("journal", current)}">${t.common.navJournal}</a>
+            <a class="nav-pill" href="/admin/eures-beta/">${t.common.navAdmin}</a>
           </div>
         </div>
       </div>
