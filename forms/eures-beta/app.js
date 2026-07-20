@@ -1337,49 +1337,316 @@ const projectContentByLang = {
 
 const journalEntriesFR = [
   {
+    sort_date: "2026-07-20",
+    date: "Juillet 2026",
+    title: "Ouvrir le projet et documenter ses décisions",
+    observed: "Le projet entre dans une phase où plusieurs catégories d’acteurs doivent pouvoir en comprendre rapidement la raison d’être, les résultats obtenus, les enseignements, les choix opérés, la méthode et les prochaines étapes. Une page d’inscription seule ne permet pas à un décideur, un partenaire ou un média de présenter correctement le projet.",
+    decided: "Créer un espace institutionnel public autour de deux pages complémentaires : Le projet, qui présente le problème, la solution, les enseignements, la méthode et les modalités de coopération ; et Journal du projet, qui retrace les étapes franchies, les observations et les décisions structurantes. Le nom Match Europe est utilisé comme identité éditoriale, tandis que les fondations techniques existantes d’EURES Beta sont conservées.",
+    changed: [
+      "Le projet devient plus lisible et plus transparent.",
+      "Les partenaires peuvent désormais disposer d’une référence commune pour présenter l’expérimentation.",
+      "Les évolutions du projet et sa trajectoire peuvent être suivies plus facilement."
+    ],
+    next: "Enrichir régulièrement le journal, consolider les données publiées et préparer la coconstruction du pilote avec les trois services publics de l’emploi."
+  },
+  {
+    sort_date: "2026-07-15",
     date: "15 juillet 2026",
     title: "La confiance devient le principal enjeu",
-    observed: "L’expérimentation confirme qu’il est possible de mobiliser des employeurs, d’identifier des candidats, de qualifier les profils et de réaliser des propositions de matching. Cependant, une partie des candidats hésite à répondre lorsqu’elle ne reconnaît pas immédiatement l’origine institutionnelle du service ou le cadre dans lequel ses données sont utilisées.",
-    decided: "Faire évoluer Match Europe vers un dispositif de mise en relation davantage incarné par les services publics de l’emploi et leurs relais locaux.",
+    observed: "L’expérimentation confirme qu’il est possible de convaincre des employeurs, de recueillir leurs besoins, d’identifier des candidats, de qualifier les profils, de produire des propositions de matching et d’organiser des premières mises en relation. Le principal frein ne se situe donc plus dans la faisabilité du matching. Une partie importante des candidats hésite toutefois à répondre lorsqu’elle ne reconnaît pas immédiatement l’origine institutionnelle du service ou le cadre dans lequel ses données sont utilisées.",
+    decided: "Faire évoluer Match Europe vers un dispositif de mise en relation davantage incarné par les services publics de l’emploi et leurs relais locaux. La stratégie consiste à construire un environnement de confiance avant d’intensifier les campagnes de recrutement.",
     changed: [
-      "La priorité n’est plus uniquement d’améliorer le matching.",
-      "Le projet doit aussi travailler la présentation du service par des acteurs connus.",
-      "Le consentement, l’identité institutionnelle et les canaux de contact deviennent des dimensions centrales.",
-      "L’accompagnement humain et l’implication progressive des équipes locales prennent davantage de place dans le dispositif."
+      "La présentation du service par des professionnels connus devient une priorité.",
+      "Le consentement des candidats et une identité institutionnelle claire prennent une place centrale.",
+      "Les canaux de contact maîtrisés et l’accompagnement humain deviennent des composantes clés du service.",
+      "L’implication progressive des agences locales et la constitution d’un vivier d’environ 300 candidats informés et qualifiés deviennent des objectifs structurants."
     ],
     next: "Coconstruire avec les services publics de l’emploi français, wallon et luxembourgeois les conditions d’un pilote sur les trois versants."
+  },
+  {
+    sort_date: "2026-07-01",
+    date: "Juin–juillet 2026",
+    title: "Tester les canaux de prise de contact",
+    observed: "La capacité à identifier un candidat pertinent ne garantit pas qu’il répondra à la sollicitation. Les courriers électroniques ou messages provenant d’un service encore peu connu peuvent être ignorés ou susciter de la méfiance.",
+    decided: "Étudier des canaux de communication plus directs, notamment WhatsApp Business, en commençant par un usage manuel et limité. Ce canal doit rester encadré par des règles claires concernant le consentement, l’identité de l’émetteur, les personnes habilitées, les informations échangées, la conservation des messages, la traçabilité et l’interdiction d’utiliser des comptes personnels.",
+    changed: "La prise de contact est considérée comme une composante du produit à part entière, et non comme une simple étape secondaire après le matching.",
+    next: "Tester les canaux les plus efficaces tout en renforçant le caractère institutionnel et rassurant du service."
+  },
+  {
+    sort_date: "2026-06-20",
+    date: "Juin 2026",
+    title: "Construire un matching explicable et supervisé",
+    observed: "Un simple rapprochement par intitulé de métier ne suffit pas pour proposer un candidat à un employeur. La pertinence dépend de plusieurs dimensions : le métier et l’expérience, les compétences, les langues, la mobilité, la disponibilité, les conditions de travail, la rémunération, ainsi que les qualifications ou autorisations nécessaires.",
+    decided: "Construire un moteur de matching reposant sur des règles objectives et compréhensibles. Chaque proposition doit pouvoir être expliquée par les critères ayant conduit au rapprochement. La décision finale reste soumise à une validation humaine avant la mise en relation.",
+    changed: "Le score ne constitue pas une décision automatique. Il devient un outil d’aide à la décision permettant de comparer les profils, de comprendre leurs points forts et leurs limites et de préparer une intervention humaine plus efficace.",
+    next: "Enrichir progressivement le modèle, notamment par une meilleure prise en compte des compétences clés, tout en évaluant les risques de biais."
+  },
+  {
+    sort_date: "2026-06-15",
+    date: "Juin 2026",
+    title: "Mettre en ligne une première version opérationnelle",
+    observed: "Les outils de collecte initialement utilisés permettaient de démarrer rapidement, mais ils devenaient insuffisants pour suivre l’augmentation du nombre de profils, des besoins et des propositions de matching. Le service devait également mieux prendre en compte la protection des données, la sécurité, la traçabilité, la conformité, ainsi que le suivi des décisions et des échanges.",
+    decided: "Développer une première version opérationnelle d’EURES Beta comprenant une entrée dédiée aux candidats, une entrée dédiée aux employeurs, une page de statistiques, un espace d’administration, un moteur de matching automatisé, une validation manuelle avant toute transmission à un employeur, ainsi que la traçabilité des propositions et des réponses.",
+    changed: "Le projet ne repose plus uniquement sur des traitements manuels dispersés. Il dispose d’un service en ligne capable de structurer les données, de produire des propositions de matching et d’enregistrer les principales étapes de la mise en relation.",
+    next: "Tester l’usage du service, améliorer les formulaires et rendre les critères de rapprochement plus précis et plus explicables."
+  },
+  {
+    sort_date: "2026-06-05",
+    date: "Début juin 2026",
+    title: "Obtenir les premiers résultats terrain",
+    observed: "En deux semaines d’expérimentation avec des employeurs luxembourgeois : 2 employeurs ont participé ; 5 besoins de recrutement ont été recueillis ; 158 candidats ont été contactés ; 35 profils ont été obtenus ; 22 propositions de matching ont été produites ; de premiers entretiens ont été engagés. Ces résultats montrent qu’il est possible de mobiliser des employeurs, d’identifier des candidats et de réaliser des rapprochements dans des délais courts.",
+    decided: "Poursuivre l’expérimentation et transformer le mode de conciergerie initial en un service plus structuré et plus traçable.",
+    changed: [
+      "Le projet dispose désormais de premiers résultats concrets.",
+      "L’hypothèse d’un service de mise en relation transfrontalière est suffisamment crédible pour justifier le développement d’un premier outil opérationnel."
+    ],
+    next: "Créer un environnement permettant de recueillir les informations, automatiser une partie du matching et conserver une validation humaine."
+  },
+  {
+    sort_date: "2026-05-15",
+    date: "Mai 2026",
+    title: "Lancer une première expérimentation de matching",
+    observed: "Pour comprendre les conditions réelles d’une mise en relation transfrontalière, il était nécessaire de sortir d’une réflexion uniquement théorique. Une première expérimentation a donc été engagée autour de besoins d’employeurs luxembourgeois et de candidats susceptibles de travailler au Luxembourg. Les premiers métiers ciblés concernaient notamment le nettoyage et l’entretien, avant une ouverture progressive à d’autres secteurs.",
+    decided: "Tester le service selon un mode de « conciergerie » : recueillir directement les besoins des employeurs, identifier des candidats potentiels, les contacter, qualifier leur intérêt et leurs contraintes, analyser les correspondances et proposer les mises en relation les plus pertinentes.",
+    changed: "Le service est évalué sur des situations réelles et non uniquement sur la qualité théorique d’un algorithme. Chaque échange permet d’identifier les informations réellement utiles au matching et les difficultés rencontrées par les utilisateurs.",
+    next: "Structurer les données recueillies et formaliser les premiers critères de rapprochement."
+  },
+  {
+    sort_date: "2026-04-20",
+    date: "Avril 2026",
+    title: "Choisir la méthode Startup d’État",
+    observed: "Le problème à résoudre est complexe et implique plusieurs administrations, pays, systèmes d’information et catégories d’utilisateurs. Dans ce contexte, définir à l’avance une solution complète présenterait un risque important : construire un service long et coûteux avant d’avoir vérifié son utilité réelle.",
+    decided: "Appliquer les principes de la démarche Startup d’État : partir des besoins des utilisateurs, travailler avec une équipe resserrée, tester rapidement, progresser par itérations, mesurer l’impact et conserver la possibilité d’ajuster ou d’arrêter une hypothèse qui ne fonctionne pas.",
+    changed: "Les partenaires ne sont pas sollicités pour valider un cahier des charges figé. Ils sont invités à contribuer à une expérimentation progressive, en donnant accès aux utilisateurs, aux données utiles, aux professionnels et aux dispositifs existants.",
+    next: "Construire une première version du parcours candidat et employeur suffisamment simple pour être testée sur le terrain."
+  },
+  {
+    sort_date: "2026-04-15",
+    date: "15 avril 2026",
+    title: "Articuler l’expérimentation avec les travaux européens",
+    observed: "Les échanges avec la coordination EURES de France Travail ont confirmé plusieurs difficultés d’usage du portail EURES, ainsi qu’une articulation encore insuffisante avec Europass. Ils ont également permis d’identifier des travaux européens déjà engagés autour de trois priorités : un service plus personnalisé, une application mobile et un tableau de bord commun.",
+    decided: "Positionner l’expérimentation comme une contribution concrète et complémentaire aux réflexions déjà engagées au niveau européen. Le projet doit démontrer, par l’usage, ce qu’une approche plus simple, personnalisée et pilotée par les résultats peut apporter.",
+    changed: "L’expérimentation est pensée comme un terrain d’apprentissage pouvant nourrir les travaux plus larges sur l’évolution d’EURES, sans attendre une transformation complète des outils européens.",
+    next: "Accéder aux environnements et ressources utiles, puis préparer un premier parcours testable avec de vrais candidats et de vrais employeurs."
+  },
+  {
+    sort_date: "2026-04-01",
+    date: "Avril 2026",
+    title: "Comprendre les limites du fonctionnement actuel",
+    observed: "Les premiers échanges menés avec les acteurs de l’emploi transfrontalier ont permis de mieux comprendre le fonctionnement actuel du marché de l’emploi dans la Grande Région. Plusieurs limites ont été relevées : les outils restent largement organisés par pays ; la navigation entre les offres peut conduire à de nombreuses redirections ; les profils de candidats disponibles sont parfois peu exploitables ou anonymisés ; les services existants ne facilitent pas toujours une mise en relation rapide et personnalisée ; les différents acteurs disposent d’informations et de ressources qui restent difficiles à mobiliser dans un parcours unique.",
+    decided: "Tester une approche plus directe, centrée sur un problème concret : mieux rapprocher les candidats et les employeurs d’un même bassin économique transfrontalier. Le projet adopte une démarche inspirée des Startups d’État : partir du terrain, expérimenter rapidement et mesurer les résultats obtenus.",
+    changed: "Le projet ne cherche pas d’abord à refondre l’ensemble du système EURES. Il vise à tester une solution limitée, utilisable rapidement, puis à l’ajuster à partir des retours des candidats, des employeurs et des professionnels de l’emploi.",
+    next: "Définir un premier cas d’usage et identifier les partenaires susceptibles de contribuer à l’expérimentation."
   }
 ];
 
 const journalEntriesEN = [
   {
+    sort_date: "2026-07-20",
+    date: "July 2026",
+    title: "Open up the project and document its decisions",
+    observed: "The project is entering a phase in which several categories of actors need to be able to quickly understand its purpose, results, lessons learned, key choices, method and next steps. A sign-up page alone is not enough for a decision-maker, a partner or a media outlet to present the project properly.",
+    decided: "Create a public institutional space built around two complementary pages: The project, presenting the problem, the solution, the lessons learned, the method and the cooperation framework; and Project journal, retracing the milestones reached, the observations made and the structuring decisions taken. Match Europe is used as the editorial identity, while the existing EURES Beta technical foundations are kept in place.",
+    changed: [
+      "The project becomes more readable and more transparent.",
+      "Partners can now rely on a shared reference point to present the experiment.",
+      "The project’s developments and trajectory can be followed more easily."
+    ],
+    next: "Update the journal regularly, consolidate published data and prepare the co-design of the pilot with the three public employment services."
+  },
+  {
+    sort_date: "2026-07-15",
     date: "July 15, 2026",
     title: "Trust becomes the main issue",
-    observed: "The experiment confirms that it is possible to mobilise employers, identify candidates, qualify profiles and produce matching proposals. However, some candidates hesitate to respond when they do not immediately recognise the institutional origin of the service or the framework in which their data is used.",
-    decided: "To evolve Match Europe towards an introduction service more clearly embodied by public employment services and their local relays.",
+    observed: "The experiment confirms that it is possible to convince employers, collect their needs, identify candidates, qualify profiles, produce matching proposals and organise first introductions. The main obstacle therefore no longer lies in the feasibility of matching itself. However, a significant share of candidates still hesitate to respond when they do not immediately recognise the institutional origin of the service or the framework in which their data is used.",
+    decided: "Evolve Match Europe towards an introduction service more clearly embodied by public employment services and their local relays. The strategy is to build an environment of trust before intensifying recruitment campaigns.",
     changed: [
-      "The priority is no longer only to improve matching.",
-      "The project must also work on how the service is presented by recognised actors.",
-      "Consent, institutional identity and contact channels become central dimensions.",
-      "Human support and the gradual involvement of local teams take a stronger place in the service."
+      "Presenting the service through recognised professionals becomes a priority.",
+      "Candidate consent and a clear institutional identity become central.",
+      "Well-managed contact channels and human support become key components of the service.",
+      "The gradual involvement of local agencies and the creation of a pool of around 300 informed and qualified candidates become structuring goals."
     ],
     next: "Co-design with French, Walloon and Luxembourg public employment services the conditions for a pilot across the three sides."
+  },
+  {
+    sort_date: "2026-07-01",
+    date: "June-July 2026",
+    title: "Test contact channels",
+    observed: "Being able to identify a relevant candidate does not guarantee that the person will respond to outreach. Emails or messages coming from a service that is still little known may be ignored or may trigger mistrust.",
+    decided: "Study more direct communication channels, including WhatsApp Business, starting with a limited manual use. This channel must remain governed by clear rules on consent, sender identity, authorised staff, exchanged information, message retention, traceability and the prohibition on using personal accounts.",
+    changed: "Initial contact is now treated as a product component in its own right, not as a secondary step after matching.",
+    next: "Test the most effective channels while reinforcing the service’s institutional and reassuring character."
+  },
+  {
+    sort_date: "2026-06-20",
+    date: "June 2026",
+    title: "Build explainable and supervised matching",
+    observed: "A simple match based on a job title is not enough to suggest a candidate to an employer. Relevance depends on several dimensions: occupation and experience, skills, languages, mobility, availability, working conditions, pay, as well as required qualifications or authorisations.",
+    decided: "Build a matching engine based on objective and understandable rules. Each proposal must be explainable through the criteria that led to the suggested match. The final decision remains subject to human validation before any introduction takes place.",
+    changed: "The score is not an automatic decision. It becomes a decision-support tool used to compare profiles, understand their strengths and limits, and prepare a more effective human intervention.",
+    next: "Gradually enrich the model, especially through a better account of key skills, while assessing the risks of bias."
+  },
+  {
+    sort_date: "2026-06-15",
+    date: "June 2026",
+    title: "Put a first operational version online",
+    observed: "The initial collection tools made it possible to start quickly, but they were becoming insufficient to handle the growing number of profiles, needs and matching proposals. The service also needed to better address data protection, security, traceability, compliance, and the follow-up of decisions and exchanges.",
+    decided: "Develop a first operational version of EURES Beta including a dedicated candidate entry point, a dedicated employer entry point, a statistics page, an administration space, an automated matching engine, manual validation before any transmission to an employer, and traceability of proposals and responses.",
+    changed: "The project no longer relies only on scattered manual processing. It now has an online service capable of structuring data, producing matching proposals and recording the main steps of the introduction process.",
+    next: "Test how the service is used, improve the forms and make the matching criteria more precise and more explainable."
+  },
+  {
+    sort_date: "2026-06-05",
+    date: "Early June 2026",
+    title: "Obtain the first field results",
+    observed: "Within two weeks of experimentation with employers in Luxembourg: 2 employers took part; 5 recruitment needs were collected; 158 candidates were contacted; 35 profiles were obtained; 22 matching proposals were produced; and first interviews were initiated. These results show that it is possible to mobilise employers, identify candidates and produce matches within short timeframes.",
+    decided: "Continue the experiment and transform the initial concierge-style mode into a more structured and traceable service.",
+    changed: [
+      "The project now has its first concrete results.",
+      "The hypothesis of a cross-border introduction service is credible enough to justify developing a first operational tool."
+    ],
+    next: "Create an environment capable of collecting information, automating part of the matching process and preserving human validation."
+  },
+  {
+    sort_date: "2026-05-15",
+    date: "May 2026",
+    title: "Launch a first matching experiment",
+    observed: "To understand the real conditions of cross-border introductions, it was necessary to move beyond purely theoretical reflection. A first experiment was therefore launched around the needs of employers in Luxembourg and candidates who might work in Luxembourg. The first targeted occupations notably concerned cleaning and maintenance, before a gradual opening to other sectors.",
+    decided: "Test the service in a concierge-style mode: collect employer needs directly, identify potential candidates, contact them, qualify their interest and constraints, analyse possible matches and propose the most relevant introductions.",
+    changed: "The service is assessed on real situations and not only on the theoretical quality of an algorithm. Each exchange helps identify the information that is actually useful for matching and the difficulties faced by users.",
+    next: "Structure the collected data and formalise the first matching criteria."
+  },
+  {
+    sort_date: "2026-04-20",
+    date: "April 2026",
+    title: "Choose the Startup d'Etat approach",
+    observed: "The problem to be solved is complex and involves several administrations, countries, information systems and categories of users. In this context, defining a complete solution in advance would create a significant risk: building a long and costly service before verifying its real usefulness.",
+    decided: "Apply the principles of the Startup d'Etat approach: start from user needs, work with a small team, test quickly, progress through iterations, measure impact, and keep the possibility of adjusting or stopping a hypothesis that does not work.",
+    changed: "Partners are not asked to validate a fixed specification. They are invited to contribute to a gradual experiment by providing access to users, useful data, professionals and existing schemes.",
+    next: "Build a first version of the candidate and employer journeys that is simple enough to be tested in the field."
+  },
+  {
+    sort_date: "2026-04-15",
+    date: "April 15, 2026",
+    title: "Connect the experiment with European workstreams",
+    observed: "Discussions with the EURES coordination team at France Travail confirmed several usability difficulties with the EURES portal, as well as an articulation with Europass that remains insufficient. They also made it possible to identify European work already under way around three priorities: a more personalised service, a mobile application and a shared dashboard.",
+    decided: "Position the experiment as a concrete and complementary contribution to reflections already under way at European level. The project must demonstrate, through real use, what a simpler, more personalised and results-driven approach can bring.",
+    changed: "The experiment is conceived as a learning ground that can feed broader work on the evolution of EURES, without waiting for a complete transformation of European tools.",
+    next: "Gain access to the useful environments and resources, then prepare a first testable journey with real candidates and real employers."
+  },
+  {
+    sort_date: "2026-04-01",
+    date: "April 2026",
+    title: "Understand the limits of the current system",
+    observed: "Initial discussions with cross-border employment stakeholders helped clarify how the labour market currently works in the Greater Region. Several limits were identified: tools remain largely organised by country; navigating between vacancies can lead to multiple redirects; available candidate profiles are sometimes only partially usable or anonymised; existing services do not always support quick and personalised introductions; and the various actors hold information and resources that remain difficult to mobilise within a single journey.",
+    decided: "Test a more direct approach focused on a concrete problem: better connect candidates and employers within the same cross-border economic area. The project adopts an approach inspired by Startup d'Etat: start from the field, experiment quickly and measure the results obtained.",
+    changed: "The project does not seek first to redesign the entire EURES system. It aims to test a limited solution that can be used quickly and then adjust it on the basis of feedback from candidates, employers and employment professionals.",
+    next: "Define a first use case and identify the partners who may contribute to the experiment."
   }
 ];
 
 const journalEntriesDE = [
   {
+    sort_date: "2026-07-20",
+    date: "Juli 2026",
+    title: "Das Projekt öffnen und seine Entscheidungen dokumentieren",
+    observed: "Das Projekt tritt in eine Phase ein, in der mehrere Gruppen von Akteuren seinen Zweck, die erreichten Ergebnisse, die gewonnenen Erkenntnisse, die getroffenen Entscheidungen, die Methode und die nächsten Schritte rasch verstehen können müssen. Eine reine Registrierungsseite genügt nicht, damit Entscheidungsträger, Partner oder Medien das Projekt angemessen darstellen können.",
+    decided: "Einen öffentlichen institutionellen Bereich rund um zwei ergänzende Seiten schaffen: Projekt, das Problem, Lösung, Erkenntnisse, Methode und Kooperationsrahmen darstellt, und Projektjournal, das die erreichten Etappen, Beobachtungen und strukturierenden Entscheidungen nachzeichnet. Der Name Match Europe wird als redaktionelle Identität genutzt, während die bestehenden technischen Grundlagen von EURES Beta erhalten bleiben.",
+    changed: [
+      "Das Projekt wird lesbarer und transparenter.",
+      "Partner verfügen nun über einen gemeinsamen Bezugspunkt, um die Erprobung darzustellen.",
+      "Die Entwicklung des Projekts und seine Richtung lassen sich leichter verfolgen."
+    ],
+    next: "Das Journal regelmäßig ergänzen, veröffentlichte Daten konsolidieren und die gemeinsame Ausgestaltung des Piloten mit den drei öffentlichen Arbeitsverwaltungen vorbereiten."
+  },
+  {
+    sort_date: "2026-07-15",
     date: "15. Juli 2026",
     title: "Vertrauen wird zum zentralen Thema",
-    observed: "Die Erprobung bestätigt, dass es möglich ist, Arbeitgeber zu mobilisieren, Kandidaten zu identifizieren, Profile zu qualifizieren und Matching-Vorschläge zu erstellen. Ein Teil der Kandidaten zögert jedoch zu antworten, wenn die institutionelle Herkunft des Dienstes oder der Rahmen der Datennutzung nicht sofort erkennbar sind.",
-    decided: "Match Europe zu einem Vermittlungsdienst weiterzuentwickeln, der stärker von öffentlichen Arbeitsverwaltungen und ihren lokalen Anlaufstellen getragen wird.",
+    observed: "Die Erprobung bestätigt, dass es möglich ist, Arbeitgeber zu überzeugen, ihre Bedarfe zu erfassen, Kandidaten zu identifizieren, Profile zu qualifizieren, Matching-Vorschläge zu erstellen und erste Vermittlungen zu organisieren. Das Haupthemmnis liegt damit nicht mehr in der grundsätzlichen Machbarkeit des Matchings. Ein wichtiger Teil der Kandidaten zögert jedoch zu antworten, wenn die institutionelle Herkunft des Dienstes oder der Rahmen der Datennutzung nicht sofort erkennbar sind.",
+    decided: "Match Europe zu einem Vermittlungsdienst weiterzuentwickeln, der stärker von öffentlichen Arbeitsverwaltungen und ihren lokalen Anlaufstellen getragen wird. Die Strategie besteht darin, vor einer Ausweitung der Rekrutierungsmaßnahmen zunächst ein Vertrauensumfeld aufzubauen.",
     changed: [
-      "Die Priorität liegt nicht mehr allein in der Verbesserung des Matchings.",
-      "Das Projekt muss auch daran arbeiten, wie der Dienst durch bekannte Akteure vorgestellt wird.",
-      "Einwilligung, institutionelle Identität und Kontaktkanäle werden zu zentralen Dimensionen.",
-      "Menschliche Begleitung und die schrittweise Einbindung lokaler Teams erhalten ein größeres Gewicht im Dienst."
+      "Die Vorstellung des Dienstes durch bekannte Fachkräfte wird zu einer Priorität.",
+      "Die Einwilligung der Kandidaten und eine klare institutionelle Identität rücken in den Mittelpunkt.",
+      "Kontrollierte Kontaktkanäle und menschliche Begleitung werden zu Schlüsselfaktoren des Dienstes.",
+      "Die schrittweise Einbindung lokaler Agenturen und der Aufbau eines Pools von rund 300 informierten und qualifizierten Kandidaten werden zu strukturierenden Zielen."
     ],
     next: "Mit den öffentlichen Arbeitsverwaltungen aus Frankreich, Wallonien und Luxemburg die Bedingungen eines Piloten auf den drei Seiten gemeinsam ausarbeiten."
+  },
+  {
+    sort_date: "2026-07-01",
+    date: "Juni-Juli 2026",
+    title: "Kontaktkanäle testen",
+    observed: "Die Fähigkeit, einen passenden Kandidaten zu identifizieren, garantiert noch nicht, dass dieser auf eine Kontaktaufnahme reagiert. E-Mails oder Nachrichten eines noch wenig bekannten Dienstes können ignoriert werden oder Misstrauen auslösen.",
+    decided: "Direktere Kommunikationskanäle prüfen, insbesondere WhatsApp Business, zunächst in einer manuellen und begrenzten Nutzung. Dieser Kanal muss durch klare Regeln zu Einwilligung, Absenderidentität, berechtigten Personen, ausgetauschten Informationen, Aufbewahrung der Nachrichten, Nachvollziehbarkeit und dem Verbot persönlicher Konten eingerahmt bleiben.",
+    changed: "Die Kontaktaufnahme wird als eigenständiger Bestandteil des Produkts verstanden und nicht als bloßer nachgelagerter Schritt nach dem Matching.",
+    next: "Die wirksamsten Kanäle testen und zugleich den institutionellen und vertrauensstiftenden Charakter des Dienstes stärken."
+  },
+  {
+    sort_date: "2026-06-20",
+    date: "Juni 2026",
+    title: "Ein nachvollziehbares und beaufsichtigtes Matching aufbauen",
+    observed: "Eine bloße Zuordnung über Berufsbezeichnungen reicht nicht aus, um einem Arbeitgeber einen Kandidaten vorzuschlagen. Die Relevanz hängt von mehreren Dimensionen ab: Beruf und Erfahrung, Kompetenzen, Sprachen, Mobilität, Verfügbarkeit, Arbeitsbedingungen, Vergütung sowie erforderliche Qualifikationen oder Berechtigungen.",
+    decided: "Einen Matching-Motor auf Grundlage objektiver und verständlicher Regeln entwickeln. Jeder Vorschlag muss durch die Kriterien erklärbar sein, die zu dieser Zuordnung geführt haben. Die endgültige Entscheidung bleibt vor jeder Vermittlung einer menschlichen Validierung vorbehalten.",
+    changed: "Der Score ist keine automatische Entscheidung. Er wird zu einem Entscheidungsunterstützungsinstrument, mit dem Profile verglichen, ihre Stärken und Grenzen verstanden und menschliche Eingriffe wirksamer vorbereitet werden können.",
+    next: "Das Modell schrittweise anreichern, insbesondere durch eine bessere Berücksichtigung von Schlüsselkompetenzen, und gleichzeitig mögliche Bias-Risiken bewerten."
+  },
+  {
+    sort_date: "2026-06-15",
+    date: "Juni 2026",
+    title: "Eine erste operative Version online stellen",
+    observed: "Die zunächst verwendeten Erfassungstools ermöglichten einen schnellen Start, reichten aber nicht mehr aus, um die wachsende Zahl von Profilen, Bedarfen und Matching-Vorschlägen zu verfolgen. Der Dienst musste zudem Datenschutz, Sicherheit, Nachvollziehbarkeit, Konformität sowie die Nachverfolgung von Entscheidungen und Austausch besser berücksichtigen.",
+    decided: "Eine erste operative Version von EURES Beta entwickeln, die einen eigenen Zugang für Kandidaten, einen eigenen Zugang für Arbeitgeber, eine Statistikseite, einen Administrationsbereich, einen automatisierten Matching-Motor, eine manuelle Validierung vor jeder Weitergabe an einen Arbeitgeber sowie die Nachvollziehbarkeit von Vorschlägen und Antworten umfasst.",
+    changed: "Das Projekt beruht nicht mehr nur auf verstreuten manuellen Bearbeitungen. Es verfügt nun über einen Online-Dienst, der Daten strukturieren, Matching-Vorschläge erzeugen und die wichtigsten Schritte der Vermittlung dokumentieren kann.",
+    next: "Die Nutzung des Dienstes testen, die Formulare verbessern und die Zuordnungskriterien präziser und besser erklärbar machen."
+  },
+  {
+    sort_date: "2026-06-05",
+    date: "Anfang Juni 2026",
+    title: "Erste Ergebnisse aus dem Feld erzielen",
+    observed: "In zwei Wochen Erprobung mit Arbeitgebern in Luxemburg: 2 Arbeitgeber haben teilgenommen; 5 Rekrutierungsbedarfe wurden erfasst; 158 Kandidaten wurden kontaktiert; 35 Profile wurden gewonnen; 22 Matching-Vorschläge wurden erstellt; erste Vorstellungsgespräche wurden angestoßen. Diese Ergebnisse zeigen, dass Arbeitgeber mobilisiert, Kandidaten identifiziert und Zuordnungen in kurzer Zeit vorgenommen werden können.",
+    decided: "Die Erprobung fortsetzen und den anfänglichen Concierge-Modus in einen strukturierteren und besser nachvollziehbaren Dienst überführen.",
+    changed: [
+      "Das Projekt verfügt nun über erste konkrete Ergebnisse.",
+      "Die Hypothese eines grenzüberschreitenden Vermittlungsdienstes ist glaubwürdig genug, um die Entwicklung eines ersten operativen Werkzeugs zu rechtfertigen."
+    ],
+    next: "Eine Umgebung schaffen, die Informationen erfassen, einen Teil des Matchings automatisieren und zugleich eine menschliche Validierung erhalten kann."
+  },
+  {
+    sort_date: "2026-05-15",
+    date: "Mai 2026",
+    title: "Eine erste Matching-Erprobung starten",
+    observed: "Um die realen Bedingungen grenzüberschreitender Vermittlung zu verstehen, war es notwendig, über eine rein theoretische Betrachtung hinauszugehen. Deshalb wurde eine erste Erprobung rund um Bedarfe luxemburgischer Arbeitgeber und Kandidaten gestartet, die in Luxemburg arbeiten könnten. Die zuerst anvisierten Berufe betrafen insbesondere Reinigung und Instandhaltung, bevor schrittweise weitere Sektoren hinzukamen.",
+    decided: "Den Dienst in einem „Concierge“-Modus testen: Arbeitgeberbedarfe direkt erfassen, potenzielle Kandidaten identifizieren, sie kontaktieren, ihr Interesse und ihre Einschränkungen qualifizieren, Übereinstimmungen analysieren und die relevantesten Vermittlungen vorschlagen.",
+    changed: "Der Dienst wird an realen Situationen bewertet und nicht nur an der theoretischen Qualität eines Algorithmus. Jeder Austausch hilft dabei, die für das Matching tatsächlich nützlichen Informationen und die bei den Nutzern auftretenden Schwierigkeiten zu identifizieren.",
+    next: "Die erfassten Daten strukturieren und die ersten Zuordnungskriterien formalisieren."
+  },
+  {
+    sort_date: "2026-04-20",
+    date: "April 2026",
+    title: "Die Methode Startup d'Etat wählen",
+    observed: "Das zu lösende Problem ist komplex und betrifft mehrere Verwaltungen, Länder, Informationssysteme und Nutzergruppen. In diesem Kontext würde die vorherige Definition einer vollständigen Lösung ein erhebliches Risiko bergen: einen langen und kostspieligen Dienst aufzubauen, bevor sein tatsächlicher Nutzen überprüft wurde.",
+    decided: "Die Prinzipien der Methode Startup d'Etat anwenden: von den Bedürfnissen der Nutzer ausgehen, mit einem kleinen Team arbeiten, schnell testen, iterativ vorgehen, Wirkung messen und die Möglichkeit behalten, eine nicht funktionierende Hypothese anzupassen oder zu stoppen.",
+    changed: "Die Partner werden nicht gebeten, ein starres Lastenheft zu validieren. Sie sind eingeladen, zu einer schrittweisen Erprobung beizutragen, indem sie Zugang zu Nutzern, nützlichen Daten, Fachkräften und bestehenden Instrumenten ermöglichen.",
+    next: "Eine erste Version des Kandidaten- und Arbeitgeberwegs entwickeln, die einfach genug ist, um im Feld getestet zu werden."
+  },
+  {
+    sort_date: "2026-04-15",
+    date: "15. April 2026",
+    title: "Die Erprobung mit europäischen Arbeiten verzahnen",
+    observed: "Die Gespräche mit der EURES-Koordination von France Travail bestätigten mehrere Nutzungsprobleme des EURES-Portals sowie eine noch unzureichende Verzahnung mit Europass. Sie machten zudem bereits laufende europäische Arbeiten zu drei Prioritäten sichtbar: ein stärker personalisierter Dienst, eine mobile Anwendung und ein gemeinsames Dashboard.",
+    decided: "Die Erprobung als konkreten und komplementären Beitrag zu den bereits auf europäischer Ebene laufenden Überlegungen positionieren. Das Projekt soll durch reale Nutzung zeigen, welchen Mehrwert ein einfacherer, personalisierter und stärker ergebnisorientierter Ansatz bringen kann.",
+    changed: "Die Erprobung wird als Lernfeld gedacht, das breitere Arbeiten zur Weiterentwicklung von EURES speisen kann, ohne auf eine vollständige Transformation der europäischen Werkzeuge zu warten.",
+    next: "Zugang zu den nützlichen Umgebungen und Ressourcen erhalten und anschließend einen ersten testbaren Weg mit echten Kandidaten und echten Arbeitgebern vorbereiten."
+  },
+  {
+    sort_date: "2026-04-01",
+    date: "April 2026",
+    title: "Die Grenzen des aktuellen Systems verstehen",
+    observed: "Die ersten Gespräche mit Akteuren der grenzüberschreitenden Beschäftigung haben geholfen, die aktuelle Funktionsweise des Arbeitsmarkts in der Großregion besser zu verstehen. Mehrere Grenzen wurden deutlich: Werkzeuge bleiben weitgehend nach Ländern organisiert; die Navigation zwischen Stellenangeboten führt mitunter zu vielen Weiterleitungen; verfügbare Kandidatenprofile sind teilweise wenig nutzbar oder anonymisiert; bestehende Dienste erleichtern eine schnelle und personalisierte Vermittlung nicht immer; und die verschiedenen Akteure verfügen über Informationen und Ressourcen, die sich in einem einheitlichen Weg nur schwer mobilisieren lassen.",
+    decided: "Einen direkteren Ansatz testen, der sich auf ein konkretes Problem konzentriert: Kandidaten und Arbeitgeber innerhalb desselben grenzüberschreitenden Wirtschaftsraums besser zusammenführen. Das Projekt übernimmt einen von Startup d'Etat inspirierten Ansatz: vom Feld ausgehen, schnell experimentieren und die erzielten Ergebnisse messen.",
+    changed: "Das Projekt versucht nicht zuerst, das gesamte EURES-System neu zu gestalten. Es zielt darauf ab, eine begrenzte Lösung zu testen, die schnell nutzbar ist und anschließend anhand der Rückmeldungen von Kandidaten, Arbeitgebern und Beschäftigungsfachleuten angepasst werden kann.",
+    next: "Einen ersten Anwendungsfall definieren und die Partner identifizieren, die zur Erprobung beitragen können."
   }
 ];
 
@@ -1409,6 +1676,14 @@ const journalLabels = {
     next: "Nächster Schritt",
   },
 };
+
+function sortJournalEntries(entries) {
+  return [...entries].sort((left, right) => {
+    const leftValue = String(left.sort_date || "");
+    const rightValue = String(right.sort_date || "");
+    return rightValue.localeCompare(leftValue);
+  });
+}
 
 const candidateTallyMeta = {
   formId: "449blX",
@@ -2904,7 +3179,7 @@ function projectTemplate(lang, t) {
 }
 
 function journalTemplate(lang, t) {
-  const entries = journalEntriesByLang[lang] || journalEntriesFR;
+  const entries = sortJournalEntries(journalEntriesByLang[lang] || journalEntriesFR);
   const labels = journalLabels[lang] || journalLabels.fr;
 
   return `
