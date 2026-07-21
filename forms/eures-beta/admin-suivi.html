@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EURES beta - Suivi projet</title>
+  <link rel="stylesheet" href="/forms/eures-beta/site.css">
+  <style>
+    .admin-shell {
+      width: min(1380px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1rem 0 2rem;
+    }
+
+    .admin-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      border-radius: 24px;
+      padding: 1.2rem;
+    }
+
+    .page-head {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .page-head-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .page-head h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 0.95;
+      color: var(--accent-strong);
+    }
+
+    .page-head p {
+      margin: 0;
+      max-width: 72ch;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .admin-branding {
+      display: block;
+      width: clamp(160px, 18vw, 260px);
+      height: auto;
+    }
+
+    .head-actions,
+    .lang-switch,
+    .toolbar-actions,
+    .drawer-actions,
+    .comment-form,
+    .board-column-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+
+    .head-actions a,
+    .lang-switch button,
+    .toolbar button,
+    .drawer-actions button,
+    .comment-form button,
+    .ai-actions button {
+      min-height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .lang-switch button.is-active,
+    .toolbar button.primary,
+    .drawer-actions button.primary,
+    .comment-form button.primary,
+    .ai-actions button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .head-actions a:hover,
+    .lang-switch button:hover,
+    .toolbar button:hover,
+    .drawer-actions button:hover,
+    .comment-form button:hover,
+    .ai-actions button:hover {
+      transform: translateY(-1px);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) repeat(4, minmax(160px, 0.6fr)) auto;
+      gap: 0.8rem;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .toolbar input,
+    .toolbar select,
+    .composer textarea,
+    .drawer form input,
+    .drawer form select,
+    .drawer form textarea,
+    .comment-form textarea {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+      font: inherit;
+    }
+
+    .composer {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) auto;
+      gap: 0.8rem;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .composer textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .composer-actions {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .status-line {
+      min-height: 1.2rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(250px, 1fr));
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+    }
+
+    .board-column {
+      min-width: 250px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 0.9rem;
+      display: grid;
+      gap: 0.8rem;
+      align-content: start;
+      min-height: 420px;
+    }
+
+    .board-column.is-drop-target {
+      border-color: rgba(0, 68, 148, 0.4);
+      background: rgba(220, 233, 255, 0.78);
+    }
+
+    .board-column-title {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--accent-strong);
+    }
+
+    .board-column-count {
+      min-width: 36px;
+      border-radius: 999px;
+      padding: 0.25rem 0.55rem;
+      background: rgba(0, 48, 102, 0.08);
+      color: var(--accent-strong);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .board-cards {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .card-item {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      padding: 0.9rem;
+      box-shadow: 0 14px 28px rgba(23, 50, 77, 0.08);
+      cursor: pointer;
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .card-item[draggable="true"] {
+      cursor: grab;
+    }
+
+    .card-item.is-dragging {
+      opacity: 0.5;
+    }
+
+    .card-item h3 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.25;
+      color: var(--accent-strong);
+    }
+
+    .card-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .card-tags,
+    .detail-tags,
+    .comment-meta,
+    .ai-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.38rem 0.7rem;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .pill.blocking {
+      background: #fdebea;
+      border-color: #e0a4a4;
+      color: #8a2f2f;
+    }
+
+    .drawer-shell {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 28, 45, 0.36);
+      display: none;
+      align-items: stretch;
+      justify-content: flex-end;
+      z-index: 20;
+    }
+
+    .drawer-shell.is-open {
+      display: flex;
+    }
+
+    .drawer {
+      width: min(720px, 100%);
+      background: #f9fbff;
+      height: 100%;
+      overflow-y: auto;
+      box-shadow: -24px 0 60px rgba(20, 37, 62, 0.2);
+      padding: 1rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .drawer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .drawer-top h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--accent-strong);
+    }
+
+    .drawer section {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1rem;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: grid;
+      gap: 0.45rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .detail-list,
+    .history-list,
+    .comment-list {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .detail-row dt {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .detail-row dd {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .comment-item,
+    .history-item {
+      border: 1px solid rgba(23, 50, 77, 0.08);
+      border-radius: 18px;
+      background: rgba(246, 250, 255, 0.84);
+      padding: 0.85rem;
+    }
+
+    .comment-item p,
+    .history-item p {
+      margin: 0.25rem 0 0;
+      line-height: 1.6;
+    }
+
+    .comment-meta,
+    .history-item small {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .empty-state {
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      padding: 1.2rem;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    @media (max-width: 1080px) {
+      .toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .composer {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .form-grid,
+      .detail-row {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .head-actions {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body data-form-id="eures-beta">
+  <div class="admin-shell">
+    <section class="admin-card page-head">
+      <img class="admin-branding" src="/assets/eures-email-header.png" alt="République Française, France Travail et EURES">
+      <div class="page-head-top">
+        <div>
+          <h1 id="page-title">Suivi projet</h1>
+          <p id="page-lede">Un kanban embarqué dans l’admin EURES pour suivre les sujets, les arbitrages, les blocages et les décisions sans sortir du projet.</p>
+        </div>
+        <div class="head-actions">
+          <a href="/admin/eures-beta/">Retour à l’admin EURES</a>
+          <a href="/admin/eures-beta/logout">Se déconnecter</a>
+        </div>
+      </div>
+      <div class="lang-switch" id="lang-switch"></div>
+    </section>
+
+    <section class="admin-card">
+      <div class="composer">
+        <div>
+          <label for="quick-note" id="quick-note-label">Créer une carte à partir d’un texte libre</label>
+          <textarea id="quick-note" placeholder="Décrire un besoin, un bug, une idée ou une décision à préparer..."></textarea>
+        </div>
+        <div class="composer-actions">
+          <button class="primary" id="quick-draft-btn" type="button">Préparer le brouillon</button>
+          <button id="quick-create-btn" type="button">Créer directement la carte</button>
+          <div class="status-line" id="quick-status"></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input id="filter-search" type="search" placeholder="Rechercher un titre, un texte, un responsable">
+        <select id="filter-type"></select>
+        <select id="filter-priority"></select>
+        <select id="filter-size"></select>
+        <select id="filter-blocking"></select>
+        <div class="toolbar-actions">
+          <button class="primary" id="new-card-btn" type="button">Nouvelle carte</button>
+          <button id="reload-btn" type="button">Rafraîchir</button>
+        </div>
+      </div>
+
+      <div class="status-line" id="board-status">Chargement...</div>
+      <section class="board" id="board"></section>
+    </section>
+  </div>
+
+  <div class="drawer-shell" id="drawer-shell" aria-hidden="true">
+    <aside class="drawer">
+      <div class="drawer-top">
+        <h2 id="drawer-title">Carte projet</h2>
+        <button id="close-drawer-btn" type="button">Fermer</button>
+      </div>
+
+      <section>
+        <div class="drawer-actions">
+          <button class="primary" id="save-card-btn" type="button">Enregistrer</button>
+          <button id="validate-card-btn" type="button">Vérifier</button>
+          <button id="delete-card-btn" type="button">Supprimer</button>
+        </div>
+        <div class="status-line" id="drawer-status"></div>
+      </section>
+
+      <section>
+        <form id="card-form">
+          <div class="form-grid">
+            <label class="full">Titre
+              <input id="card-titre" name="titre" required>
+            </label>
+            <label>Langue source
+              <select id="card-langue" name="langue_source"></select>
+            </label>
+            <label>Type
+              <select id="card-type" name="type"></select>
+            </label>
+            <label>Statut
+              <select id="card-statut" name="statut"></select>
+            </label>
+            <label>Priorité
+              <select id="card-priorite" name="priorite"></select>
+            </label>
+            <label>Taille de dev
+              <select id="card-taille" name="taille_dev"></select>
+            </label>
+            <label>Responsable
+              <input id="card-responsable" name="responsable">
+            </label>
+            <label>Source
+              <input id="card-source" name="source">
+            </label>
+            <label class="full">Description
+              <textarea id="card-description" name="description"></textarea>
+            </label>
+            <label class="full">Attendu
+              <textarea id="card-attendu" name="attendu"></textarea>
+            </label>
+            <label class="full">Observé
+              <textarea id="card-observe" name="observe"></textarea>
+            </label>
+            <label class="full">Contexte
+              <textarea id="card-contexte" name="contexte"></textarea>
+            </label>
+            <label class="full">Liens
+              <textarea id="card-liens" name="liens" placeholder="Un lien par ligne"></textarea>
+            </label>
+            <label><input id="card-bloquant" name="bloquant" type="checkbox"> Bloquant</label>
+          </div>
+        </form>
+      </section>
+
+      <section>
+        <div class="ai-actions">
+          <button class="primary" id="translate-en-btn" type="button">Traduire EN</button>
+          <button id="translate-de-btn" type="button">Traduire DE</button>
+        </div>
+        <div class="status-line" id="translation-status"></div>
+      </section>
+
+      <section>
+        <h3>Détail</h3>
+        <dl class="detail-list" id="detail-list"></dl>
+      </section>
+
+      <section>
+        <h3>Commentaires</h3>
+        <div class="comment-form">
+          <textarea id="comment-body" placeholder="Ajouter un commentaire interne..."></textarea>
+          <button class="primary" id="comment-save-btn" type="button">Ajouter</button>
+        </div>
+        <div class="comment-list" id="comment-list"></div>
+      </section>
+
+      <section>
+        <h3>Historique</h3>
+        <div class="history-list" id="history-list"></div>
+      </section>
+    </aside>
+  </div>
+
+  <script>
+    const FORM_ID = document.body.dataset.formId || "eures-beta";
+    const state = {
+      metadata: null,
+      cards: [],
+      lang: localStorage.getItem("eures-tracking-lang") || "fr",
+      currentCard: null,
+      draggingRecordId: null,
+    };
+
+    const uiText = {
+      fr: {
+        pageTitle: "Suivi projet",
+        lede: "Un kanban embarqué dans l’admin EURES pour suivre les sujets, les arbitrages, les blocages et les décisions sans sortir du projet.",
+        quickLabel: "Créer une carte à partir d’un texte libre",
+        boardLoaded: (count) => `${count} carte(s) chargée(s).`,
+        noCards: "Aucune carte dans cette colonne.",
+        commentsEmpty: "Aucun commentaire pour l’instant.",
+        historyEmpty: "Aucun historique pour l’instant.",
+      },
+      en: {
+        pageTitle: "Project tracking",
+        lede: "A native kanban inside the EURES admin to track topics, decisions, blockers and delivery work without leaving the project.",
+        quickLabel: "Create a card from free text",
+        boardLoaded: (count) => `${count} card(s) loaded.`,
+        noCards: "No cards in this column.",
+        commentsEmpty: "No comments yet.",
+        historyEmpty: "No history yet.",
+      },
+      de: {
+        pageTitle: "Projektverfolgung",
+        lede: "Ein natives Kanban im EURES-Admin, um Themen, Entscheidungen, Blocker und Umsetzungen direkt im Projekt zu verfolgen.",
+        quickLabel: "Karte aus Freitext erstellen",
+        boardLoaded: (count) => `${count} Karte(n) geladen.`,
+        noCards: "Keine Karten in dieser Spalte.",
+        commentsEmpty: "Noch keine Kommentare.",
+        historyEmpty: "Noch kein Verlauf.",
+      }
+    };
+
+    const esc = (value) => String(value ?? "").replace(/[&<>"]/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;"
+    }[char]));
+
+    function apiUrl(path) {
+      return `/api/forms/${FORM_ID}${path}`;
+    }
+
+    function currentLabels() {
+      return state.metadata?.labels?.[state.lang] || state.metadata?.labels?.fr || {};
+    }
+
+    function setStatus(id, text) {
+      document.getElementById(id).textContent = text || "";
+    }
+
+    function normalizeText(value) {
+      return String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function defaultCard() {
+      return {
+        titre: "",
+        langue_source: "fr",
+        type: "evolution",
+        description: "",
+        attendu: "",
+        observe: "",
+        contexte: "",
+        statut: "a_qualifier",
+        priorite: "moyenne",
+        taille_dev: "chat",
+        responsable: "",
+        source: "admin_ui",
+        bloquant: false,
+        liens: [],
+        commentaires: [],
+        historique: []
+      };
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, { credentials: "same-origin", ...options });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || "Requête impossible");
+      }
+      return payload;
+    }
+
+    function populateSelect(selectId, values, labelMap, includeAll = false) {
+      const select = document.getElementById(selectId);
+      const options = [];
+      if (includeAll) options.push(`<option value="">Tous</option>`);
+      for (const value of values) {
+        options.push(`<option value="${esc(value)}">${esc(labelMap?.[value] || value)}</option>`);
+      }
+      select.innerHTML = options.join("");
+    }
+
+    function renderLanguageSwitch() {
+      const wrapper = document.getElementById("lang-switch");
+      wrapper.innerHTML = ["fr", "en", "de"].map((lang) => `
+        <button type="button" class="${lang === state.lang ? "is-active" : ""}" data-lang="${lang}">${lang.toUpperCase()}</button>
+      `).join("");
+      wrapper.querySelectorAll("[data-lang]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.lang = button.dataset.lang;
+          localStorage.setItem("eures-tracking-lang", state.lang);
+          renderStaticText();
+          renderBoard();
+          renderDrawer();
+          renderFilters();
+          renderLanguageSwitch();
+        });
+      });
+    }
+
+    function renderStaticText() {
+      const copy = uiText[state.lang] || uiText.fr;
+      document.getElementById("page-title").textContent = copy.pageTitle;
+      document.getElementById("page-lede").textContent = copy.lede;
+      document.getElementById("quick-note-label").textContent = copy.quickLabel;
+    }
+
+    function renderFilters() {
+      const labels = currentLabels();
+      populateSelect("filter-type", state.metadata.types, labels.types, true);
+      populateSelect("filter-priority", state.metadata.priorities, labels.priorities, true);
+      populateSelect("filter-size", state.metadata.sizes, labels.sizes, true);
+      const blocking = document.getElementById("filter-blocking");
+      blocking.innerHTML = `
+        <option value="">Tous</option>
+        <option value="true">Bloquants</option>
+        <option value="false">Non bloquants</option>
+      `;
+
+      populateSelect("card-langue", state.metadata.languages, { fr: "FR", en: "EN", de: "DE" });
+      populateSelect("card-type", state.metadata.types, labels.types);
+      populateSelect("card-statut", state.metadata.statuses, labels.statuses);
+      populateSelect("card-priorite", state.metadata.priorities, labels.priorities);
+      populateSelect("card-taille", state.metadata.sizes, labels.sizes);
+    }
+
+    function filteredCards() {
+      const search = normalizeText(document.getElementById("filter-search").value.trim());
+      const type = document.getElementById("filter-type").value;
+      const priority = document.getElementById("filter-priority").value;
+      const size = document.getElementById("filter-size").value;
+      const blocking = document.getElementById("filter-blocking").value;
+
+      return state.cards.filter((card) => {
+        if (type && card.type !== type) return false;
+        if (priority && card.priorite !== priority) return false;
+        if (size && card.taille_dev !== size) return false;
+        if (blocking === "true" && !card.bloquant) return false;
+        if (blocking === "false" && card.bloquant) return false;
+        if (!search) return true;
+        const haystack = normalizeText([
+          card.titre,
+          card.description,
+          card.observe,
+          card.attendu,
+          card.contexte,
+          card.responsable
+        ].join(" "));
+        return haystack.includes(search);
+      });
+    }
+
+    function renderBoard() {
+      const board = document.getElementById("board");
+      const labels = currentLabels();
+      const cards = filteredCards();
+      board.innerHTML = state.metadata.statuses.map((status) => {
+        const inColumn = cards.filter((card) => card.statut === status);
+        return `
+          <section class="board-column" data-status="${esc(status)}">
+            <div class="board-column-head">
+              <h2 class="board-column-title">${esc(labels.statuses?.[status] || status)}</h2>
+              <span class="board-column-count">${inColumn.length}</span>
+            </div>
+            <div class="board-cards">
+              ${inColumn.length ? inColumn.map(renderCardHtml).join("") : `<div class="empty-state">${esc((uiText[state.lang] || uiText.fr).noCards)}</div>`}
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      for (const cardEl of board.querySelectorAll(".card-item")) {
+        cardEl.addEventListener("click", () => openCard(Number(cardEl.dataset.recordId)));
+        cardEl.addEventListener("dragstart", (event) => {
+          state.draggingRecordId = Number(cardEl.dataset.recordId);
+          cardEl.classList.add("is-dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", String(state.draggingRecordId));
+        });
+        cardEl.addEventListener("dragend", () => {
+          state.draggingRecordId = null;
+          cardEl.classList.remove("is-dragging");
+          board.querySelectorAll(".board-column").forEach((col) => col.classList.remove("is-drop-target"));
+        });
+      }
+
+      for (const column of board.querySelectorAll(".board-column")) {
+        column.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          column.classList.add("is-drop-target");
+        });
+        column.addEventListener("dragleave", () => column.classList.remove("is-drop-target"));
+        column.addEventListener("drop", async (event) => {
+          event.preventDefault();
+          column.classList.remove("is-drop-target");
+          const recordId = Number(event.dataTransfer.getData("text/plain") || state.draggingRecordId || 0);
+          if (!recordId) return;
+          const card = state.cards.find((item) => Number(item.record_id) === recordId);
+          if (!card) return;
+          const nextStatus = column.dataset.status;
+          if (card.statut === nextStatus) return;
+          await saveCard({ ...card, statut: nextStatus }, recordId, true);
+        });
+      }
+    }
+
+    function renderCardHtml(card) {
+      const labels = currentLabels();
+      const excerpt = card.description || card.observe || card.attendu || card.contexte || "";
+      return `
+        <article class="card-item" data-record-id="${Number(card.record_id)}" draggable="true">
+          <h3>${esc(card.titre || "Sans titre")}</h3>
+          <p>${esc(excerpt.slice(0, 140))}</p>
+          <div class="card-tags">
+            <span class="pill">${esc(labels.priorities?.[card.priorite] || card.priorite)}</span>
+            <span class="pill">${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</span>
+            <span class="pill">${esc(labels.types?.[card.type] || card.type)}</span>
+            ${card.bloquant ? `<span class="pill blocking">⛔ Bloquant</span>` : ""}
+          </div>
+          <p>${esc(card.responsable || "Responsable non défini")} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</p>
+        </article>
+      `;
+    }
+
+    function renderDrawer() {
+      const shell = document.getElementById("drawer-shell");
+      if (!state.currentCard) {
+        shell.classList.remove("is-open");
+        shell.setAttribute("aria-hidden", "true");
+        return;
+      }
+      shell.classList.add("is-open");
+      shell.setAttribute("aria-hidden", "false");
+      const card = state.currentCard;
+      const labels = currentLabels();
+      document.getElementById("drawer-title").textContent = card.titre || "Carte projet";
+      document.getElementById("card-titre").value = card.titre || "";
+      document.getElementById("card-langue").value = card.langue_source || "fr";
+      document.getElementById("card-type").value = card.type || "evolution";
+      document.getElementById("card-statut").value = card.statut || "a_qualifier";
+      document.getElementById("card-priorite").value = card.priorite || "moyenne";
+      document.getElementById("card-taille").value = card.taille_dev || "chat";
+      document.getElementById("card-responsable").value = card.responsable || "";
+      document.getElementById("card-source").value = card.source || "";
+      document.getElementById("card-description").value = card.description || "";
+      document.getElementById("card-attendu").value = card.attendu || "";
+      document.getElementById("card-observe").value = card.observe || "";
+      document.getElementById("card-contexte").value = card.contexte || "";
+      document.getElementById("card-liens").value = (card.liens || []).join("\n");
+      document.getElementById("card-bloquant").checked = Boolean(card.bloquant);
+
+      document.getElementById("detail-list").innerHTML = `
+        <div class="detail-row"><dt>ID</dt><dd>${esc(card.card_id || "")}</dd></div>
+        <div class="detail-row"><dt>Statut</dt><dd>${esc(labels.statuses?.[card.statut] || card.statut)}</dd></div>
+        <div class="detail-row"><dt>Priorité</dt><dd>${esc(labels.priorities?.[card.priorite] || card.priorite)}</dd></div>
+        <div class="detail-row"><dt>Taille</dt><dd>${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</dd></div>
+        <div class="detail-row"><dt>Type</dt><dd>${esc(labels.types?.[card.type] || card.type)}</dd></div>
+        <div class="detail-row"><dt>Créée</dt><dd>${esc(card.created_at || "")}</dd></div>
+        <div class="detail-row"><dt>Mise à jour</dt><dd>${esc(card.updated_at || "")}</dd></div>
+      `;
+      renderComments();
+      renderHistory();
+    }
+
+    function renderComments() {
+      const list = document.getElementById("comment-list");
+      const card = state.currentCard;
+      const comments = Array.isArray(card?.commentaires) ? card.commentaires : [];
+      if (!comments.length) {
+        list.innerHTML = `<div class="empty-state">${esc((uiText[state.lang] || uiText.fr).commentsEmpty)}</div>`;
+        return;
+      }
+      list.innerHTML = comments.slice().reverse().map((comment) => `
+        <article class="comment-item">
+          <div class="comment-meta"><strong>${esc(comment.author || "admin")}</strong> · ${esc(comment.created_at || "")}</div>
+          <p>${esc(comment.body || "")}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderHistory() {
+      const list = document.getElementById("history-list");
+      const card = state.currentCard;
+      const history = Array.isArray(card?.historique) ? card.historique : [];
+      if (!history.length) {
+        list.innerHTML = `<div class="empty-state">${esc((uiText[state.lang] || uiText.fr).historyEmpty)}</div>`;
+        return;
+      }
+      list.innerHTML = history.slice().reverse().map((event) => `
+        <article class="history-item">
+          <strong>${esc(event.message || event.action || "Mise à jour")}</strong>
+          <p>${esc(event.actor || "admin")} · ${esc(event.at || "")}</p>
+        </article>
+      `).join("");
+    }
+
+    function openCard(recordId) {
+      const card = state.cards.find((item) => Number(item.record_id) === Number(recordId));
+      state.currentCard = card ? structuredClone(card) : defaultCard();
+      setStatus("drawer-status", "");
+      setStatus("translation-status", "");
+      renderDrawer();
+    }
+
+    function closeDrawer() {
+      state.currentCard = null;
+      document.getElementById("comment-body").value = "";
+      renderDrawer();
+    }
+
+    function readFormCard() {
+      const base = state.currentCard || defaultCard();
+      return {
+        ...base,
+        titre: document.getElementById("card-titre").value.trim(),
+        langue_source: document.getElementById("card-langue").value,
+        type: document.getElementById("card-type").value,
+        statut: document.getElementById("card-statut").value,
+        priorite: document.getElementById("card-priorite").value,
+        taille_dev: document.getElementById("card-taille").value,
+        responsable: document.getElementById("card-responsable").value.trim(),
+        source: document.getElementById("card-source").value.trim() || "admin_ui",
+        description: document.getElementById("card-description").value.trim(),
+        attendu: document.getElementById("card-attendu").value.trim(),
+        observe: document.getElementById("card-observe").value.trim(),
+        contexte: document.getElementById("card-contexte").value.trim(),
+        liens: document.getElementById("card-liens").value.split("\n").map((item) => item.trim()).filter(Boolean),
+        bloquant: document.getElementById("card-bloquant").checked
+      };
+    }
+
+    async function loadBoard() {
+      setStatus("board-status", "Chargement du suivi projet...");
+      const payload = await fetchJson(apiUrl("/admin/tracking/cards"));
+      state.metadata = payload.metadata;
+      state.cards = Array.isArray(payload.cards) ? payload.cards : [];
+      renderLanguageSwitch();
+      renderStaticText();
+      renderFilters();
+      renderBoard();
+      setStatus("board-status", (uiText[state.lang] || uiText.fr).boardLoaded(state.cards.length));
+      if (state.currentCard?.record_id) {
+        const fresh = state.cards.find((card) => Number(card.record_id) === Number(state.currentCard.record_id));
+        if (fresh) {
+          state.currentCard = structuredClone(fresh);
+          renderDrawer();
+        }
+      }
+    }
+
+    async function saveCard(cardPayload, recordId = null, silent = false) {
+      const url = recordId ? apiUrl(`/admin/tracking/cards/${recordId}`) : apiUrl("/admin/tracking/cards");
+      const method = recordId ? "PATCH" : "POST";
+      const payload = await fetchJson(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cardPayload)
+      });
+      if (!silent) {
+        setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : "Carte enregistrée.");
+      }
+      await loadBoard();
+      if (payload.card?.record_id) openCard(payload.card.record_id);
+    }
+
+    async function validateCurrentCard() {
+      const payload = readFormCard();
+      if (state.currentCard?.record_id) payload.record_id = state.currentCard.record_id;
+      const result = await fetchJson(apiUrl("/admin/tracking/ai/validate"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      setStatus("drawer-status", [
+        result.errors?.join(" "),
+        result.warnings?.join(" ") || "Vérification terminée."
+      ].filter(Boolean).join(" "));
+    }
+
+    async function addComment() {
+      if (!state.currentCard?.record_id) {
+        setStatus("drawer-status", "Enregistre d’abord la carte avant d’ajouter un commentaire.");
+        return;
+      }
+      const body = document.getElementById("comment-body").value.trim();
+      if (!body) return;
+      const payload = await fetchJson(apiUrl(`/admin/tracking/cards/${state.currentCard.record_id}/comments`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body })
+      });
+      state.currentCard = structuredClone(payload.card);
+      const index = state.cards.findIndex((card) => Number(card.record_id) === Number(payload.card.record_id));
+      if (index >= 0) state.cards[index] = payload.card;
+      document.getElementById("comment-body").value = "";
+      renderComments();
+      renderHistory();
+      setStatus("drawer-status", "Commentaire ajouté.");
+    }
+
+    async function deleteCurrentCard() {
+      if (!state.currentCard?.record_id) {
+        closeDrawer();
+        return;
+      }
+      if (!window.confirm("Supprimer définitivement cette carte ?")) return;
+      await fetchJson(apiUrl(`/admin/tracking/cards/${state.currentCard.record_id}`), { method: "DELETE" });
+      closeDrawer();
+      await loadBoard();
+    }
+
+    async function runDraft(createDirectly) {
+      const text = document.getElementById("quick-note").value.trim();
+      if (!text) {
+        setStatus("quick-status", "Ajoute d’abord un texte libre.");
+        return;
+      }
+      setStatus("quick-status", createDirectly ? "Création en cours..." : "Structuration en cours...");
+      const payload = await fetchJson(apiUrl("/admin/tracking/ai/draft"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text,
+          langue_source: state.lang,
+          source: "free_text",
+          create: createDirectly
+        })
+      });
+      if (createDirectly && payload.card?.record_id) {
+        document.getElementById("quick-note").value = "";
+        setStatus("quick-status", payload.warnings?.join(" ") || "Carte créée.");
+        await loadBoard();
+        openCard(payload.card.record_id);
+        return;
+      }
+      state.currentCard = structuredClone(payload.card);
+      setStatus("quick-status", payload.warnings?.join(" ") || "Brouillon prêt.");
+      renderDrawer();
+    }
+
+    async function translateCurrentCard(targetLanguage) {
+      const card = readFormCard();
+      setStatus("translation-status", "Traduction en cours...");
+      const payload = await fetchJson(apiUrl("/admin/tracking/ai/translate"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ card, target_language: targetLanguage })
+      });
+      const translated = payload.translated?.fields || {};
+      if (translated.titre) document.getElementById("card-titre").value = translated.titre;
+      if (translated.description) document.getElementById("card-description").value = translated.description;
+      if (translated.attendu) document.getElementById("card-attendu").value = translated.attendu;
+      if (translated.observe) document.getElementById("card-observe").value = translated.observe;
+      if (translated.contexte) document.getElementById("card-contexte").value = translated.contexte;
+      setStatus("translation-status", payload.warnings?.join(" ") || "Traduction appliquée au formulaire courant.");
+    }
+
+    document.getElementById("filter-search").addEventListener("input", renderBoard);
+    document.getElementById("filter-type").addEventListener("change", renderBoard);
+    document.getElementById("filter-priority").addEventListener("change", renderBoard);
+    document.getElementById("filter-size").addEventListener("change", renderBoard);
+    document.getElementById("filter-blocking").addEventListener("change", renderBoard);
+    document.getElementById("reload-btn").addEventListener("click", loadBoard);
+    document.getElementById("new-card-btn").addEventListener("click", () => {
+      state.currentCard = defaultCard();
+      renderDrawer();
+    });
+    document.getElementById("close-drawer-btn").addEventListener("click", closeDrawer);
+    document.getElementById("save-card-btn").addEventListener("click", async () => {
+      const payload = readFormCard();
+      await saveCard(payload, state.currentCard?.record_id || null);
+    });
+    document.getElementById("validate-card-btn").addEventListener("click", validateCurrentCard);
+    document.getElementById("comment-save-btn").addEventListener("click", addComment);
+    document.getElementById("delete-card-btn").addEventListener("click", deleteCurrentCard);
+    document.getElementById("quick-draft-btn").addEventListener("click", () => runDraft(false));
+    document.getElementById("quick-create-btn").addEventListener("click", () => runDraft(true));
+    document.getElementById("translate-en-btn").addEventListener("click", () => translateCurrentCard("en"));
+    document.getElementById("translate-de-btn").addEventListener("click", () => translateCurrentCard("de"));
+    document.getElementById("drawer-shell").addEventListener("click", (event) => {
+      if (event.target.id === "drawer-shell") closeDrawer();
+    });
+
+    loadBoard().catch((error) => {
+      setStatus("board-status", error.message || "Chargement impossible");
+    });
+  </script>
+</body>
+</html>
