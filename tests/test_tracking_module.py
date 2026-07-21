@@ -14,7 +14,6 @@ class TrackingModuleTest(unittest.TestCase):
         result = app.validate_tracking_card({
             'description': 'Corriger le bouton de login qui ne répond plus.',
             'liens': ['https://example.org/task', 'mailto:test@example.org'],
-            'bloquant': True,
             'statut': 'fait',
         }, actor='tester')
 
@@ -23,7 +22,6 @@ class TrackingModuleTest(unittest.TestCase):
         self.assertEqual(result['card']['liens'], ['https://example.org/task'])
         self.assertTrue(any('titre' in warning.lower() for warning in result['warnings']))
         self.assertTrue(any('ignor' in warning.lower() for warning in result['warnings']))
-        self.assertTrue(any('bloquante' in warning.lower() for warning in result['warnings']))
 
     def test_draft_tracking_card_from_text_detects_bug_and_blocker(self):
         result = app.draft_tracking_card_from_text(
@@ -36,7 +34,6 @@ class TrackingModuleTest(unittest.TestCase):
         self.assertEqual(result['errors'], [])
         self.assertEqual(result['card']['type'], 'bug')
         self.assertEqual(result['card']['priorite'], 'critique')
-        self.assertTrue(result['card']['bloquant'])
         self.assertEqual(result['card']['source'], 'assistant')
 
     def test_validate_tracking_card_archives_and_restores_with_history(self):

@@ -337,12 +337,6 @@
       line-height: 1.1;
     }
 
-    .pill.blocking {
-      background: #fdebea;
-      border-color: #e0a4a4;
-      color: #8a2f2f;
-    }
-
     .pill.archived {
       background: rgba(0, 48, 102, 0.08);
       color: var(--accent-strong);
@@ -642,10 +636,6 @@
               <span id="filter-size-label">Taille</span>
               <select id="filter-size"></select>
             </label>
-            <label class="filter-field" for="filter-blocking">
-              <span id="filter-blocking-label">Blocage</span>
-              <select id="filter-blocking"></select>
-            </label>
             </div>
             <div class="toolbar-actions">
               <button class="primary" id="new-card-btn" type="button">Nouvelle carte</button>
@@ -671,7 +661,6 @@
       <section>
         <div class="drawer-actions">
           <button class="primary" id="save-card-btn" type="button">Enregistrer</button>
-          <button id="validate-card-btn" type="button">Vérifier</button>
           <button id="archive-card-btn" type="button">Archiver la carte</button>
           <button id="delete-card-btn" type="button">Supprimer</button>
         </div>
@@ -681,8 +670,11 @@
       <section>
         <form id="card-form">
           <div class="form-grid">
-            <label class="full" id="label-card-titre">Titre
+            <label class="full" id="label-card-titre">Sujet
               <input id="card-titre" name="titre" required>
+            </label>
+            <label id="label-card-priorite">Priorité
+              <select id="card-priorite" name="priorite"></select>
             </label>
             <label id="label-card-langue">Langue source
               <select id="card-langue" name="langue_source"></select>
@@ -693,9 +685,6 @@
             <label id="label-card-statut">Statut
               <select id="card-statut" name="statut"></select>
             </label>
-            <label id="label-card-priorite">Priorité
-              <select id="card-priorite" name="priorite"></select>
-            </label>
             <label id="label-card-taille">Taille de dev
               <select id="card-taille" name="taille_dev"></select>
             </label>
@@ -705,16 +694,16 @@
             <label id="label-card-source">Source
               <input id="card-source" name="source">
             </label>
-            <label class="full" id="label-card-description">Description
+            <label class="full" id="label-card-description">Problème ou besoin
               <textarea id="card-description" name="description"></textarea>
             </label>
-            <label class="full" id="label-card-attendu">Attendu
-              <textarea id="card-attendu" name="attendu"></textarea>
-            </label>
-            <label class="full" id="label-card-observe">Observé
+            <label class="full" id="label-card-observe">Situation actuelle
               <textarea id="card-observe" name="observe"></textarea>
             </label>
-            <label class="full" id="label-card-contexte">Contexte
+            <label class="full" id="label-card-attendu">Idée de solution
+              <textarea id="card-attendu" name="attendu"></textarea>
+            </label>
+            <label class="full" id="label-card-contexte">Contexte utile
               <textarea id="card-contexte" name="contexte"></textarea>
             </label>
             <label class="full" id="label-card-liens">Liens
@@ -727,7 +716,6 @@
                 <div class="image-gallery" id="card-images-gallery"></div>
               </div>
             </label>
-            <label id="label-card-bloquant"><input id="card-bloquant" name="bloquant" type="checkbox"> Bloquant</label>
           </div>
         </form>
       </section>
@@ -796,15 +784,13 @@
         filterType: "Type",
         filterPriority: "Priorité",
         filterSize: "Taille",
-        filterBlocking: "Blocage",
         drawerTitle: "Carte projet",
         close: "Fermer",
         save: "Enregistrer",
-        validate: "Vérifier",
         archive: "Archiver la carte",
         restore: "Restaurer la carte",
         delete: "Supprimer",
-        fieldTitle: "Titre",
+        fieldTitle: "Sujet",
         fieldLanguage: "Langue source",
         fieldType: "Type",
         fieldStatus: "Statut",
@@ -812,10 +798,10 @@
         fieldSize: "Taille de dev",
         fieldOwner: "Responsable",
         fieldSource: "Source",
-        fieldDescription: "Description",
-        fieldExpected: "Attendu",
-        fieldObserved: "Observé",
-        fieldContext: "Contexte",
+        fieldDescription: "Problème ou besoin",
+        fieldExpected: "Idée de solution",
+        fieldObserved: "Situation actuelle",
+        fieldContext: "Contexte utile",
         fieldLinks: "Liens",
         fieldLinksPlaceholder: "Un lien par ligne",
         fieldImages: "Images jointes",
@@ -825,7 +811,6 @@
         imageOpen: "Ouvrir",
         imageProcessing: "Préparation de l’image...",
         imageCount: (count) => `${count} image(s) jointe(s).`,
-        fieldBlocking: "Bloquant",
         translateEn: "Traduire en EN",
         translateDe: "Traduire en DE",
         detailHeading: "Détail",
@@ -840,8 +825,6 @@
         all: "Tous",
         activeOnly: "Actives",
         archivedOnly: "Archivées",
-        blockingOnly: "Bloquants",
-        nonBlockingOnly: "Non bloquants",
         untitled: "Sans titre",
         noOwner: "Responsable non défini",
         archivedBadge: "Archivée",
@@ -857,7 +840,6 @@
         detailUpdated: "Mise à jour",
         statusLoading: "Chargement du suivi projet...",
         statusSaved: "Carte enregistrée.",
-        statusValidated: "Vérification terminée.",
         statusCommentNeedsSave: "Enregistre d’abord la carte avant d’ajouter un commentaire.",
         statusCommentAdded: "Commentaire ajouté.",
         statusArchiveNeedsSave: "Enregistre d’abord la carte avant de l’archiver.",
@@ -902,15 +884,13 @@
         filterType: "Type",
         filterPriority: "Priority",
         filterSize: "Size",
-        filterBlocking: "Blocking",
         drawerTitle: "Project card",
         close: "Close",
         save: "Save",
-        validate: "Validate",
         archive: "Archive card",
         restore: "Restore card",
         delete: "Delete",
-        fieldTitle: "Title",
+        fieldTitle: "Topic",
         fieldLanguage: "Source language",
         fieldType: "Type",
         fieldStatus: "Status",
@@ -918,10 +898,10 @@
         fieldSize: "Dev size",
         fieldOwner: "Owner",
         fieldSource: "Source",
-        fieldDescription: "Description",
-        fieldExpected: "Expected",
-        fieldObserved: "Observed",
-        fieldContext: "Context",
+        fieldDescription: "Problem or need",
+        fieldExpected: "Solution idea",
+        fieldObserved: "Current situation",
+        fieldContext: "Useful context",
         fieldLinks: "Links",
         fieldLinksPlaceholder: "One link per line",
         fieldImages: "Attached images",
@@ -931,7 +911,6 @@
         imageOpen: "Open",
         imageProcessing: "Preparing image...",
         imageCount: (count) => `${count} attached image(s).`,
-        fieldBlocking: "Blocking",
         translateEn: "Translate to EN",
         translateDe: "Translate to DE",
         detailHeading: "Details",
@@ -946,8 +925,6 @@
         all: "All",
         activeOnly: "Active",
         archivedOnly: "Archived",
-        blockingOnly: "Blocking",
-        nonBlockingOnly: "Non-blocking",
         untitled: "Untitled",
         noOwner: "No owner",
         archivedBadge: "Archived",
@@ -963,7 +940,6 @@
         detailUpdated: "Updated",
         statusLoading: "Loading project tracking...",
         statusSaved: "Card saved.",
-        statusValidated: "Validation completed.",
         statusCommentNeedsSave: "Save the card before adding a comment.",
         statusCommentAdded: "Comment added.",
         statusArchiveNeedsSave: "Save the card before archiving it.",
@@ -1008,15 +984,13 @@
         filterType: "Typ",
         filterPriority: "Prioritat",
         filterSize: "Umfang",
-        filterBlocking: "Blockierung",
         drawerTitle: "Projektkarte",
         close: "Schliessen",
         save: "Speichern",
-        validate: "Prufen",
         archive: "Karte archivieren",
         restore: "Karte wiederherstellen",
         delete: "Loschen",
-        fieldTitle: "Titel",
+        fieldTitle: "Thema",
         fieldLanguage: "Ausgangssprache",
         fieldType: "Typ",
         fieldStatus: "Status",
@@ -1024,10 +998,10 @@
         fieldSize: "Entwicklungsumfang",
         fieldOwner: "Verantwortlich",
         fieldSource: "Quelle",
-        fieldDescription: "Beschreibung",
-        fieldExpected: "Erwartet",
-        fieldObserved: "Beobachtet",
-        fieldContext: "Kontext",
+        fieldDescription: "Problem oder Bedarf",
+        fieldExpected: "Losungsidee",
+        fieldObserved: "Aktuelle Situation",
+        fieldContext: "Nutzlicher Kontext",
         fieldLinks: "Links",
         fieldLinksPlaceholder: "Ein Link pro Zeile",
         fieldImages: "Bilder",
@@ -1037,7 +1011,6 @@
         imageOpen: "Offnen",
         imageProcessing: "Bild wird vorbereitet...",
         imageCount: (count) => `${count} Bild(er) angehangt.`,
-        fieldBlocking: "Blockierend",
         translateEn: "Nach EN ubersetzen",
         translateDe: "Nach DE ubersetzen",
         detailHeading: "Details",
@@ -1052,8 +1025,6 @@
         all: "Alle",
         activeOnly: "Aktive",
         archivedOnly: "Archivierte",
-        blockingOnly: "Blockierend",
-        nonBlockingOnly: "Nicht blockierend",
         untitled: "Ohne Titel",
         noOwner: "Keine verantwortliche Person",
         archivedBadge: "Archiviert",
@@ -1069,7 +1040,6 @@
         detailUpdated: "Aktualisiert",
         statusLoading: "Projektverfolgung wird geladen...",
         statusSaved: "Karte gespeichert.",
-        statusValidated: "Prufung abgeschlossen.",
         statusCommentNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie einen Kommentar hinzufugen.",
         statusCommentAdded: "Kommentar hinzugefugt.",
         statusArchiveNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie sie archivieren.",
@@ -1158,7 +1128,6 @@
         taille_dev: "chat",
         responsable: "",
         source: "admin_ui",
-        bloquant: false,
         archived: false,
         archived_at: "",
         archived_by: "",
@@ -1227,14 +1196,12 @@
       document.getElementById("filter-type-label").textContent = t("filterType");
       document.getElementById("filter-priority-label").textContent = t("filterPriority");
       document.getElementById("filter-size-label").textContent = t("filterSize");
-      document.getElementById("filter-blocking-label").textContent = t("filterBlocking");
       document.getElementById("filter-search").placeholder = t("searchPlaceholder");
       document.getElementById("new-card-btn").textContent = t("newCard");
       document.getElementById("reset-filters-btn").textContent = t("resetFilters");
       document.getElementById("reload-btn").textContent = t("reload");
       document.getElementById("close-drawer-btn").textContent = t("close");
       document.getElementById("save-card-btn").textContent = t("save");
-      document.getElementById("validate-card-btn").textContent = t("validate");
       document.getElementById("archive-card-btn").textContent = state.currentCard?.archived ? t("restore") : t("archive");
       document.getElementById("delete-card-btn").textContent = t("delete");
       document.getElementById("label-card-titre").childNodes[0].textContent = t("fieldTitle");
@@ -1253,7 +1220,6 @@
       document.getElementById("card-liens").placeholder = t("fieldLinksPlaceholder");
       document.getElementById("label-card-images").childNodes[0].textContent = t("fieldImages");
       document.getElementById("card-images-help").textContent = t("fieldImagesHelp");
-      document.getElementById("label-card-bloquant").lastChild.textContent = ` ${t("fieldBlocking")}`;
       document.getElementById("translate-en-btn").textContent = t("translateEn");
       document.getElementById("translate-de-btn").textContent = t("translateDe");
       document.getElementById("detail-heading").textContent = t("detailHeading");
@@ -1269,7 +1235,6 @@
       const currentType = document.getElementById("filter-type").value;
       const currentPriority = document.getElementById("filter-priority").value;
       const currentSize = document.getElementById("filter-size").value;
-      const currentBlocking = document.getElementById("filter-blocking").value;
       const archive = document.getElementById("filter-archive");
       archive.innerHTML = `
         <option value="active">${esc(t("activeOnly"))}</option>
@@ -1279,17 +1244,10 @@
       populateSelect("filter-type", state.metadata.types, labels.types, true);
       populateSelect("filter-priority", state.metadata.priorities, labels.priorities, true);
       populateSelect("filter-size", state.metadata.sizes, labels.sizes, true);
-      const blocking = document.getElementById("filter-blocking");
-      blocking.innerHTML = `
-        <option value="">${esc(t("all"))}</option>
-        <option value="true">${esc(t("blockingOnly"))}</option>
-        <option value="false">${esc(t("nonBlockingOnly"))}</option>
-      `;
       archive.value = currentArchive;
       document.getElementById("filter-type").value = currentType;
       document.getElementById("filter-priority").value = currentPriority;
       document.getElementById("filter-size").value = currentSize;
-      blocking.value = currentBlocking;
 
       populateSelect("card-langue", state.metadata.languages, { fr: "FR", en: "EN", de: "DE" });
       populateSelect("card-type", state.metadata.types, labels.types);
@@ -1304,7 +1262,6 @@
       const type = document.getElementById("filter-type").value;
       const priority = document.getElementById("filter-priority").value;
       const size = document.getElementById("filter-size").value;
-      const blocking = document.getElementById("filter-blocking").value;
 
       return state.cards.filter((card) => {
         if (archive === "active" && card.archived) return false;
@@ -1312,8 +1269,6 @@
         if (type && card.type !== type) return false;
         if (priority && card.priorite !== priority) return false;
         if (size && card.taille_dev !== size) return false;
-        if (blocking === "true" && !card.bloquant) return false;
-        if (blocking === "false" && card.bloquant) return false;
         if (!search) return true;
         const haystack = normalizeText([
           card.titre,
@@ -1397,7 +1352,6 @@
             <span class="pill">${esc(labels.types?.[card.type] || card.type)}</span>
             ${Array.isArray(card.images) && card.images.length ? `<span class="pill">Img ${card.images.length}</span>` : ""}
             ${card.archived ? `<span class="pill archived">${esc(t("archivedBadge"))}</span>` : ""}
-            ${card.bloquant ? `<span class="pill blocking">⛔ ${esc(t("fieldBlocking"))}</span>` : ""}
           </div>
           <div class="card-meta">${esc(card.responsable || t("noOwner"))} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
         </article>
@@ -1429,7 +1383,6 @@
       document.getElementById("card-observe").value = card.observe || "";
       document.getElementById("card-contexte").value = card.contexte || "";
       document.getElementById("card-liens").value = (card.liens || []).join("\n");
-      document.getElementById("card-bloquant").checked = Boolean(card.bloquant);
       document.getElementById("archive-card-btn").textContent = card.archived ? t("restore") : t("archive");
       document.getElementById("card-images-input").value = "";
       renderImageGallery();
@@ -1600,7 +1553,6 @@
       document.getElementById("filter-type").value = "";
       document.getElementById("filter-priority").value = "";
       document.getElementById("filter-size").value = "";
-      document.getElementById("filter-blocking").value = "";
       renderBoard();
     }
 
@@ -1622,7 +1574,6 @@
         contexte: document.getElementById("card-contexte").value.trim(),
         images: Array.isArray(base.images) ? base.images : [],
         liens: document.getElementById("card-liens").value.split("\n").map((item) => item.trim()).filter(Boolean),
-        bloquant: document.getElementById("card-bloquant").checked,
         archived: Boolean(base.archived)
       };
     }
@@ -1660,20 +1611,6 @@
       }
       await loadBoard();
       if (payload.card?.record_id) openCard(payload.card.record_id);
-    }
-
-    async function validateCurrentCard() {
-      const payload = readFormCard();
-      if (state.currentCard?.record_id) payload.record_id = state.currentCard.record_id;
-      const result = await fetchJson(apiUrl("/admin/tracking/ai/validate"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      setStatus("drawer-status", [
-        result.errors?.join(" "),
-        result.warnings?.join(" ") || t("statusValidated")
-      ].filter(Boolean).join(" "));
     }
 
     async function addComment() {
@@ -1773,7 +1710,6 @@
     document.getElementById("filter-type").addEventListener("change", renderBoard);
     document.getElementById("filter-priority").addEventListener("change", renderBoard);
     document.getElementById("filter-size").addEventListener("change", renderBoard);
-    document.getElementById("filter-blocking").addEventListener("change", renderBoard);
     document.getElementById("reload-btn").addEventListener("click", loadBoard);
     document.getElementById("reset-filters-btn").addEventListener("click", resetFilters);
     document.getElementById("new-card-btn").addEventListener("click", () => {
@@ -1792,7 +1728,6 @@
       const payload = readFormCard();
       await saveCard(payload, state.currentCard?.record_id || null);
     });
-    document.getElementById("validate-card-btn").addEventListener("click", validateCurrentCard);
     document.getElementById("archive-card-btn").addEventListener("click", toggleArchiveCurrentCard);
     document.getElementById("comment-save-btn").addEventListener("click", addComment);
     document.getElementById("delete-card-btn").addEventListener("click", deleteCurrentCard);

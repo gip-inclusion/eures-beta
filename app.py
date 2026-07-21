@@ -117,7 +117,6 @@ EURES_TRACKING_CARD_FIELDS = {
     'segment',
     'responsable',
     'source',
-    'bloquant',
     'archived',
     'archived_at',
     'archived_by',
@@ -143,7 +142,6 @@ EURES_TRACKING_TABLE_COLUMNS = {
     'segment': 'Text',
     'responsable': 'Text',
     'source': 'Text',
-    'bloquant': 'Bool',
     'archived': 'Bool',
     'archived_at': 'Text',
     'archived_by': 'Text',
@@ -6133,7 +6131,6 @@ def _tracking_default_card() -> dict:
         'segment': '',
         'responsable': '',
         'source': 'admin_ui',
-        'bloquant': False,
         'archived': False,
         'archived_at': '',
         'archived_by': '',
@@ -6232,7 +6229,6 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'segment': _tracking_text(fields.get('segment')),
         'responsable': _tracking_text(fields.get('responsable')),
         'source': _tracking_text(fields.get('source')) or 'admin_ui',
-        'bloquant': _tracking_bool(fields.get('bloquant')),
         'archived': _tracking_bool(fields.get('archived')),
         'archived_at': _tracking_text(fields.get('archived_at')),
         'archived_by': _tracking_text(fields.get('archived_by')),
@@ -6262,7 +6258,6 @@ def _tracking_record_fields(card: dict) -> dict:
         'segment': card['segment'],
         'responsable': card['responsable'],
         'source': card['source'],
-        'bloquant': card['bloquant'],
         'archived': card['archived'],
         'archived_at': card['archived_at'],
         'archived_by': card['archived_by'],
@@ -6295,7 +6290,6 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'segment': '',
         'responsable': _tracking_text(payload.get('responsable') or base['responsable']),
         'source': _tracking_text(payload.get('source') or base['source']) or 'admin_ui',
-        'bloquant': _tracking_bool(payload.get('bloquant') if 'bloquant' in payload else base['bloquant']),
         'archived': _tracking_bool(payload.get('archived') if 'archived' in payload else base['archived']),
         'archived_at': _tracking_text(base.get('archived_at')),
         'archived_by': _tracking_text(base.get('archived_by')),
@@ -6321,8 +6315,6 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         errors.append("Ajoutez au moins une description, un constat, un attendu ou un contexte.")
     if invalid_links:
         warnings.append("Certains liens ont été ignorés car ils ne sont pas au format http(s).")
-    if candidate['bloquant'] and candidate['statut'] == 'fait':
-        warnings.append("La carte est marquée bloquante alors qu'elle est dans la colonne Fait.")
     if candidate['archived'] and not candidate['archived_at']:
         candidate['archived_at'] = candidate['updated_at']
         candidate['archived_by'] = actor
@@ -6417,7 +6409,6 @@ def draft_tracking_card_from_text(text: str, source_language: str = 'fr', actor:
         'taille_dev': size,
         'responsable': '',
         'source': source,
-        'bloquant': any(token in folded for token in ('bloquant', 'bloque', 'blocked', 'blockiert', 'blocker')),
         'liens': re.findall(r'https?://\S+', normalized),
     }, actor=actor)
     if not validated['errors']:
