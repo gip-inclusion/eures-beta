@@ -6455,8 +6455,8 @@ def save_tracking_card(payload: dict, actor: str = 'admin') -> dict:
 def delete_tracking_card(record_id: int):
     config, headers = _tracking_table_ready()
     delete_url = f"{GRIST_BASE_URL}/api/docs/{config['doc_id']}/tables/{config['table_id']}/records/delete"
-    resp = write_grist_records('POST', delete_url, {'records': [int(record_id)]}, headers)
-    if resp.status_code != 200:
+    resp = write_grist_records('POST', delete_url, [int(record_id)], headers)
+    if resp.status_code not in {200, 202, 204}:
         raise RuntimeError(f'Failed to delete tracking card: HTTP {resp.status_code} - {resp.text}')
 
 

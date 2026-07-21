@@ -1,6 +1,7 @@
 import base64
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 
 import app
 
@@ -54,6 +55,24 @@ class TrackingModuleTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Suivi projet', response.data)
         response.close()
+
+    @patch.object(app, 'write_grist_records')
+    @patch.object(app, '_tracking_table_ready')
+    def test_delete_tracking_card_uses_grist_delete_payload_contract(self, tracking_table_ready, write_grist_records):
+        tracking_table_ready.return_value = (
+            {'doc_id': 'doc-eures', 'table_id': 'Suivi_Projet', 'api_key': 'api-key'},
+            {'Authorization': 'Bearer api-key', 'Accept': 'application/json', 'Content-Type': 'application/json'},
+        )
+        write_grist_records.return_value = SimpleNamespace(status_code=200, text='')
+
+        app.delete_tracking_card(42)
+
+        write_grist_records.assert_called_once_with(
+            'POST',
+            'https://grist.numerique.gouv.fr/api/docs/doc-eures/tables/Suivi_Projet/records/delete',
+            [42],
+            {'Authorization': 'Bearer api-key', 'Accept': 'application/json', 'Content-Type': 'application/json'},
+        )
 
 
 if __name__ == '__main__':
