@@ -244,6 +244,7 @@ class TrackingModuleTest(unittest.TestCase):
         self.assertEqual(result['card']['github_pr_state'], 'open')
         self.assertEqual(result['card']['github_pr_number'], '42')
         self.assertEqual(result['card']['github_branch'], 'feature/EURES-23-autosave')
+        self.assertTrue(result['card']['github_last_activity_at'])
         self.assertIn('https://github.com/gip-inclusion/eures-beta/pull/42', result['card']['liens'])
         self.assertTrue(any(event['action'] == 'github_pr_opened' for event in result['card']['historique']))
 

@@ -133,6 +133,7 @@ EURES_TRACKING_CARD_FIELDS = {
     'github_pr_url',
     'github_pr_number',
     'github_pr_state',
+    'github_last_activity_at',
     'production_url',
     'production_environment',
     'production_deployed_at',
@@ -166,6 +167,7 @@ EURES_TRACKING_TABLE_COLUMNS = {
     'github_pr_url': 'Text',
     'github_pr_number': 'Numeric',
     'github_pr_state': 'Text',
+    'github_last_activity_at': 'Text',
     'production_url': 'Text',
     'production_environment': 'Text',
     'production_deployed_at': 'Text',
@@ -6170,6 +6172,7 @@ def _tracking_default_card() -> dict:
         'github_pr_url': '',
         'github_pr_number': '',
         'github_pr_state': '',
+        'github_last_activity_at': '',
         'production_url': '',
         'production_environment': '',
         'production_deployed_at': '',
@@ -6276,6 +6279,7 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'github_pr_url': _tracking_text(fields.get('github_pr_url')),
         'github_pr_number': _tracking_text(fields.get('github_pr_number')),
         'github_pr_state': _tracking_text(fields.get('github_pr_state')),
+        'github_last_activity_at': _tracking_text(fields.get('github_last_activity_at')),
         'production_url': _tracking_text(fields.get('production_url')),
         'production_environment': _tracking_text(fields.get('production_environment')),
         'production_deployed_at': _tracking_text(fields.get('production_deployed_at')),
@@ -6314,6 +6318,7 @@ def _tracking_record_fields(card: dict) -> dict:
         'github_pr_url': card['github_pr_url'],
         'github_pr_number': card['github_pr_number'],
         'github_pr_state': card['github_pr_state'],
+        'github_last_activity_at': card['github_last_activity_at'],
         'production_url': card['production_url'],
         'production_environment': card['production_environment'],
         'production_deployed_at': card['production_deployed_at'],
@@ -6353,6 +6358,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'github_pr_url': _tracking_text(payload.get('github_pr_url') if 'github_pr_url' in payload else base.get('github_pr_url')),
         'github_pr_number': _tracking_text(payload.get('github_pr_number') if 'github_pr_number' in payload else base.get('github_pr_number')),
         'github_pr_state': _tracking_text(payload.get('github_pr_state') if 'github_pr_state' in payload else base.get('github_pr_state')),
+        'github_last_activity_at': _tracking_text(payload.get('github_last_activity_at') if 'github_last_activity_at' in payload else base.get('github_last_activity_at')),
         'production_url': _tracking_text(payload.get('production_url') if 'production_url' in payload else base.get('production_url')),
         'production_environment': _tracking_text(payload.get('production_environment') if 'production_environment' in payload else base.get('production_environment')),
         'production_deployed_at': _tracking_text(payload.get('production_deployed_at') if 'production_deployed_at' in payload else base.get('production_deployed_at')),
@@ -6724,6 +6730,7 @@ def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
             card['liens'] = list(card.get('liens') or []) + [pr_url]
     if pr_number:
         card['github_pr_number'] = pr_number
+    card['github_last_activity_at'] = _tracking_now()
 
     if action in {'opened', 'reopened'}:
         card['github_pr_state'] = 'open'
