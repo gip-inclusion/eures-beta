@@ -39,6 +39,69 @@ class TrackingModuleTest(unittest.TestCase):
         self.assertTrue(result['card']['bloquant'])
         self.assertEqual(result['card']['source'], 'assistant')
 
+    def test_validate_tracking_card_archives_and_restores_with_history(self):
+        created = app.validate_tracking_card({
+            'titre': 'Carte de test',
+            'description': 'Tester le comportement d archivage.'
+        }, actor='alice@example.org')
+        existing = created['card']
+
+        archived = app.validate_tracking_card({
+            'record_id': 12,
+            'card_id': existing['card_id'],
+            'titre': existing['titre'],
+            'description': existing['description'],
+            'archived': True,
+        }, existing=existing, actor='bob@example.org')
+
+        self.assertEqual(archived['errors'], [])
+        self.assertTrue(archived['card']['archived'])
+        self.assertEqual(archived['card']['archived_by'], 'bob@example.org')
+        self.assertTrue(archived['card']['archived_at'])
+        self.assertTrue(any(event['action'] == 'archived' for event in archived['card']['historique']))
+
+        restored = app.validate_tracking_card({
+            'record_id': 12,
+            'card_id': archived['card']['card_id'],
+            'titre': archived['card']['titre'],
+            'description': archived['card']['description'],
+            'archived': False,
+        }, existing=archived['card'], actor='carol@example.org')
+
+        self.assertEqual(restored['errors'], [])
+        self.assertFalse(restored['card']['archived'])
+        self.assertEqual(restored['card']['archived_at'], '')
+        self.assertEqual(restored['card']['archived_by'], '')
+        self.assertTrue(any(event['action'] == 'restored' for event in restored['card']['historique']))
+
+    def test_tracking_card_roundtrip_includes_archive_fields(self):
+        record = {
+            'id': 17,
+            'fields': {
+                'card_id': 'card-17',
+                'titre': 'Carte archivee',
+                'description': 'Description',
+                'archived': True,
+                'archived_at': '2026-07-21T10:00:00Z',
+                'archived_by': 'eric@example.org',
+                'liens_json': '[]',
+                'commentaires_json': '[]',
+                'historique_json': '[]',
+            },
+        }
+
+        card = app._tracking_card_from_record(record)
+
+        self.assertTrue(card['archived'])
+        self.assertEqual(card['archived_at'], '2026-07-21T10:00:00Z')
+        self.assertEqual(card['archived_by'], 'eric@example.org')
+        self.assertTrue(app._tracking_record_fields(card)['archived'])
+
+    def test_tracking_metadata_exposes_archive_filters(self):
+        metadata = app.tracking_metadata()
+
+        self.assertEqual(metadata['archive_filters'], ['active', 'archived', 'all'])
+
     @patch.dict(app.os.environ, {
         'ADMIN_USERNAME_EURES_BETA': 'eures-admin',
         'ADMIN_PASSWORD_EURES_BETA': 'eures-password',

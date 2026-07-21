@@ -118,6 +118,9 @@ EURES_TRACKING_CARD_FIELDS = {
     'responsable',
     'source',
     'bloquant',
+    'archived',
+    'archived_at',
+    'archived_by',
     'liens_json',
     'commentaires_json',
     'historique_json',
@@ -140,6 +143,9 @@ EURES_TRACKING_TABLE_COLUMNS = {
     'responsable': 'Text',
     'source': 'Text',
     'bloquant': 'Bool',
+    'archived': 'Bool',
+    'archived_at': 'Text',
+    'archived_by': 'Text',
     'liens_json': 'Text',
     'commentaires_json': 'Text',
     'historique_json': 'Text',
@@ -6087,6 +6093,9 @@ def _tracking_default_card() -> dict:
         'responsable': '',
         'source': 'admin_ui',
         'bloquant': False,
+        'archived': False,
+        'archived_at': '',
+        'archived_by': '',
         'liens': [],
         'commentaires': [],
         'historique': [],
@@ -6100,6 +6109,7 @@ def tracking_metadata() -> dict:
         'languages': ['fr', 'en', 'de'],
         'default_language': 'fr',
         'scope': 'global',
+        'archive_filters': ['active', 'archived', 'all'],
         'statuses': list(EURES_TRACKING_STATUSES),
         'priorities': list(EURES_TRACKING_PRIORITIES),
         'types': list(EURES_TRACKING_TYPES),
@@ -6181,6 +6191,9 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'responsable': _tracking_text(fields.get('responsable')),
         'source': _tracking_text(fields.get('source')) or 'admin_ui',
         'bloquant': _tracking_bool(fields.get('bloquant')),
+        'archived': _tracking_bool(fields.get('archived')),
+        'archived_at': _tracking_text(fields.get('archived_at')),
+        'archived_by': _tracking_text(fields.get('archived_by')),
         'liens': _tracking_list(fields.get('liens_json')),
         'commentaires': _tracking_list(fields.get('commentaires_json')),
         'historique': _tracking_list(fields.get('historique_json')),
@@ -6207,6 +6220,9 @@ def _tracking_record_fields(card: dict) -> dict:
         'responsable': card['responsable'],
         'source': card['source'],
         'bloquant': card['bloquant'],
+        'archived': card['archived'],
+        'archived_at': card['archived_at'],
+        'archived_by': card['archived_by'],
         'liens_json': json.dumps(card['liens'], ensure_ascii=False),
         'commentaires_json': json.dumps(card['commentaires'], ensure_ascii=False),
         'historique_json': json.dumps(card['historique'], ensure_ascii=False),
@@ -6236,6 +6252,9 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'responsable': _tracking_text(payload.get('responsable') or base['responsable']),
         'source': _tracking_text(payload.get('source') or base['source']) or 'admin_ui',
         'bloquant': _tracking_bool(payload.get('bloquant') if 'bloquant' in payload else base['bloquant']),
+        'archived': _tracking_bool(payload.get('archived') if 'archived' in payload else base['archived']),
+        'archived_at': _tracking_text(base.get('archived_at')),
+        'archived_by': _tracking_text(base.get('archived_by')),
         'commentaires': list(base.get('commentaires') or []),
         'historique': list(base.get('historique') or []),
         'created_at': _tracking_text(base.get('created_at')),
@@ -6257,11 +6276,38 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         warnings.append("Certains liens ont été ignorés car ils ne sont pas au format http(s).")
     if candidate['bloquant'] and candidate['statut'] == 'fait':
         warnings.append("La carte est marquée bloquante alors qu'elle est dans la colonne Fait.")
+    if candidate['archived'] and not candidate['archived_at']:
+        candidate['archived_at'] = candidate['updated_at']
+        candidate['archived_by'] = actor
+    if not candidate['archived']:
+        candidate['archived_at'] = ''
+        candidate['archived_by'] = ''
 
     if not candidate['created_at']:
         candidate['created_at'] = candidate['updated_at']
         candidate['historique'].append(_tracking_history_event(actor, 'created', 'Carte créée.'))
     else:
+        if existing and _tracking_bool(existing.get('archived')) != candidate['archived']:
+            if candidate['archived']:
+                candidate['archived_at'] = candidate['updated_at']
+                candidate['archived_by'] = actor
+                candidate['historique'].append(
+                    _tracking_history_event(
+                        actor,
+                        'archived',
+                        'Carte archivée.',
+                    )
+                )
+            else:
+                candidate['historique'].append(
+                    _tracking_history_event(
+                        actor,
+                        'restored',
+                        'Carte restaurée.',
+                    )
+                )
+                candidate['archived_at'] = ''
+                candidate['archived_by'] = ''
         if existing and existing.get('statut') != candidate['statut']:
             candidate['historique'].append(
                 _tracking_history_event(
@@ -6451,7 +6497,14 @@ def list_tracking_cards() -> list[dict]:
         card = _tracking_card_from_record(rec)
         if card:
             cards.append(card)
-    cards.sort(key=lambda row: (EURES_TRACKING_STATUSES.index(row['statut']), row['updated_at'], row['created_at']))
+    cards.sort(
+        key=lambda row: (
+            1 if row.get('archived') else 0,
+            EURES_TRACKING_STATUSES.index(row['statut']),
+            row['updated_at'],
+            row['created_at'],
+        )
+    )
     return cards
 
 

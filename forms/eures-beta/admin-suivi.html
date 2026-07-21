@@ -107,7 +107,7 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) repeat(4, minmax(160px, 0.6fr)) auto;
+      grid-template-columns: minmax(0, 1.2fr) repeat(5, minmax(150px, 0.55fr)) auto;
       gap: 0.8rem;
       align-items: start;
       margin-bottom: 1rem;
@@ -266,6 +266,11 @@
       background: #fdebea;
       border-color: #e0a4a4;
       color: #8a2f2f;
+    }
+
+    .pill.archived {
+      background: rgba(0, 48, 102, 0.08);
+      color: var(--accent-strong);
     }
 
     .drawer-shell {
@@ -455,6 +460,7 @@
 
       <div class="toolbar">
         <input id="filter-search" type="search" placeholder="Rechercher un titre, un texte, un responsable">
+        <select id="filter-archive"></select>
         <select id="filter-type"></select>
         <select id="filter-priority"></select>
         <select id="filter-size"></select>
@@ -481,6 +487,7 @@
         <div class="drawer-actions">
           <button class="primary" id="save-card-btn" type="button">Enregistrer</button>
           <button id="validate-card-btn" type="button">Vérifier</button>
+          <button id="archive-card-btn" type="button">Archiver la carte</button>
           <button id="delete-card-btn" type="button">Supprimer</button>
         </div>
         <div class="status-line" id="drawer-status"></div>
@@ -590,6 +597,8 @@
         close: "Fermer",
         save: "Enregistrer",
         validate: "Vérifier",
+        archive: "Archiver la carte",
+        restore: "Restaurer la carte",
         delete: "Supprimer",
         fieldTitle: "Titre",
         fieldLanguage: "Langue source",
@@ -618,15 +627,21 @@
         commentsEmpty: "Aucun commentaire pour l’instant.",
         historyEmpty: "Aucun historique pour l’instant.",
         all: "Tous",
+        activeOnly: "Actives",
+        archivedOnly: "Archivées",
         blockingOnly: "Bloquants",
         nonBlockingOnly: "Non bloquants",
         untitled: "Sans titre",
         noOwner: "Responsable non défini",
+        archivedBadge: "Archivée",
         detailId: "ID",
         detailStatus: "Statut",
         detailPriority: "Priorité",
         detailSize: "Taille",
         detailType: "Type",
+        detailArchiveState: "Archivage",
+        detailArchivedAt: "Archivée le",
+        detailArchivedBy: "Archivée par",
         detailCreated: "Créée",
         detailUpdated: "Mise à jour",
         statusLoading: "Chargement du suivi projet...",
@@ -634,6 +649,11 @@
         statusValidated: "Vérification terminée.",
         statusCommentNeedsSave: "Enregistre d’abord la carte avant d’ajouter un commentaire.",
         statusCommentAdded: "Commentaire ajouté.",
+        statusArchiveNeedsSave: "Enregistre d’abord la carte avant de l’archiver.",
+        statusArchiveConfirm: "Archiver cette carte et la sortir du flux actif ?",
+        statusRestoreConfirm: "Restaurer cette carte dans le flux actif ?",
+        statusArchived: "Carte archivée.",
+        statusRestored: "Carte restaurée.",
         statusDeleteConfirm: "Supprimer définitivement cette carte ?",
         statusNeedFreeText: "Ajoute d’abord un texte libre.",
         statusCreating: "Création en cours...",
@@ -664,6 +684,8 @@
         close: "Close",
         save: "Save",
         validate: "Validate",
+        archive: "Archive card",
+        restore: "Restore card",
         delete: "Delete",
         fieldTitle: "Title",
         fieldLanguage: "Source language",
@@ -692,15 +714,21 @@
         commentsEmpty: "No comments yet.",
         historyEmpty: "No history yet.",
         all: "All",
+        activeOnly: "Active",
+        archivedOnly: "Archived",
         blockingOnly: "Blocking",
         nonBlockingOnly: "Non-blocking",
         untitled: "Untitled",
         noOwner: "No owner",
+        archivedBadge: "Archived",
         detailId: "ID",
         detailStatus: "Status",
         detailPriority: "Priority",
         detailSize: "Size",
         detailType: "Type",
+        detailArchiveState: "Archive state",
+        detailArchivedAt: "Archived at",
+        detailArchivedBy: "Archived by",
         detailCreated: "Created",
         detailUpdated: "Updated",
         statusLoading: "Loading project tracking...",
@@ -708,6 +736,11 @@
         statusValidated: "Validation completed.",
         statusCommentNeedsSave: "Save the card before adding a comment.",
         statusCommentAdded: "Comment added.",
+        statusArchiveNeedsSave: "Save the card before archiving it.",
+        statusArchiveConfirm: "Archive this card and remove it from the active flow?",
+        statusRestoreConfirm: "Restore this card to the active flow?",
+        statusArchived: "Card archived.",
+        statusRestored: "Card restored.",
         statusDeleteConfirm: "Delete this card permanently?",
         statusNeedFreeText: "Add some free text first.",
         statusCreating: "Creating card...",
@@ -738,6 +771,8 @@
         close: "Schliessen",
         save: "Speichern",
         validate: "Prufen",
+        archive: "Karte archivieren",
+        restore: "Karte wiederherstellen",
         delete: "Loschen",
         fieldTitle: "Titel",
         fieldLanguage: "Ausgangssprache",
@@ -766,15 +801,21 @@
         commentsEmpty: "Noch keine Kommentare.",
         historyEmpty: "Noch kein Verlauf.",
         all: "Alle",
+        activeOnly: "Aktive",
+        archivedOnly: "Archivierte",
         blockingOnly: "Blockierend",
         nonBlockingOnly: "Nicht blockierend",
         untitled: "Ohne Titel",
         noOwner: "Keine verantwortliche Person",
+        archivedBadge: "Archiviert",
         detailId: "ID",
         detailStatus: "Status",
         detailPriority: "Prioritat",
         detailSize: "Umfang",
         detailType: "Typ",
+        detailArchiveState: "Archivstatus",
+        detailArchivedAt: "Archiviert am",
+        detailArchivedBy: "Archiviert von",
         detailCreated: "Erstellt",
         detailUpdated: "Aktualisiert",
         statusLoading: "Projektverfolgung wird geladen...",
@@ -782,6 +823,11 @@
         statusValidated: "Prufung abgeschlossen.",
         statusCommentNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie einen Kommentar hinzufugen.",
         statusCommentAdded: "Kommentar hinzugefugt.",
+        statusArchiveNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie sie archivieren.",
+        statusArchiveConfirm: "Diese Karte archivieren und aus dem aktiven Ablauf nehmen?",
+        statusRestoreConfirm: "Diese Karte wieder in den aktiven Ablauf aufnehmen?",
+        statusArchived: "Karte archiviert.",
+        statusRestored: "Karte wiederhergestellt.",
         statusDeleteConfirm: "Diese Karte endgultig loschen?",
         statusNeedFreeText: "Fugen Sie zuerst einen Freitext hinzu.",
         statusCreating: "Karte wird erstellt...",
@@ -856,6 +902,9 @@
         responsable: "",
         source: "admin_ui",
         bloquant: false,
+        archived: false,
+        archived_at: "",
+        archived_by: "",
         liens: [],
         commentaires: [],
         historique: []
@@ -916,6 +965,7 @@
       document.getElementById("close-drawer-btn").textContent = t("close");
       document.getElementById("save-card-btn").textContent = t("save");
       document.getElementById("validate-card-btn").textContent = t("validate");
+      document.getElementById("archive-card-btn").textContent = state.currentCard?.archived ? t("restore") : t("archive");
       document.getElementById("delete-card-btn").textContent = t("delete");
       document.getElementById("label-card-titre").childNodes[0].textContent = t("fieldTitle");
       document.getElementById("label-card-langue").childNodes[0].textContent = t("fieldLanguage");
@@ -943,6 +993,12 @@
 
     function renderFilters() {
       const labels = currentLabels();
+      const archive = document.getElementById("filter-archive");
+      archive.innerHTML = `
+        <option value="active">${esc(t("activeOnly"))}</option>
+        <option value="archived">${esc(t("archivedOnly"))}</option>
+        <option value="all">${esc(t("all"))}</option>
+      `;
       populateSelect("filter-type", state.metadata.types, labels.types, true);
       populateSelect("filter-priority", state.metadata.priorities, labels.priorities, true);
       populateSelect("filter-size", state.metadata.sizes, labels.sizes, true);
@@ -962,12 +1018,15 @@
 
     function filteredCards() {
       const search = normalizeText(document.getElementById("filter-search").value.trim());
+      const archive = document.getElementById("filter-archive").value || "active";
       const type = document.getElementById("filter-type").value;
       const priority = document.getElementById("filter-priority").value;
       const size = document.getElementById("filter-size").value;
       const blocking = document.getElementById("filter-blocking").value;
 
       return state.cards.filter((card) => {
+        if (archive === "active" && card.archived) return false;
+        if (archive === "archived" && !card.archived) return false;
         if (type && card.type !== type) return false;
         if (priority && card.priorite !== priority) return false;
         if (size && card.taille_dev !== size) return false;
@@ -1008,6 +1067,10 @@
       for (const cardEl of board.querySelectorAll(".card-item")) {
         cardEl.addEventListener("click", () => openCard(Number(cardEl.dataset.recordId)));
         cardEl.addEventListener("dragstart", (event) => {
+          if (cardEl.getAttribute("draggable") !== "true") {
+            event.preventDefault();
+            return;
+          }
           state.draggingRecordId = Number(cardEl.dataset.recordId);
           cardEl.classList.add("is-dragging");
           event.dataTransfer.effectAllowed = "move";
@@ -1033,6 +1096,7 @@
           if (!recordId) return;
           const card = state.cards.find((item) => Number(item.record_id) === recordId);
           if (!card) return;
+          if (card.archived) return;
           const nextStatus = column.dataset.status;
           if (card.statut === nextStatus) return;
           await saveCard({ ...card, statut: nextStatus }, recordId, true);
@@ -1043,12 +1107,13 @@
     function renderCardHtml(card) {
       const labels = currentLabels();
       return `
-        <article class="card-item" data-record-id="${Number(card.record_id)}" draggable="true">
+        <article class="card-item" data-record-id="${Number(card.record_id)}" draggable="${card.archived ? "false" : "true"}">
           <h3>${esc(card.titre || t("untitled"))}</h3>
           <div class="card-tags">
             <span class="pill">${esc(labels.priorities?.[card.priorite] || card.priorite)}</span>
             <span class="pill">${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</span>
             <span class="pill">${esc(labels.types?.[card.type] || card.type)}</span>
+            ${card.archived ? `<span class="pill archived">${esc(t("archivedBadge"))}</span>` : ""}
             ${card.bloquant ? `<span class="pill blocking">⛔ ${esc(t("fieldBlocking"))}</span>` : ""}
           </div>
           <div class="card-meta">${esc(card.responsable || t("noOwner"))} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
@@ -1082,6 +1147,7 @@
       document.getElementById("card-contexte").value = card.contexte || "";
       document.getElementById("card-liens").value = (card.liens || []).join("\n");
       document.getElementById("card-bloquant").checked = Boolean(card.bloquant);
+      document.getElementById("archive-card-btn").textContent = card.archived ? t("restore") : t("archive");
       bindAutoResize(document.getElementById("card-form"));
       autoResizeTextarea(document.getElementById("comment-body"));
 
@@ -1091,6 +1157,9 @@
         <div class="detail-row"><dt>${esc(t("detailPriority"))}</dt><dd>${esc(labels.priorities?.[card.priorite] || card.priorite)}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailSize"))}</dt><dd>${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailType"))}</dt><dd>${esc(labels.types?.[card.type] || card.type)}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailArchiveState"))}</dt><dd>${esc(card.archived ? t("archivedBadge") : t("activeOnly"))}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailArchivedAt"))}</dt><dd>${esc(card.archived_at || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailArchivedBy"))}</dt><dd>${esc(card.archived_by || "")}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailCreated"))}</dt><dd>${esc(card.created_at || "")}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailUpdated"))}</dt><dd>${esc(card.updated_at || "")}</dd></div>
       `;
@@ -1161,7 +1230,8 @@
         observe: document.getElementById("card-observe").value.trim(),
         contexte: document.getElementById("card-contexte").value.trim(),
         liens: document.getElementById("card-liens").value.split("\n").map((item) => item.trim()).filter(Boolean),
-        bloquant: document.getElementById("card-bloquant").checked
+        bloquant: document.getElementById("card-bloquant").checked,
+        archived: Boolean(base.archived)
       };
     }
 
@@ -1246,6 +1316,20 @@
       await loadBoard();
     }
 
+    async function toggleArchiveCurrentCard() {
+      if (!state.currentCard?.record_id) {
+        setStatus("drawer-status", t("statusArchiveNeedsSave"));
+        return;
+      }
+      const nextArchived = !Boolean(state.currentCard.archived);
+      if (!window.confirm(t(nextArchived ? "statusArchiveConfirm" : "statusRestoreConfirm"))) return;
+      await saveCard({
+        ...readFormCard(),
+        archived: nextArchived
+      }, state.currentCard.record_id, true);
+      setStatus("drawer-status", t(nextArchived ? "statusArchived" : "statusRestored"));
+    }
+
     async function runDraft(createDirectly) {
       const text = document.getElementById("quick-note").value.trim();
       if (!text) {
@@ -1293,6 +1377,7 @@
     }
 
     document.getElementById("filter-search").addEventListener("input", renderBoard);
+    document.getElementById("filter-archive").addEventListener("change", renderBoard);
     document.getElementById("filter-type").addEventListener("change", renderBoard);
     document.getElementById("filter-priority").addEventListener("change", renderBoard);
     document.getElementById("filter-size").addEventListener("change", renderBoard);
@@ -1308,6 +1393,7 @@
       await saveCard(payload, state.currentCard?.record_id || null);
     });
     document.getElementById("validate-card-btn").addEventListener("click", validateCurrentCard);
+    document.getElementById("archive-card-btn").addEventListener("click", toggleArchiveCurrentCard);
     document.getElementById("comment-save-btn").addEventListener("click", addComment);
     document.getElementById("delete-card-btn").addEventListener("click", deleteCurrentCard);
     document.getElementById("quick-draft-btn").addEventListener("click", () => runDraft(false));
