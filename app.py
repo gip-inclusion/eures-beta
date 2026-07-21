@@ -121,6 +121,7 @@ EURES_TRACKING_CARD_FIELDS = {
     'archived',
     'archived_at',
     'archived_by',
+    'images_json',
     'liens_json',
     'commentaires_json',
     'historique_json',
@@ -146,6 +147,7 @@ EURES_TRACKING_TABLE_COLUMNS = {
     'archived': 'Bool',
     'archived_at': 'Text',
     'archived_by': 'Text',
+    'images_json': 'Text',
     'liens_json': 'Text',
     'commentaires_json': 'Text',
     'historique_json': 'Text',
@@ -6015,6 +6017,45 @@ def _tracking_text(value) -> str:
     return str(value or '').strip()
 
 
+def _tracking_images(value, max_items: int = 4, max_data_url_length: int = 3_000_000) -> tuple[list[dict], list[str]]:
+    raw_items = _tracking_list(value)
+    images = []
+    warnings = []
+    allowed_mimes = {'image/png', 'image/jpeg', 'image/webp', 'image/gif'}
+    for item in raw_items:
+        if not isinstance(item, dict):
+            continue
+        name = _tracking_text(item.get('name')) or 'image'
+        mime = _tracking_text(item.get('mime')).lower()
+        data_url = str(item.get('data_url') or '').strip()
+        image_id = _tracking_text(item.get('id')) or secrets.token_urlsafe(8)
+        created_at = _tracking_text(item.get('created_at')) or _tracking_now()
+        if not data_url.startswith('data:image/'):
+            warnings.append(f"L'image {name} a été ignorée car son format est invalide.")
+            continue
+        if mime not in allowed_mimes:
+            warnings.append(f"L'image {name} a été ignorée car son type n'est pas supporté.")
+            continue
+        if len(data_url) > max_data_url_length:
+            warnings.append(f"L'image {name} a été ignorée car elle est trop volumineuse.")
+            continue
+        images.append({
+            'id': image_id,
+            'name': name[:160],
+            'mime': mime,
+            'size': max(0, int(item.get('size') or 0)),
+            'width': max(0, int(item.get('width') or 0)),
+            'height': max(0, int(item.get('height') or 0)),
+            'created_at': created_at,
+            'data_url': data_url,
+        })
+        if len(images) >= max_items:
+            if len(raw_items) > max_items:
+                warnings.append(f"Seules {max_items} images ont été conservées.")
+            break
+    return images, warnings
+
+
 def _tracking_summarize_title(value: str, max_length: int = 72) -> str:
     text = ' '.join(str(value or '').split())
     if not text:
@@ -6096,6 +6137,7 @@ def _tracking_default_card() -> dict:
         'archived': False,
         'archived_at': '',
         'archived_by': '',
+        'images': [],
         'liens': [],
         'commentaires': [],
         'historique': [],
@@ -6194,6 +6236,7 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'archived': _tracking_bool(fields.get('archived')),
         'archived_at': _tracking_text(fields.get('archived_at')),
         'archived_by': _tracking_text(fields.get('archived_by')),
+        'images': _tracking_images(fields.get('images_json'))[0],
         'liens': _tracking_list(fields.get('liens_json')),
         'commentaires': _tracking_list(fields.get('commentaires_json')),
         'historique': _tracking_list(fields.get('historique_json')),
@@ -6223,6 +6266,7 @@ def _tracking_record_fields(card: dict) -> dict:
         'archived': card['archived'],
         'archived_at': card['archived_at'],
         'archived_by': card['archived_by'],
+        'images_json': json.dumps(card['images'], ensure_ascii=False),
         'liens_json': json.dumps(card['liens'], ensure_ascii=False),
         'commentaires_json': json.dumps(card['commentaires'], ensure_ascii=False),
         'historique_json': json.dumps(card['historique'], ensure_ascii=False),
@@ -6255,16 +6299,19 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'archived': _tracking_bool(payload.get('archived') if 'archived' in payload else base['archived']),
         'archived_at': _tracking_text(base.get('archived_at')),
         'archived_by': _tracking_text(base.get('archived_by')),
+        'images': list(base.get('images') or []),
         'commentaires': list(base.get('commentaires') or []),
         'historique': list(base.get('historique') or []),
         'created_at': _tracking_text(base.get('created_at')),
         'updated_at': _tracking_now(),
     })
+    images, image_warnings = _tracking_images(payload.get('images', base.get('images', [])))
+    candidate['images'] = images
     links, invalid_links = _tracking_extract_links(payload.get('liens', base.get('liens', [])))
     candidate['liens'] = links
 
     errors = []
-    warnings = []
+    warnings = list(image_warnings)
     if not candidate['titre'] and candidate['description']:
         candidate['titre'] = _tracking_summarize_title(candidate['description'])
         warnings.append("Le titre a été déduit de la description.")

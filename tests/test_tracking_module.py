@@ -102,6 +102,35 @@ class TrackingModuleTest(unittest.TestCase):
 
         self.assertEqual(metadata['archive_filters'], ['active', 'archived', 'all'])
 
+    def test_validate_tracking_card_keeps_valid_images_and_rejects_invalid_ones(self):
+        result = app.validate_tracking_card({
+            'titre': 'Carte avec image',
+            'description': 'Ajout d une capture ecran.',
+            'images': [
+                {
+                    'id': 'img-1',
+                    'name': 'capture.png',
+                    'mime': 'image/png',
+                    'size': 12345,
+                    'width': 800,
+                    'height': 600,
+                    'data_url': 'data:image/png;base64,AAAA',
+                },
+                {
+                    'id': 'img-2',
+                    'name': 'document.pdf',
+                    'mime': 'application/pdf',
+                    'size': 900,
+                    'data_url': 'data:application/pdf;base64,BBBB',
+                },
+            ],
+        }, actor='tester')
+
+        self.assertEqual(result['errors'], [])
+        self.assertEqual(len(result['card']['images']), 1)
+        self.assertEqual(result['card']['images'][0]['name'], 'capture.png')
+        self.assertTrue(any('ignor' in warning.lower() for warning in result['warnings']))
+
     @patch.dict(app.os.environ, {
         'ADMIN_USERNAME_EURES_BETA': 'eures-admin',
         'ADMIN_PASSWORD_EURES_BETA': 'eures-password',

@@ -477,6 +477,76 @@
       background: rgba(255, 255, 255, 0.7);
     }
 
+    .image-upload-stack {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .image-upload-meta {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .image-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .image-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 0.7rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .image-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid rgba(23, 50, 77, 0.08);
+      background: rgba(228, 236, 245, 0.7);
+    }
+
+    .image-card-meta {
+      display: grid;
+      gap: 0.18rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .image-card strong,
+    .image-card span {
+      overflow-wrap: anywhere;
+    }
+
+    .image-card-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .image-card-actions button,
+    .image-card-actions a {
+      min-height: auto;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--text);
+      padding: 0.45rem 0.8rem;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
     @media (max-width: 1080px) {
       .toolbar-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -650,6 +720,13 @@
             <label class="full" id="label-card-liens">Liens
               <textarea id="card-liens" name="liens" placeholder="Un lien par ligne"></textarea>
             </label>
+            <label class="full" id="label-card-images">Images jointes
+              <div class="image-upload-stack">
+                <input id="card-images-input" name="images" type="file" accept="image/*" multiple>
+                <div class="image-upload-meta" id="card-images-help">Ajoute une capture d’écran ou une image utile à la carte. Les images sont compressées avant enregistrement.</div>
+                <div class="image-gallery" id="card-images-gallery"></div>
+              </div>
+            </label>
             <label id="label-card-bloquant"><input id="card-bloquant" name="bloquant" type="checkbox"> Bloquant</label>
           </div>
         </form>
@@ -741,6 +818,13 @@
         fieldContext: "Contexte",
         fieldLinks: "Liens",
         fieldLinksPlaceholder: "Un lien par ligne",
+        fieldImages: "Images jointes",
+        fieldImagesHelp: "Ajoute une capture d’écran ou une image utile à la carte. Les images sont compressées avant enregistrement.",
+        imageEmpty: "Aucune image jointe.",
+        imageRemove: "Retirer",
+        imageOpen: "Ouvrir",
+        imageProcessing: "Préparation de l’image...",
+        imageCount: (count) => `${count} image(s) jointe(s).`,
         fieldBlocking: "Bloquant",
         translateEn: "Traduire en EN",
         translateDe: "Traduire en DE",
@@ -840,6 +924,13 @@
         fieldContext: "Context",
         fieldLinks: "Links",
         fieldLinksPlaceholder: "One link per line",
+        fieldImages: "Attached images",
+        fieldImagesHelp: "Add a screenshot or any useful image to the card. Images are compressed before saving.",
+        imageEmpty: "No attached images.",
+        imageRemove: "Remove",
+        imageOpen: "Open",
+        imageProcessing: "Preparing image...",
+        imageCount: (count) => `${count} attached image(s).`,
         fieldBlocking: "Blocking",
         translateEn: "Translate to EN",
         translateDe: "Translate to DE",
@@ -939,6 +1030,13 @@
         fieldContext: "Kontext",
         fieldLinks: "Links",
         fieldLinksPlaceholder: "Ein Link pro Zeile",
+        fieldImages: "Bilder",
+        fieldImagesHelp: "Fugen Sie einen Screenshot oder ein anderes nutzliches Bild zur Karte hinzu. Die Bilder werden vor dem Speichern komprimiert.",
+        imageEmpty: "Keine Bilder angehangt.",
+        imageRemove: "Entfernen",
+        imageOpen: "Offnen",
+        imageProcessing: "Bild wird vorbereitet...",
+        imageCount: (count) => `${count} Bild(er) angehangt.`,
         fieldBlocking: "Blockierend",
         translateEn: "Nach EN ubersetzen",
         translateDe: "Nach DE ubersetzen",
@@ -1038,6 +1136,14 @@
       return String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
+    function formatBytes(value) {
+      const size = Number(value || 0);
+      if (!size) return "";
+      if (size < 1024) return `${size} B`;
+      if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+      return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
     function defaultCard() {
       return {
         titre: "",
@@ -1056,6 +1162,7 @@
         archived: false,
         archived_at: "",
         archived_by: "",
+        images: [],
         liens: [],
         commentaires: [],
         historique: []
@@ -1144,6 +1251,8 @@
       document.getElementById("label-card-contexte").childNodes[0].textContent = t("fieldContext");
       document.getElementById("label-card-liens").childNodes[0].textContent = t("fieldLinks");
       document.getElementById("card-liens").placeholder = t("fieldLinksPlaceholder");
+      document.getElementById("label-card-images").childNodes[0].textContent = t("fieldImages");
+      document.getElementById("card-images-help").textContent = t("fieldImagesHelp");
       document.getElementById("label-card-bloquant").lastChild.textContent = ` ${t("fieldBlocking")}`;
       document.getElementById("translate-en-btn").textContent = t("translateEn");
       document.getElementById("translate-de-btn").textContent = t("translateDe");
@@ -1286,6 +1395,7 @@
             <span class="pill">${esc(labels.priorities?.[card.priorite] || card.priorite)}</span>
             <span class="pill">${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</span>
             <span class="pill">${esc(labels.types?.[card.type] || card.type)}</span>
+            ${Array.isArray(card.images) && card.images.length ? `<span class="pill">Img ${card.images.length}</span>` : ""}
             ${card.archived ? `<span class="pill archived">${esc(t("archivedBadge"))}</span>` : ""}
             ${card.bloquant ? `<span class="pill blocking">⛔ ${esc(t("fieldBlocking"))}</span>` : ""}
           </div>
@@ -1321,6 +1431,8 @@
       document.getElementById("card-liens").value = (card.liens || []).join("\n");
       document.getElementById("card-bloquant").checked = Boolean(card.bloquant);
       document.getElementById("archive-card-btn").textContent = card.archived ? t("restore") : t("archive");
+      document.getElementById("card-images-input").value = "";
+      renderImageGallery();
       bindAutoResize(document.getElementById("card-form"));
       autoResizeTextarea(document.getElementById("comment-body"));
 
@@ -1338,6 +1450,101 @@
       `;
       renderComments();
       renderHistory();
+    }
+
+    function renderImageGallery() {
+      const gallery = document.getElementById("card-images-gallery");
+      const images = Array.isArray(state.currentCard?.images) ? state.currentCard.images : [];
+      if (!images.length) {
+        gallery.innerHTML = `<div class="empty-state">${esc(t("imageEmpty"))}</div>`;
+        return;
+      }
+      gallery.innerHTML = images.map((image) => `
+        <article class="image-card">
+          <img src="${esc(image.data_url || "")}" alt="${esc(image.name || "image")}">
+          <div class="image-card-meta">
+            <strong>${esc(image.name || "image")}</strong>
+            <span>${esc([formatBytes(image.size), image.width && image.height ? `${image.width}×${image.height}` : ""].filter(Boolean).join(" · "))}</span>
+          </div>
+          <div class="image-card-actions">
+            <a href="${esc(image.data_url || "")}" target="_blank" rel="noreferrer">${esc(t("imageOpen"))}</a>
+            <button type="button" data-remove-image-id="${esc(image.id || "")}">${esc(t("imageRemove"))}</button>
+          </div>
+        </article>
+      `).join("");
+      gallery.querySelectorAll("[data-remove-image-id]").forEach((button) => {
+        button.addEventListener("click", () => removeCurrentImage(button.dataset.removeImageId));
+      });
+    }
+
+    function removeCurrentImage(imageId) {
+      if (!state.currentCard) return;
+      state.currentCard.images = (state.currentCard.images || []).filter((image) => image.id !== imageId);
+      renderImageGallery();
+      setStatus("drawer-status", t("imageCount")(state.currentCard.images.length));
+    }
+
+    async function fileToDataUrl(file) {
+      return await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(new Error("read_failed"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function imageFileToAttachment(file) {
+      const rawDataUrl = await fileToDataUrl(file);
+      const img = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("image_load_failed"));
+        image.src = rawDataUrl;
+      });
+      const maxDimension = 1600;
+      const ratio = Math.min(1, maxDimension / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+      const width = Math.max(1, Math.round((img.naturalWidth || 1) * ratio));
+      const height = Math.max(1, Math.round((img.naturalHeight || 1) * ratio));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      let mime = file.type && file.type.startsWith("image/") ? file.type : "image/png";
+      let dataUrl = canvas.toDataURL(mime);
+      if (dataUrl.length > 1_800_000) {
+        mime = "image/jpeg";
+        dataUrl = canvas.toDataURL("image/jpeg", 0.86);
+      }
+      return {
+        id: crypto.randomUUID ? crypto.randomUUID() : `img_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+        name: file.name || "image",
+        mime,
+        size: file.size || 0,
+        width,
+        height,
+        created_at: new Date().toISOString(),
+        data_url: dataUrl,
+      };
+    }
+
+    async function handleImageSelection(fileList) {
+      if (!state.currentCard) {
+        state.currentCard = defaultCard();
+      }
+      const files = Array.from(fileList || []).filter((file) => String(file.type || "").startsWith("image/"));
+      if (!files.length) return;
+      setStatus("drawer-status", t("imageProcessing"));
+      const nextImages = Array.isArray(state.currentCard.images) ? [...state.currentCard.images] : [];
+      for (const file of files) {
+        if (nextImages.length >= 4) break;
+        const image = await imageFileToAttachment(file);
+        nextImages.push(image);
+      }
+      state.currentCard.images = nextImages.slice(0, 4);
+      renderImageGallery();
+      setStatus("drawer-status", t("imageCount")(state.currentCard.images.length));
+      document.getElementById("card-images-input").value = "";
     }
 
     function renderComments() {
@@ -1383,6 +1590,7 @@
     function closeDrawer() {
       state.currentCard = null;
       document.getElementById("comment-body").value = "";
+      document.getElementById("card-images-input").value = "";
       renderDrawer();
     }
 
@@ -1412,6 +1620,7 @@
         attendu: document.getElementById("card-attendu").value.trim(),
         observe: document.getElementById("card-observe").value.trim(),
         contexte: document.getElementById("card-contexte").value.trim(),
+        images: Array.isArray(base.images) ? base.images : [],
         liens: document.getElementById("card-liens").value.split("\n").map((item) => item.trim()).filter(Boolean),
         bloquant: document.getElementById("card-bloquant").checked,
         archived: Boolean(base.archived)
@@ -1572,6 +1781,13 @@
       renderDrawer();
     });
     document.getElementById("close-drawer-btn").addEventListener("click", closeDrawer);
+    document.getElementById("card-images-input").addEventListener("change", async (event) => {
+      try {
+        await handleImageSelection(event.target.files);
+      } catch (error) {
+        setStatus("drawer-status", error.message || t("statusRequestError"));
+      }
+    });
     document.getElementById("save-card-btn").addEventListener("click", async () => {
       const payload = readFormCard();
       await saveCard(payload, state.currentCard?.record_id || null);
