@@ -1362,7 +1362,7 @@
           if (card.archived) return;
           const nextStatus = column.dataset.status;
           if (card.statut === nextStatus) return;
-          await saveCard({ ...card, statut: nextStatus }, recordId, true);
+          await saveCard({ ...card, statut: nextStatus }, recordId, true, false);
         });
       }
     }
@@ -1624,7 +1624,7 @@
       }
     }
 
-    async function saveCard(cardPayload, recordId = null, silent = false) {
+    async function saveCard(cardPayload, recordId = null, silent = false, reopenAfterSave = true) {
       if (state.isSavingCard) return;
       const url = recordId ? apiUrl(`/admin/tracking/cards/${recordId}`) : apiUrl("/admin/tracking/cards");
       const method = recordId ? "PATCH" : "POST";
@@ -1642,7 +1642,7 @@
           setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : t("statusSaved"));
         }
         await loadBoard();
-        if (payload.card?.record_id) openCard(payload.card.record_id);
+        if (reopenAfterSave && payload.card?.record_id) openCard(payload.card.record_id);
       } finally {
         setCardSavingState(false);
       }
