@@ -673,21 +673,6 @@
             <label class="full" id="label-card-titre">Sujet
               <input id="card-titre" name="titre" required placeholder="Ex. Empêcher la création en double d’une carte">
             </label>
-            <label id="label-card-priorite">Priorité
-              <select id="card-priorite" name="priorite"></select>
-            </label>
-            <label id="label-card-langue">Langue source
-              <select id="card-langue" name="langue_source"></select>
-            </label>
-            <label id="label-card-type">Type
-              <select id="card-type" name="type"></select>
-            </label>
-            <label id="label-card-statut">Statut
-              <select id="card-statut" name="statut"></select>
-            </label>
-            <label id="label-card-taille">Taille de dev
-              <select id="card-taille" name="taille_dev"></select>
-            </label>
             <label id="label-card-responsable">Responsable
               <input id="card-responsable" name="responsable" placeholder="Ex. Eric, équipe produit, dev front">
             </label>
@@ -708,6 +693,21 @@
             </label>
             <label class="full" id="label-card-indicateurs">Indicateurs associés
               <textarea id="card-indicateurs" name="indicateurs_suivi" placeholder="Qu’est-ce qu’on mesure après la mise en production ? Ex. taux de complétion, nombre de doublons, temps de saisie, usage de la fonctionnalité..."></textarea>
+            </label>
+            <label id="label-card-priorite">Priorité
+              <select id="card-priorite" name="priorite"></select>
+            </label>
+            <label id="label-card-type">Type
+              <select id="card-type" name="type"></select>
+            </label>
+            <label id="label-card-statut">Statut
+              <select id="card-statut" name="statut"></select>
+            </label>
+            <label id="label-card-taille">Taille de dev
+              <select id="card-taille" name="taille_dev"></select>
+            </label>
+            <label id="label-card-langue">Langue source
+              <select id="card-langue" name="langue_source"></select>
             </label>
             <label class="full" id="label-card-liens">Liens
               <textarea id="card-liens" name="liens" placeholder="Un lien par ligne"></textarea>
@@ -1307,7 +1307,8 @@
     }
 
     async function fetchJson(url, options = {}) {
-      const response = await fetch(url, { credentials: "same-origin", ...options });
+      const mergedHeaders = { "X-UI-Language": state.lang, ...(options.headers || {}) };
+      const response = await fetch(url, { credentials: "same-origin", ...options, headers: mergedHeaders });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(payload.error || t("statusRequestError"));
@@ -1536,9 +1537,8 @@
 
     function renderCardHtml(card) {
       const labels = currentLabels();
-      const githubActivity = card.github_last_activity_at
-        ? `${t("detailGithubLastActivity")} ${(card.github_last_activity_at || "").replace("T", " ").slice(0, 16)}`
-        : `${t("detailUpdated")} ${(card.updated_at || "").replace("T", " ").slice(0, 16)}`;
+      const activityDate = (card.github_last_activity_at || card.updated_at || "").replace("T", " ").slice(0, 16);
+      const activityPrefix = card.github_last_activity_at ? "GH" : "MAJ";
       return `
         <article class="card-item" data-record-id="${Number(card.record_id)}" draggable="${card.archived ? "false" : "true"}">
           <h3>${esc(card.titre || t("untitled"))}</h3>
@@ -1549,7 +1549,7 @@
             ${Array.isArray(card.images) && card.images.length ? `<span class="pill">Img ${card.images.length}</span>` : ""}
             ${card.archived ? `<span class="pill archived">${esc(t("archivedBadge"))}</span>` : ""}
           </div>
-          <div class="card-meta">${esc(card.reference || card.card_id || "")} · ${esc(card.responsable || t("noOwner"))} · ${esc(githubActivity)}</div>
+          <div class="card-meta">${esc(card.reference || card.card_id || "")} · ${esc(card.responsable || t("noOwner"))} · ${esc(activityPrefix)} ${esc(activityDate)}</div>
         </article>
       `;
     }

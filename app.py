@@ -269,6 +269,92 @@ EURES_TRACKING_UI_LABELS = {
         'scope_label': 'Global',
     },
 }
+EURES_TRACKING_MESSAGES = {
+    'fr': {
+        'invalid_image_format': "L'image {name} a été ignorée car son format est invalide.",
+        'invalid_image_type': "L'image {name} a été ignorée car son type n'est pas supporté.",
+        'invalid_image_too_large': "L'image {name} a été ignorée car elle est trop volumineuse.",
+        'only_max_images': "Seules {count} images ont été conservées.",
+        'title_derived': "Le titre a été déduit de la description.",
+        'title_required': "Le titre est obligatoire.",
+        'content_required': "Ajoutez au moins une description, un constat, un attendu, un contexte ou des indicateurs associés.",
+        'links_ignored': "Certains liens ont été ignorés car ils ne sont pas au format http(s).",
+        'history_created': "Carte créée.",
+        'history_archived': "Carte archivée.",
+        'history_restored': "Carte restaurée.",
+        'history_updated': "Carte mise à jour.",
+        'history_status_changed': "Déplacement vers {status}.",
+        'history_comment_added': "Commentaire ajouté.",
+        'history_images_added': "{count} image(s) ajoutée(s).",
+        'history_images_removed': "{count} image(s) supprimée(s).",
+        'draft_structured': "Carte structurée automatiquement à partir du texte libre.",
+        'comment_required': "Le commentaire est obligatoire.",
+        'card_not_found': "Carte de suivi introuvable.",
+        'tracking_config_incomplete': "La configuration du suivi EURES est incomplète.",
+        'github_pr_opened': "PR #{number} ouverte sur GitHub.",
+        'github_pr_updated': "PR #{number} mise à jour sur GitHub.",
+        'github_pr_merged': "PR #{number} fusionnée dans {branch}.",
+        'github_pr_closed': "PR #{number} fermée sans fusion.",
+        'deployment_succeeded': "Déploiement {environment} réussi.",
+        'unknown_target_branch': "la branche cible",
+    },
+    'en': {
+        'invalid_image_format': "Image {name} was ignored because its format is invalid.",
+        'invalid_image_type': "Image {name} was ignored because its type is not supported.",
+        'invalid_image_too_large': "Image {name} was ignored because it is too large.",
+        'only_max_images': "Only {count} images were kept.",
+        'title_derived': "The title was derived from the description.",
+        'title_required': "Title is required.",
+        'content_required': "Add at least a description, an observation, a solution idea, some context or success indicators.",
+        'links_ignored': "Some links were ignored because they are not valid http(s) URLs.",
+        'history_created': "Card created.",
+        'history_archived': "Card archived.",
+        'history_restored': "Card restored.",
+        'history_updated': "Card updated.",
+        'history_status_changed': "Moved to {status}.",
+        'history_comment_added': "Comment added.",
+        'history_images_added': "{count} image(s) added.",
+        'history_images_removed': "{count} image(s) removed.",
+        'draft_structured': "Card was structured automatically from the free text.",
+        'comment_required': "Comment is required.",
+        'card_not_found': "Tracking card not found.",
+        'tracking_config_incomplete': "EURES tracking configuration is incomplete.",
+        'github_pr_opened': "PR #{number} opened on GitHub.",
+        'github_pr_updated': "PR #{number} updated on GitHub.",
+        'github_pr_merged': "PR #{number} merged into {branch}.",
+        'github_pr_closed': "PR #{number} closed without merge.",
+        'deployment_succeeded': "{environment} deployment succeeded.",
+        'unknown_target_branch': "the target branch",
+    },
+    'de': {
+        'invalid_image_format': "Bild {name} wurde ignoriert, weil sein Format ungueltig ist.",
+        'invalid_image_type': "Bild {name} wurde ignoriert, weil sein Typ nicht unterstuetzt wird.",
+        'invalid_image_too_large': "Bild {name} wurde ignoriert, weil es zu gross ist.",
+        'only_max_images': "Es wurden nur {count} Bilder behalten.",
+        'title_derived': "Der Titel wurde aus der Beschreibung abgeleitet.",
+        'title_required': "Ein Titel ist erforderlich.",
+        'content_required': "Fugen Sie mindestens eine Beschreibung, eine aktuelle Situation, eine Losungsidee, Kontext oder Erfolgsindikatoren hinzu.",
+        'links_ignored': "Einige Links wurden ignoriert, weil sie keine gueltigen http(s)-Links sind.",
+        'history_created': "Karte erstellt.",
+        'history_archived': "Karte archiviert.",
+        'history_restored': "Karte wiederhergestellt.",
+        'history_updated': "Karte aktualisiert.",
+        'history_status_changed': "In {status} verschoben.",
+        'history_comment_added': "Kommentar hinzugefugt.",
+        'history_images_added': "{count} Bild(er) hinzugefugt.",
+        'history_images_removed': "{count} Bild(er) entfernt.",
+        'draft_structured': "Karte wurde automatisch aus dem Freitext strukturiert.",
+        'comment_required': "Ein Kommentar ist erforderlich.",
+        'card_not_found': "Tracking-Karte nicht gefunden.",
+        'tracking_config_incomplete': "Die EURES-Tracking-Konfiguration ist unvollstandig.",
+        'github_pr_opened': "PR #{number} auf GitHub geoffnet.",
+        'github_pr_updated': "PR #{number} auf GitHub aktualisiert.",
+        'github_pr_merged': "PR #{number} nach {branch} gemergt.",
+        'github_pr_closed': "PR #{number} ohne Merge geschlossen.",
+        'deployment_succeeded': "{environment}-Deployment erfolgreich.",
+        'unknown_target_branch': "die Ziel-Branch",
+    },
+}
 EURES_MATCHING_FIELDS = {
     'besoin_id',
     'candidat_id',
@@ -5994,6 +6080,28 @@ def _tracking_ui_language(value: str | None) -> str:
     return raw if raw in EURES_TRACKING_UI_LABELS else 'fr'
 
 
+def _tracking_message(language: str | None, key: str, **kwargs) -> str:
+    lang = _tracking_ui_language(language)
+    template = (
+        EURES_TRACKING_MESSAGES.get(lang, {}).get(key)
+        or EURES_TRACKING_MESSAGES['fr'].get(key)
+        or key
+    )
+    try:
+        return template.format(**kwargs)
+    except Exception:
+        return template
+
+
+def _tracking_request_language(payload: dict | None = None) -> str:
+    header_lang = _tracking_ui_language(request.headers.get('X-UI-Language'))
+    if header_lang:
+        return header_lang
+    if isinstance(payload, dict):
+        return _tracking_ui_language(payload.get('langue_source'))
+    return 'fr'
+
+
 def _tracking_choice(value, allowed: tuple[str, ...], fallback: str) -> str:
     raw = eures_fold_text(value)
     aliases = {
@@ -6037,7 +6145,7 @@ def _tracking_text(value) -> str:
     return str(value or '').strip()
 
 
-def _tracking_images(value, max_items: int = 4, max_data_url_length: int = 3_000_000) -> tuple[list[dict], list[str]]:
+def _tracking_images(value, language: str = 'fr', max_items: int = 4, max_data_url_length: int = 3_000_000) -> tuple[list[dict], list[str]]:
     raw_items = _tracking_list(value)
     images = []
     warnings = []
@@ -6051,13 +6159,13 @@ def _tracking_images(value, max_items: int = 4, max_data_url_length: int = 3_000
         image_id = _tracking_text(item.get('id')) or secrets.token_urlsafe(8)
         created_at = _tracking_text(item.get('created_at')) or _tracking_now()
         if not data_url.startswith('data:image/'):
-            warnings.append(f"L'image {name} a été ignorée car son format est invalide.")
+            warnings.append(_tracking_message(language, 'invalid_image_format', name=name))
             continue
         if mime not in allowed_mimes:
-            warnings.append(f"L'image {name} a été ignorée car son type n'est pas supporté.")
+            warnings.append(_tracking_message(language, 'invalid_image_type', name=name))
             continue
         if len(data_url) > max_data_url_length:
-            warnings.append(f"L'image {name} a été ignorée car elle est trop volumineuse.")
+            warnings.append(_tracking_message(language, 'invalid_image_too_large', name=name))
             continue
         images.append({
             'id': image_id,
@@ -6071,7 +6179,7 @@ def _tracking_images(value, max_items: int = 4, max_data_url_length: int = 3_000
         })
         if len(images) >= max_items:
             if len(raw_items) > max_items:
-                warnings.append(f"Seules {max_items} images ont été conservées.")
+                warnings.append(_tracking_message(language, 'only_max_images', count=max_items))
             break
     return images, warnings
 
@@ -6086,6 +6194,23 @@ def _tracking_summarize_title(value: str, max_length: int = 72) -> str:
     if ' ' in trimmed:
         trimmed = trimmed.rsplit(' ', 1)[0]
     return trimmed.rstrip(' .:;,-') + '...'
+
+
+def _tracking_title_from_free_text(value: str) -> str:
+    text = ' '.join(str(value or '').split())
+    if not text:
+        return ''
+    first_sentence = re.split(r'(?<=[\.\!\?\:])\s+|\n+', text, maxsplit=1)[0].strip(' -•\t')
+    first_sentence = re.sub(
+        r'^(dans un premier temps|aujourd[’\' ]hui|actuellement|pour le moment|j[’\' ]aimerais|je voudrais|il faudrait|possible de|peut[- ]on|est[- ]ce que|en fait)\s+',
+        '',
+        first_sentence,
+        flags=re.IGNORECASE,
+    ).strip(' ,:;-')
+    words = first_sentence.split()
+    if len(words) > 12:
+        first_sentence = ' '.join(words[:12])
+    return _tracking_summarize_title(first_sentence or text)
 
 
 def _tracking_now() -> str:
@@ -6240,7 +6365,7 @@ def _ensure_grist_table(config: dict, headers: dict, columns: dict[str, str]):
 def _tracking_table_ready() -> tuple[dict, dict]:
     config = get_eures_tracking_config()
     if not config:
-        raise RuntimeError('EURES tracking configuration is incomplete.')
+        raise RuntimeError(_tracking_message('fr', 'tracking_config_incomplete'))
     headers = _tracking_admin_headers(config)
     _ensure_grist_table(config, headers, EURES_TRACKING_TABLE_COLUMNS)
     return config, headers
@@ -6271,7 +6396,7 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'archived': _tracking_bool(fields.get('archived')),
         'archived_at': _tracking_text(fields.get('archived_at')),
         'archived_by': _tracking_text(fields.get('archived_by')),
-        'images': _tracking_images(fields.get('images_json'))[0],
+        'images': _tracking_images(fields.get('images_json'), fields.get('langue_source') or 'fr')[0],
         'liens': _tracking_list(fields.get('liens_json')),
         'commentaires': _tracking_list(fields.get('commentaires_json')),
         'historique': _tracking_list(fields.get('historique_json')),
@@ -6327,10 +6452,11 @@ def _tracking_record_fields(card: dict) -> dict:
     }
 
 
-def validate_tracking_card(payload: dict, existing: dict | None = None, actor: str = 'admin') -> dict:
+def validate_tracking_card(payload: dict, existing: dict | None = None, actor: str = 'admin', language: str | None = None) -> dict:
     base = _tracking_default_card()
     if existing:
         base.update(existing)
+    message_language = _tracking_ui_language(language or payload.get('langue_source') or base.get('langue_source'))
     candidate = dict(base)
     candidate.update({
         'card_id': _tracking_text(payload.get('card_id')) or base['card_id'],
@@ -6365,7 +6491,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'created_at': _tracking_text(base.get('created_at')),
         'updated_at': _tracking_now(),
     })
-    images, image_warnings = _tracking_images(payload.get('images', base.get('images', [])))
+    images, image_warnings = _tracking_images(payload.get('images', base.get('images', [])), message_language)
     candidate['images'] = images
     links, invalid_links = _tracking_extract_links(payload.get('liens', base.get('liens', [])))
     candidate['liens'] = links
@@ -6374,13 +6500,13 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
     warnings = list(image_warnings)
     if not candidate['titre'] and candidate['description']:
         candidate['titre'] = _tracking_summarize_title(candidate['description'])
-        warnings.append("Le titre a été déduit de la description.")
+        warnings.append(_tracking_message(message_language, 'title_derived'))
     if not candidate['titre']:
-        errors.append("Le titre est obligatoire.")
+        errors.append(_tracking_message(message_language, 'title_required'))
     if not candidate['description'] and not candidate['observe'] and not candidate['attendu'] and not candidate['contexte'] and not candidate['indicateurs_suivi']:
-        errors.append("Ajoutez au moins une description, un constat, un attendu ou un contexte.")
+        errors.append(_tracking_message(message_language, 'content_required'))
     if invalid_links:
-        warnings.append("Certains liens ont été ignorés car ils ne sont pas au format http(s).")
+        warnings.append(_tracking_message(message_language, 'links_ignored'))
     if candidate['archived'] and not candidate['archived_at']:
         candidate['archived_at'] = candidate['updated_at']
         candidate['archived_by'] = actor
@@ -6390,7 +6516,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
 
     if not candidate['created_at']:
         candidate['created_at'] = candidate['updated_at']
-        candidate['historique'].append(_tracking_history_event(actor, 'created', 'Carte créée.'))
+        candidate['historique'].append(_tracking_history_event(actor, 'created', _tracking_message(message_language, 'history_created')))
     else:
         if existing and _tracking_bool(existing.get('archived')) != candidate['archived']:
             if candidate['archived']:
@@ -6400,7 +6526,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
                     _tracking_history_event(
                         actor,
                         'archived',
-                        'Carte archivée.',
+                        _tracking_message(message_language, 'history_archived'),
                     )
                 )
             else:
@@ -6408,7 +6534,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
                     _tracking_history_event(
                         actor,
                         'restored',
-                        'Carte restaurée.',
+                        _tracking_message(message_language, 'history_restored'),
                     )
                 )
                 candidate['archived_at'] = ''
@@ -6418,11 +6544,19 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
                 _tracking_history_event(
                     actor,
                     'status_changed',
-                    f"Déplacement vers {candidate['statut']}.",
+                    _tracking_message(message_language, 'history_status_changed', status=candidate['statut']),
                     {'from': existing.get('statut'), 'to': candidate['statut']},
                 )
             )
-        candidate['historique'].append(_tracking_history_event(actor, 'updated', 'Carte mise à jour.'))
+        existing_image_ids = {str(item.get('id') or '') for item in (existing.get('images') or []) if isinstance(item, dict)} if existing else set()
+        next_image_ids = {str(item.get('id') or '') for item in candidate['images'] if isinstance(item, dict)}
+        added_images = len([image_id for image_id in next_image_ids if image_id and image_id not in existing_image_ids])
+        removed_images = len([image_id for image_id in existing_image_ids if image_id and image_id not in next_image_ids])
+        if added_images:
+            candidate['historique'].append(_tracking_history_event(actor, 'images_added', _tracking_message(message_language, 'history_images_added', count=added_images)))
+        if removed_images:
+            candidate['historique'].append(_tracking_history_event(actor, 'images_removed', _tracking_message(message_language, 'history_images_removed', count=removed_images)))
+        candidate['historique'].append(_tracking_history_event(actor, 'updated', _tracking_message(message_language, 'history_updated')))
     return {
         'card': candidate,
         'errors': errors,
@@ -6430,11 +6564,11 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
     }
 
 
-def draft_tracking_card_from_text(text: str, source_language: str = 'fr', actor: str = 'assistant', source: str = 'free_text') -> dict:
+def draft_tracking_card_from_text(text: str, source_language: str = 'fr', actor: str = 'assistant', source: str = 'free_text', language: str | None = None) -> dict:
     normalized = _tracking_text(text)
     folded = eures_fold_text(normalized)
     lines = [line.strip(' -•\t') for line in normalized.splitlines() if line.strip()]
-    title = _tracking_summarize_title(lines[0] if lines else normalized)
+    title = _tracking_title_from_free_text(lines[0] if lines else normalized)
 
     detected_type = 'evolution'
     if any(token in folded for token in ('bug', 'erreur', 'anomal', 'incident', 'defect', 'fehler')):
@@ -6476,9 +6610,9 @@ def draft_tracking_card_from_text(text: str, source_language: str = 'fr', actor:
         'responsable': '',
         'source': source,
         'liens': re.findall(r'https?://\S+', normalized),
-    }, actor=actor)
+    }, actor=actor, language=language or source_language)
     if not validated['errors']:
-        validated['warnings'].append("Brouillon structuré automatiquement à partir du texte libre.")
+        validated['warnings'].append(_tracking_message(language or source_language, 'draft_structured'))
     return validated
 
 
@@ -6653,6 +6787,14 @@ def _tracking_verify_hmac_signature(secret: str, payload: bytes, signature_heade
     return hmac.compare_digest(f'{prefix}{digest}', signature_header)
 
 
+def _tracking_verify_deployment_webhook(secret: str, payload: bytes) -> bool:
+    signature = request.headers.get('X-Tracking-Signature-256', '')
+    if signature:
+        return _tracking_verify_hmac_signature(secret, payload, signature)
+    header_secret = _tracking_text(request.headers.get('X-Tracking-Webhook-Secret'))
+    return bool(secret and header_secret and hmac.compare_digest(header_secret, secret))
+
+
 def _tracking_extract_reference_from_texts(*values) -> str:
     for value in values:
         text = _tracking_text(value)
@@ -6714,6 +6856,7 @@ def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
     card = _tracking_card_from_record(record)
     if not card:
         return {'ok': False, 'error': 'Tracking card payload is invalid.'}
+    language = card.get('langue_source') or 'fr'
 
     pr_number = str(pr.get('number') or payload.get('number') or '')
     pr_url = _tracking_text(pr.get('html_url'))
@@ -6740,7 +6883,7 @@ def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
             history,
             actor,
             'github_pr_opened',
-            f"PR #{pr_number or '?'} ouverte sur GitHub.",
+            _tracking_message(language, 'github_pr_opened', number=pr_number or '?'),
             {'reference': reference, 'branch': branch, 'url': pr_url},
         )
     elif action == 'synchronize':
@@ -6749,7 +6892,7 @@ def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
             history,
             actor,
             'github_pr_updated',
-            f"PR #{pr_number or '?'} mise à jour sur GitHub.",
+            _tracking_message(language, 'github_pr_updated', number=pr_number or '?'),
             {'reference': reference, 'branch': branch, 'url': pr_url},
         )
     elif action == 'closed' and merged:
@@ -6760,7 +6903,7 @@ def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
             history,
             actor,
             'github_pr_merged',
-            f"PR #{pr_number or '?'} fusionnée dans {base.get('ref') or 'la branche cible'}.",
+            _tracking_message(language, 'github_pr_merged', number=pr_number or '?', branch=base.get('ref') or _tracking_message(language, 'unknown_target_branch')),
             {'reference': reference, 'branch': branch, 'url': pr_url},
         )
     elif action == 'closed':
@@ -6769,7 +6912,7 @@ def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
             history,
             actor,
             'github_pr_closed',
-            f"PR #{pr_number or '?'} fermée sans fusion.",
+            _tracking_message(language, 'github_pr_closed', number=pr_number or '?'),
             {'reference': reference, 'branch': branch, 'url': pr_url},
         )
     else:
@@ -6803,6 +6946,7 @@ def apply_tracking_deployment_event(payload: dict, actor: str = 'deployment-bot'
     card = _tracking_card_from_record(record)
     if not card:
         return {'ok': False, 'error': 'Tracking card payload is invalid.'}
+    language = card.get('langue_source') or 'fr'
 
     production_url = _tracking_text(payload.get('url') or payload.get('deployment_url'))
     if production_url:
@@ -6817,7 +6961,7 @@ def apply_tracking_deployment_event(payload: dict, actor: str = 'deployment-bot'
         history,
         actor,
         'deployment_succeeded',
-        f"Déploiement {card['production_environment']} réussi.",
+        _tracking_message(language, 'deployment_succeeded', environment=card['production_environment']),
         {'reference': reference, 'url': production_url},
     )
     card['historique'] = history
@@ -6826,7 +6970,7 @@ def apply_tracking_deployment_event(payload: dict, actor: str = 'deployment-bot'
     return {'ok': True, 'updated': True, 'reference': card['reference'], 'card': card}
 
 
-def save_tracking_card(payload: dict, actor: str = 'admin') -> dict:
+def save_tracking_card(payload: dict, actor: str = 'admin', language: str | None = None) -> dict:
     with _EURES_TRACKING_SAVE_LOCK:
         existing_record = None
         existing_card = None
@@ -6841,7 +6985,7 @@ def save_tracking_card(payload: dict, actor: str = 'admin') -> dict:
         if existing_record:
             existing_card = _tracking_card_from_record(existing_record)
 
-        validated = validate_tracking_card(payload, existing=existing_card, actor=actor)
+        validated = validate_tracking_card(payload, existing=existing_card, actor=actor, language=language)
         if validated['errors']:
             return {'ok': False, **validated}
 
@@ -6872,19 +7016,19 @@ def delete_tracking_card(record_id: int):
         raise RuntimeError(f'Failed to delete tracking card: HTTP {resp.status_code} - {resp.text}')
 
 
-def add_tracking_comment(record_id: int, body: str, actor: str) -> dict:
+def add_tracking_comment(record_id: int, body: str, actor: str, language: str = 'fr') -> dict:
     config, headers = _tracking_table_ready()
     record = fetch_record_by_id(config['doc_id'], config['table_id'], record_id, headers)
     if not record:
-        raise RuntimeError('Tracking card not found.')
+        raise RuntimeError(_tracking_message(language, 'card_not_found'))
     card = _tracking_card_from_record(record)
     comment = _tracking_comment(actor, body)
     if not comment['body']:
-        raise RuntimeError('Comment body is required.')
+        raise RuntimeError(_tracking_message(language, 'comment_required'))
     comments = list(card.get('commentaires') or [])
     history = list(card.get('historique') or [])
     comments.append(comment)
-    history.append(_tracking_history_event(actor, 'commented', 'Commentaire ajouté.'))
+    history.append(_tracking_history_event(actor, 'commented', _tracking_message(language, 'history_comment_added')))
     updated_at = _tracking_now()
     update_table_record_by_id(
         config,
@@ -9093,11 +9237,12 @@ def admin_eures_tracking_cards(form_id: str):
     if form_id != 'eures-beta':
         return jsonify({'error': f'Unknown tracking admin form: {form_id}'}), 404
     actor = get_admin_actor(form_id, fallback='admin')
+    language = _tracking_request_language()
     try:
         if request.method == 'GET':
             return jsonify({'ok': True, 'cards': list_tracking_cards(), 'metadata': tracking_metadata()})
         payload = request.get_json(silent=True) or {}
-        result = save_tracking_card(payload, actor=actor)
+        result = save_tracking_card(payload, actor=actor, language=language)
         return jsonify(result), (200 if result.get('ok') else 400)
     except Exception as e:
         app.logger.exception('EURES tracking cards failed')
@@ -9110,6 +9255,7 @@ def admin_eures_tracking_card(form_id: str, record_id: int):
     if form_id != 'eures-beta':
         return jsonify({'error': f'Unknown tracking admin form: {form_id}'}), 404
     actor = get_admin_actor(form_id, fallback='admin')
+    language = _tracking_request_language()
     try:
         config, headers = _tracking_table_ready()
         record = fetch_record_by_id(config['doc_id'], config['table_id'], record_id, headers)
@@ -9122,7 +9268,7 @@ def admin_eures_tracking_card(form_id: str, record_id: int):
             return jsonify({'ok': True})
         payload = request.get_json(silent=True) or {}
         payload['record_id'] = record_id
-        result = save_tracking_card(payload, actor=actor)
+        result = save_tracking_card(payload, actor=actor, language=language)
         return jsonify(result), (200 if result.get('ok') else 400)
     except Exception as e:
         app.logger.exception('EURES tracking card failed')
@@ -9135,9 +9281,10 @@ def admin_eures_tracking_card_comment(form_id: str, record_id: int):
     if form_id != 'eures-beta':
         return jsonify({'error': f'Unknown tracking admin form: {form_id}'}), 404
     actor = get_admin_actor(form_id, fallback='admin')
+    language = _tracking_request_language()
     payload = request.get_json(silent=True) or {}
     try:
-        card = add_tracking_comment(record_id, payload.get('body') or '', actor)
+        card = add_tracking_comment(record_id, payload.get('body') or '', actor, language=language)
         return jsonify({'ok': True, 'card': card})
     except Exception as e:
         app.logger.exception('EURES tracking comment failed')
@@ -9151,14 +9298,16 @@ def admin_eures_tracking_ai_draft(form_id: str):
         return jsonify({'error': f'Unknown tracking admin form: {form_id}'}), 404
     payload = request.get_json(silent=True) or {}
     actor = get_admin_actor(form_id, fallback='assistant')
+    language = _tracking_request_language(payload)
     draft = draft_tracking_card_from_text(
         payload.get('text') or '',
         source_language=payload.get('langue_source') or 'fr',
         actor=actor,
         source=payload.get('source') or 'free_text',
+        language=language,
     )
     if payload.get('create') and not draft['errors']:
-        created = save_tracking_card(draft['card'], actor=actor)
+        created = save_tracking_card(draft['card'], actor=actor, language=language)
         created['warnings'] = list(dict.fromkeys((draft.get('warnings') or []) + (created.get('warnings') or [])))
         return jsonify(created), (200 if created.get('ok') else 400)
     return jsonify({'ok': not bool(draft['errors']), **draft}), (200 if not draft['errors'] else 400)
@@ -9171,6 +9320,7 @@ def admin_eures_tracking_ai_validate(form_id: str):
         return jsonify({'error': f'Unknown tracking admin form: {form_id}'}), 404
     payload = request.get_json(silent=True) or {}
     actor = get_admin_actor(form_id, fallback='assistant')
+    language = _tracking_request_language(payload)
     existing = None
     record_id = payload.get('record_id')
     try:
@@ -9178,7 +9328,7 @@ def admin_eures_tracking_ai_validate(form_id: str):
             config, headers = _tracking_table_ready()
             record = fetch_record_by_id(config['doc_id'], config['table_id'], int(record_id), headers)
             existing = _tracking_card_from_record(record) if record else None
-        result = validate_tracking_card(payload, existing=existing, actor=actor)
+        result = validate_tracking_card(payload, existing=existing, actor=actor, language=language)
         return jsonify({'ok': not bool(result['errors']), **result}), (200 if not result['errors'] else 400)
     except Exception as e:
         app.logger.exception('EURES tracking validation failed')
@@ -9201,7 +9351,7 @@ def eures_tracking_github_webhook(form_id: str):
         return jsonify({'error': f'Unknown tracking webhook form: {form_id}'}), 404
     secret = _tracking_get_github_webhook_secret()
     signature = request.headers.get('X-Hub-Signature-256', '')
-    raw_payload = request.get_data(cache=False)
+    raw_payload = request.get_data()
     if not _tracking_verify_hmac_signature(secret, raw_payload, signature):
         return jsonify({'error': 'Invalid webhook signature.'}), 403
     event_name = _tracking_text(request.headers.get('X-GitHub-Event'))
@@ -9219,8 +9369,8 @@ def eures_tracking_deployment_webhook(form_id: str):
     if form_id != 'eures-beta':
         return jsonify({'error': f'Unknown tracking deployment form: {form_id}'}), 404
     secret = _tracking_get_deploy_webhook_secret()
-    header_secret = _tracking_text(request.headers.get('X-Tracking-Webhook-Secret'))
-    if not secret or not header_secret or not hmac.compare_digest(header_secret, secret):
+    raw_payload = request.get_data()
+    if not _tracking_verify_deployment_webhook(secret, raw_payload):
         return jsonify({'error': 'Invalid deployment webhook secret.'}), 403
     payload = request.get_json(silent=True) or {}
     try:
