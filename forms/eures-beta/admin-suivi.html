@@ -757,6 +757,8 @@
       lang: localStorage.getItem("eures-tracking-lang") || "fr",
       currentCard: null,
       draggingRecordId: null,
+      suppressNextCardClick: false,
+      isSavingCard: false,
     };
 
     const uiText = {
@@ -840,6 +842,7 @@
         detailUpdated: "Mise à jour",
         statusLoading: "Chargement du suivi projet...",
         statusSaved: "Carte enregistrée.",
+        statusSaving: "Enregistrement en cours...",
         statusCommentNeedsSave: "Enregistre d’abord la carte avant d’ajouter un commentaire.",
         statusCommentAdded: "Commentaire ajouté.",
         statusArchiveNeedsSave: "Enregistre d’abord la carte avant de l’archiver.",
@@ -940,6 +943,7 @@
         detailUpdated: "Updated",
         statusLoading: "Loading project tracking...",
         statusSaved: "Card saved.",
+        statusSaving: "Saving...",
         statusCommentNeedsSave: "Save the card before adding a comment.",
         statusCommentAdded: "Comment added.",
         statusArchiveNeedsSave: "Save the card before archiving it.",
@@ -1040,6 +1044,7 @@
         detailUpdated: "Aktualisiert",
         statusLoading: "Projektverfolgung wird geladen...",
         statusSaved: "Karte gespeichert.",
+        statusSaving: "Speichern lauft...",
         statusCommentNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie einen Kommentar hinzufugen.",
         statusCommentAdded: "Kommentar hinzugefugt.",
         statusArchiveNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie sie archivieren.",
@@ -1084,6 +1089,14 @@
 
     function setStatus(id, text) {
       document.getElementById(id).textContent = text || "";
+    }
+
+    function setCardSavingState(isSaving) {
+      state.isSavingCard = Boolean(isSaving);
+      const saveButton = document.getElementById("save-card-btn");
+      if (!saveButton) return;
+      saveButton.disabled = state.isSavingCard;
+      saveButton.setAttribute("aria-disabled", state.isSavingCard ? "true" : "false");
     }
 
     function autoResizeTextarea(textarea) {
@@ -1302,18 +1315,31 @@
       }).join("");
 
       for (const cardEl of board.querySelectorAll(".card-item")) {
-        cardEl.addEventListener("click", () => openCard(Number(cardEl.dataset.recordId)));
+        cardEl.addEventListener("click", () => {
+          if (state.suppressNextCardClick) {
+            state.suppressNextCardClick = false;
+            return;
+          }
+          openCard(Number(cardEl.dataset.recordId));
+        });
         cardEl.addEventListener("dragstart", (event) => {
           if (cardEl.getAttribute("draggable") !== "true") {
             event.preventDefault();
             return;
           }
+          state.suppressNextCardClick = false;
           state.draggingRecordId = Number(cardEl.dataset.recordId);
           cardEl.classList.add("is-dragging");
           event.dataTransfer.effectAllowed = "move";
           event.dataTransfer.setData("text/plain", String(state.draggingRecordId));
         });
         cardEl.addEventListener("dragend", () => {
+          if (state.draggingRecordId) {
+            state.suppressNextCardClick = true;
+            window.setTimeout(() => {
+              state.suppressNextCardClick = false;
+            }, 180);
+          }
           state.draggingRecordId = null;
           cardEl.classList.remove("is-dragging");
           board.querySelectorAll(".board-column").forEach((col) => col.classList.remove("is-drop-target"));
@@ -1599,18 +1625,27 @@
     }
 
     async function saveCard(cardPayload, recordId = null, silent = false) {
+      if (state.isSavingCard) return;
       const url = recordId ? apiUrl(`/admin/tracking/cards/${recordId}`) : apiUrl("/admin/tracking/cards");
       const method = recordId ? "PATCH" : "POST";
-      const payload = await fetchJson(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cardPayload)
-      });
+      setCardSavingState(true);
       if (!silent) {
-        setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : t("statusSaved"));
+        setStatus("drawer-status", t("statusSaving"));
       }
-      await loadBoard();
-      if (payload.card?.record_id) openCard(payload.card.record_id);
+      try {
+        const payload = await fetchJson(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cardPayload)
+        });
+        if (!silent) {
+          setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : t("statusSaved"));
+        }
+        await loadBoard();
+        if (payload.card?.record_id) openCard(payload.card.record_id);
+      } finally {
+        setCardSavingState(false);
+      }
     }
 
     async function addComment() {
@@ -1725,6 +1760,7 @@
       }
     });
     document.getElementById("save-card-btn").addEventListener("click", async () => {
+      if (state.isSavingCard) return;
       const payload = readFormCard();
       await saveCard(payload, state.currentCard?.record_id || null);
     });
