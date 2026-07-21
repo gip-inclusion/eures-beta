@@ -433,8 +433,8 @@
           <p id="page-lede">Un kanban embarqué dans l’admin EURES pour suivre les sujets, les arbitrages, les blocages et les décisions sans sortir du projet.</p>
         </div>
         <div class="head-actions">
-          <a href="/admin/eures-beta/">Retour à l’admin EURES</a>
-          <a href="/admin/eures-beta/logout">Se déconnecter</a>
+          <a id="back-admin-link" href="/admin/eures-beta/">Retour à l’admin EURES</a>
+          <a id="logout-link" href="/admin/eures-beta/logout">Se déconnecter</a>
         </div>
       </div>
       <div class="lang-switch" id="lang-switch"></div>
@@ -489,46 +489,46 @@
       <section>
         <form id="card-form">
           <div class="form-grid">
-            <label class="full">Titre
+            <label class="full" id="label-card-titre">Titre
               <input id="card-titre" name="titre" required>
             </label>
-            <label>Langue source
+            <label id="label-card-langue">Langue source
               <select id="card-langue" name="langue_source"></select>
             </label>
-            <label>Type
+            <label id="label-card-type">Type
               <select id="card-type" name="type"></select>
             </label>
-            <label>Statut
+            <label id="label-card-statut">Statut
               <select id="card-statut" name="statut"></select>
             </label>
-            <label>Priorité
+            <label id="label-card-priorite">Priorité
               <select id="card-priorite" name="priorite"></select>
             </label>
-            <label>Taille de dev
+            <label id="label-card-taille">Taille de dev
               <select id="card-taille" name="taille_dev"></select>
             </label>
-            <label>Responsable
+            <label id="label-card-responsable">Responsable
               <input id="card-responsable" name="responsable">
             </label>
-            <label>Source
+            <label id="label-card-source">Source
               <input id="card-source" name="source">
             </label>
-            <label class="full">Description
+            <label class="full" id="label-card-description">Description
               <textarea id="card-description" name="description"></textarea>
             </label>
-            <label class="full">Attendu
+            <label class="full" id="label-card-attendu">Attendu
               <textarea id="card-attendu" name="attendu"></textarea>
             </label>
-            <label class="full">Observé
+            <label class="full" id="label-card-observe">Observé
               <textarea id="card-observe" name="observe"></textarea>
             </label>
-            <label class="full">Contexte
+            <label class="full" id="label-card-contexte">Contexte
               <textarea id="card-contexte" name="contexte"></textarea>
             </label>
-            <label class="full">Liens
+            <label class="full" id="label-card-liens">Liens
               <textarea id="card-liens" name="liens" placeholder="Un lien par ligne"></textarea>
             </label>
-            <label><input id="card-bloquant" name="bloquant" type="checkbox"> Bloquant</label>
+            <label id="label-card-bloquant"><input id="card-bloquant" name="bloquant" type="checkbox"> Bloquant</label>
           </div>
         </form>
       </section>
@@ -542,12 +542,12 @@
       </section>
 
       <section>
-        <h3>Détail</h3>
+        <h3 id="detail-heading">Détail</h3>
         <dl class="detail-list" id="detail-list"></dl>
       </section>
 
       <section>
-        <h3>Commentaires</h3>
+        <h3 id="comments-heading">Commentaires</h3>
         <div class="comment-form">
           <textarea id="comment-body" placeholder="Ajouter un commentaire interne..."></textarea>
           <button class="primary" id="comment-save-btn" type="button">Ajouter</button>
@@ -556,7 +556,7 @@
       </section>
 
       <section>
-        <h3>Historique</h3>
+        <h3 id="history-heading">Historique</h3>
         <div class="history-list" id="history-list"></div>
       </section>
     </aside>
@@ -577,28 +577,223 @@
         pageTitle: "Suivi projet",
         lede: "Un kanban embarqué dans l’admin EURES pour suivre les sujets, les arbitrages, les blocages et les décisions sans sortir du projet.",
         quickLabel: "Créer une carte à partir d’un texte libre",
+        browserTitle: "EURES beta - Suivi projet",
+        backAdmin: "Retour à l’admin EURES",
+        logout: "Se déconnecter",
+        quickPlaceholder: "Décrire un besoin, un bug, une idée ou une décision à préparer...",
+        quickDraft: "Préparer le brouillon",
+        quickCreate: "Créer directement la carte",
+        searchPlaceholder: "Rechercher un titre, un texte, un responsable",
+        newCard: "Nouvelle carte",
+        reload: "Rafraîchir",
+        drawerTitle: "Carte projet",
+        close: "Fermer",
+        save: "Enregistrer",
+        validate: "Vérifier",
+        delete: "Supprimer",
+        fieldTitle: "Titre",
+        fieldLanguage: "Langue source",
+        fieldType: "Type",
+        fieldStatus: "Statut",
+        fieldPriority: "Priorité",
+        fieldSize: "Taille de dev",
+        fieldOwner: "Responsable",
+        fieldSource: "Source",
+        fieldDescription: "Description",
+        fieldExpected: "Attendu",
+        fieldObserved: "Observé",
+        fieldContext: "Contexte",
+        fieldLinks: "Liens",
+        fieldLinksPlaceholder: "Un lien par ligne",
+        fieldBlocking: "Bloquant",
+        translateEn: "Traduire en EN",
+        translateDe: "Traduire en DE",
+        detailHeading: "Détail",
+        commentsHeading: "Commentaires",
+        commentPlaceholder: "Ajouter un commentaire interne...",
+        commentAdd: "Ajouter",
+        historyHeading: "Historique",
         boardLoaded: (count) => `${count} carte(s) chargée(s).`,
         noCards: "Aucune carte dans cette colonne.",
         commentsEmpty: "Aucun commentaire pour l’instant.",
         historyEmpty: "Aucun historique pour l’instant.",
+        all: "Tous",
+        blockingOnly: "Bloquants",
+        nonBlockingOnly: "Non bloquants",
+        untitled: "Sans titre",
+        noOwner: "Responsable non défini",
+        detailId: "ID",
+        detailStatus: "Statut",
+        detailPriority: "Priorité",
+        detailSize: "Taille",
+        detailType: "Type",
+        detailCreated: "Créée",
+        detailUpdated: "Mise à jour",
+        statusLoading: "Chargement du suivi projet...",
+        statusSaved: "Carte enregistrée.",
+        statusValidated: "Vérification terminée.",
+        statusCommentNeedsSave: "Enregistre d’abord la carte avant d’ajouter un commentaire.",
+        statusCommentAdded: "Commentaire ajouté.",
+        statusDeleteConfirm: "Supprimer définitivement cette carte ?",
+        statusNeedFreeText: "Ajoute d’abord un texte libre.",
+        statusCreating: "Création en cours...",
+        statusStructuring: "Structuration en cours...",
+        statusCreated: "Carte créée.",
+        statusDraftReady: "Brouillon prêt.",
+        statusTranslating: "Traduction en cours...",
+        statusTranslationApplied: "Traduction appliquée au formulaire courant.",
+        statusLoadError: "Chargement impossible",
+        statusRequestError: "Requête impossible",
+        fallbackHistoryEvent: "Mise à jour",
+        fallbackActor: "admin",
       },
       en: {
         pageTitle: "Project tracking",
         lede: "A native kanban inside the EURES admin to track topics, decisions, blockers and delivery work without leaving the project.",
         quickLabel: "Create a card from free text",
+        browserTitle: "EURES beta - Project tracking",
+        backAdmin: "Back to EURES admin",
+        logout: "Log out",
+        quickPlaceholder: "Describe a need, a bug, an idea or a decision to prepare...",
+        quickDraft: "Prepare draft",
+        quickCreate: "Create card directly",
+        searchPlaceholder: "Search a title, a text or an owner",
+        newCard: "New card",
+        reload: "Refresh",
+        drawerTitle: "Project card",
+        close: "Close",
+        save: "Save",
+        validate: "Validate",
+        delete: "Delete",
+        fieldTitle: "Title",
+        fieldLanguage: "Source language",
+        fieldType: "Type",
+        fieldStatus: "Status",
+        fieldPriority: "Priority",
+        fieldSize: "Dev size",
+        fieldOwner: "Owner",
+        fieldSource: "Source",
+        fieldDescription: "Description",
+        fieldExpected: "Expected",
+        fieldObserved: "Observed",
+        fieldContext: "Context",
+        fieldLinks: "Links",
+        fieldLinksPlaceholder: "One link per line",
+        fieldBlocking: "Blocking",
+        translateEn: "Translate to EN",
+        translateDe: "Translate to DE",
+        detailHeading: "Details",
+        commentsHeading: "Comments",
+        commentPlaceholder: "Add an internal comment...",
+        commentAdd: "Add",
+        historyHeading: "History",
         boardLoaded: (count) => `${count} card(s) loaded.`,
         noCards: "No cards in this column.",
         commentsEmpty: "No comments yet.",
         historyEmpty: "No history yet.",
+        all: "All",
+        blockingOnly: "Blocking",
+        nonBlockingOnly: "Non-blocking",
+        untitled: "Untitled",
+        noOwner: "No owner",
+        detailId: "ID",
+        detailStatus: "Status",
+        detailPriority: "Priority",
+        detailSize: "Size",
+        detailType: "Type",
+        detailCreated: "Created",
+        detailUpdated: "Updated",
+        statusLoading: "Loading project tracking...",
+        statusSaved: "Card saved.",
+        statusValidated: "Validation completed.",
+        statusCommentNeedsSave: "Save the card before adding a comment.",
+        statusCommentAdded: "Comment added.",
+        statusDeleteConfirm: "Delete this card permanently?",
+        statusNeedFreeText: "Add some free text first.",
+        statusCreating: "Creating card...",
+        statusStructuring: "Structuring draft...",
+        statusCreated: "Card created.",
+        statusDraftReady: "Draft ready.",
+        statusTranslating: "Translating...",
+        statusTranslationApplied: "Translation applied to the current form.",
+        statusLoadError: "Unable to load",
+        statusRequestError: "Request failed",
+        fallbackHistoryEvent: "Update",
+        fallbackActor: "admin",
       },
       de: {
         pageTitle: "Projektverfolgung",
         lede: "Ein natives Kanban im EURES-Admin, um Themen, Entscheidungen, Blocker und Umsetzungen direkt im Projekt zu verfolgen.",
         quickLabel: "Karte aus Freitext erstellen",
+        browserTitle: "EURES beta - Projektverfolgung",
+        backAdmin: "Zuruck zum EURES-Admin",
+        logout: "Abmelden",
+        quickPlaceholder: "Beschreiben Sie einen Bedarf, einen Fehler, eine Idee oder eine Entscheidung, die vorbereitet werden soll...",
+        quickDraft: "Entwurf vorbereiten",
+        quickCreate: "Karte direkt erstellen",
+        searchPlaceholder: "Titel, Text oder verantwortliche Person suchen",
+        newCard: "Neue Karte",
+        reload: "Aktualisieren",
+        drawerTitle: "Projektkarte",
+        close: "Schliessen",
+        save: "Speichern",
+        validate: "Prufen",
+        delete: "Loschen",
+        fieldTitle: "Titel",
+        fieldLanguage: "Ausgangssprache",
+        fieldType: "Typ",
+        fieldStatus: "Status",
+        fieldPriority: "Prioritat",
+        fieldSize: "Entwicklungsumfang",
+        fieldOwner: "Verantwortlich",
+        fieldSource: "Quelle",
+        fieldDescription: "Beschreibung",
+        fieldExpected: "Erwartet",
+        fieldObserved: "Beobachtet",
+        fieldContext: "Kontext",
+        fieldLinks: "Links",
+        fieldLinksPlaceholder: "Ein Link pro Zeile",
+        fieldBlocking: "Blockierend",
+        translateEn: "Nach EN ubersetzen",
+        translateDe: "Nach DE ubersetzen",
+        detailHeading: "Details",
+        commentsHeading: "Kommentare",
+        commentPlaceholder: "Internen Kommentar hinzufugen...",
+        commentAdd: "Hinzufugen",
+        historyHeading: "Verlauf",
         boardLoaded: (count) => `${count} Karte(n) geladen.`,
         noCards: "Keine Karten in dieser Spalte.",
         commentsEmpty: "Noch keine Kommentare.",
         historyEmpty: "Noch kein Verlauf.",
+        all: "Alle",
+        blockingOnly: "Blockierend",
+        nonBlockingOnly: "Nicht blockierend",
+        untitled: "Ohne Titel",
+        noOwner: "Keine verantwortliche Person",
+        detailId: "ID",
+        detailStatus: "Status",
+        detailPriority: "Prioritat",
+        detailSize: "Umfang",
+        detailType: "Typ",
+        detailCreated: "Erstellt",
+        detailUpdated: "Aktualisiert",
+        statusLoading: "Projektverfolgung wird geladen...",
+        statusSaved: "Karte gespeichert.",
+        statusValidated: "Prufung abgeschlossen.",
+        statusCommentNeedsSave: "Speichern Sie die Karte zuerst, bevor Sie einen Kommentar hinzufugen.",
+        statusCommentAdded: "Kommentar hinzugefugt.",
+        statusDeleteConfirm: "Diese Karte endgultig loschen?",
+        statusNeedFreeText: "Fugen Sie zuerst einen Freitext hinzu.",
+        statusCreating: "Karte wird erstellt...",
+        statusStructuring: "Entwurf wird strukturiert...",
+        statusCreated: "Karte erstellt.",
+        statusDraftReady: "Entwurf bereit.",
+        statusTranslating: "Ubersetzung lauft...",
+        statusTranslationApplied: "Ubersetzung auf das aktuelle Formular angewendet.",
+        statusLoadError: "Laden nicht moglich",
+        statusRequestError: "Anfrage fehlgeschlagen",
+        fallbackHistoryEvent: "Aktualisierung",
+        fallbackActor: "admin",
       }
     };
 
@@ -611,6 +806,11 @@
 
     function apiUrl(path) {
       return `/api/forms/${FORM_ID}${path}`;
+    }
+
+    function t(key) {
+      const copy = uiText[state.lang] || uiText.fr;
+      return copy[key] ?? uiText.fr[key] ?? key;
     }
 
     function currentLabels() {
@@ -666,7 +866,7 @@
       const response = await fetch(url, { credentials: "same-origin", ...options });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(payload.error || "Requête impossible");
+        throw new Error(payload.error || t("statusRequestError"));
       }
       return payload;
     }
@@ -674,7 +874,7 @@
     function populateSelect(selectId, values, labelMap, includeAll = false) {
       const select = document.getElementById(selectId);
       const options = [];
-      if (includeAll) options.push(`<option value="">Tous</option>`);
+      if (includeAll) options.push(`<option value="">${esc(t("all"))}</option>`);
       for (const value of values) {
         options.push(`<option value="${esc(value)}">${esc(labelMap?.[value] || value)}</option>`);
       }
@@ -700,10 +900,45 @@
     }
 
     function renderStaticText() {
-      const copy = uiText[state.lang] || uiText.fr;
-      document.getElementById("page-title").textContent = copy.pageTitle;
-      document.getElementById("page-lede").textContent = copy.lede;
-      document.getElementById("quick-note-label").textContent = copy.quickLabel;
+      document.documentElement.lang = state.lang;
+      document.title = t("browserTitle");
+      document.getElementById("page-title").textContent = t("pageTitle");
+      document.getElementById("page-lede").textContent = t("lede");
+      document.getElementById("back-admin-link").textContent = t("backAdmin");
+      document.getElementById("logout-link").textContent = t("logout");
+      document.getElementById("quick-note-label").textContent = t("quickLabel");
+      document.getElementById("quick-note").placeholder = t("quickPlaceholder");
+      document.getElementById("quick-draft-btn").textContent = t("quickDraft");
+      document.getElementById("quick-create-btn").textContent = t("quickCreate");
+      document.getElementById("filter-search").placeholder = t("searchPlaceholder");
+      document.getElementById("new-card-btn").textContent = t("newCard");
+      document.getElementById("reload-btn").textContent = t("reload");
+      document.getElementById("close-drawer-btn").textContent = t("close");
+      document.getElementById("save-card-btn").textContent = t("save");
+      document.getElementById("validate-card-btn").textContent = t("validate");
+      document.getElementById("delete-card-btn").textContent = t("delete");
+      document.getElementById("label-card-titre").childNodes[0].textContent = t("fieldTitle");
+      document.getElementById("label-card-langue").childNodes[0].textContent = t("fieldLanguage");
+      document.getElementById("label-card-type").childNodes[0].textContent = t("fieldType");
+      document.getElementById("label-card-statut").childNodes[0].textContent = t("fieldStatus");
+      document.getElementById("label-card-priorite").childNodes[0].textContent = t("fieldPriority");
+      document.getElementById("label-card-taille").childNodes[0].textContent = t("fieldSize");
+      document.getElementById("label-card-responsable").childNodes[0].textContent = t("fieldOwner");
+      document.getElementById("label-card-source").childNodes[0].textContent = t("fieldSource");
+      document.getElementById("label-card-description").childNodes[0].textContent = t("fieldDescription");
+      document.getElementById("label-card-attendu").childNodes[0].textContent = t("fieldExpected");
+      document.getElementById("label-card-observe").childNodes[0].textContent = t("fieldObserved");
+      document.getElementById("label-card-contexte").childNodes[0].textContent = t("fieldContext");
+      document.getElementById("label-card-liens").childNodes[0].textContent = t("fieldLinks");
+      document.getElementById("card-liens").placeholder = t("fieldLinksPlaceholder");
+      document.getElementById("label-card-bloquant").lastChild.textContent = ` ${t("fieldBlocking")}`;
+      document.getElementById("translate-en-btn").textContent = t("translateEn");
+      document.getElementById("translate-de-btn").textContent = t("translateDe");
+      document.getElementById("detail-heading").textContent = t("detailHeading");
+      document.getElementById("comments-heading").textContent = t("commentsHeading");
+      document.getElementById("comment-body").placeholder = t("commentPlaceholder");
+      document.getElementById("comment-save-btn").textContent = t("commentAdd");
+      document.getElementById("history-heading").textContent = t("historyHeading");
     }
 
     function renderFilters() {
@@ -713,9 +948,9 @@
       populateSelect("filter-size", state.metadata.sizes, labels.sizes, true);
       const blocking = document.getElementById("filter-blocking");
       blocking.innerHTML = `
-        <option value="">Tous</option>
-        <option value="true">Bloquants</option>
-        <option value="false">Non bloquants</option>
+        <option value="">${esc(t("all"))}</option>
+        <option value="true">${esc(t("blockingOnly"))}</option>
+        <option value="false">${esc(t("nonBlockingOnly"))}</option>
       `;
 
       populateSelect("card-langue", state.metadata.languages, { fr: "FR", en: "EN", de: "DE" });
@@ -809,14 +1044,14 @@
       const labels = currentLabels();
       return `
         <article class="card-item" data-record-id="${Number(card.record_id)}" draggable="true">
-          <h3>${esc(card.titre || "Sans titre")}</h3>
+          <h3>${esc(card.titre || t("untitled"))}</h3>
           <div class="card-tags">
             <span class="pill">${esc(labels.priorities?.[card.priorite] || card.priorite)}</span>
             <span class="pill">${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</span>
             <span class="pill">${esc(labels.types?.[card.type] || card.type)}</span>
-            ${card.bloquant ? `<span class="pill blocking">⛔ Bloquant</span>` : ""}
+            ${card.bloquant ? `<span class="pill blocking">⛔ ${esc(t("fieldBlocking"))}</span>` : ""}
           </div>
-          <div class="card-meta">${esc(card.responsable || "Responsable non défini")} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
+          <div class="card-meta">${esc(card.responsable || t("noOwner"))} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
         </article>
       `;
     }
@@ -832,7 +1067,7 @@
       shell.setAttribute("aria-hidden", "false");
       const card = state.currentCard;
       const labels = currentLabels();
-      document.getElementById("drawer-title").textContent = card.titre || "Carte projet";
+      document.getElementById("drawer-title").textContent = card.titre || t("drawerTitle");
       document.getElementById("card-titre").value = card.titre || "";
       document.getElementById("card-langue").value = card.langue_source || "fr";
       document.getElementById("card-type").value = card.type || "evolution";
@@ -851,13 +1086,13 @@
       autoResizeTextarea(document.getElementById("comment-body"));
 
       document.getElementById("detail-list").innerHTML = `
-        <div class="detail-row"><dt>ID</dt><dd>${esc(card.card_id || "")}</dd></div>
-        <div class="detail-row"><dt>Statut</dt><dd>${esc(labels.statuses?.[card.statut] || card.statut)}</dd></div>
-        <div class="detail-row"><dt>Priorité</dt><dd>${esc(labels.priorities?.[card.priorite] || card.priorite)}</dd></div>
-        <div class="detail-row"><dt>Taille</dt><dd>${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</dd></div>
-        <div class="detail-row"><dt>Type</dt><dd>${esc(labels.types?.[card.type] || card.type)}</dd></div>
-        <div class="detail-row"><dt>Créée</dt><dd>${esc(card.created_at || "")}</dd></div>
-        <div class="detail-row"><dt>Mise à jour</dt><dd>${esc(card.updated_at || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailId"))}</dt><dd>${esc(card.card_id || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailStatus"))}</dt><dd>${esc(labels.statuses?.[card.statut] || card.statut)}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailPriority"))}</dt><dd>${esc(labels.priorities?.[card.priorite] || card.priorite)}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailSize"))}</dt><dd>${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailType"))}</dt><dd>${esc(labels.types?.[card.type] || card.type)}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailCreated"))}</dt><dd>${esc(card.created_at || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailUpdated"))}</dt><dd>${esc(card.updated_at || "")}</dd></div>
       `;
       renderComments();
       renderHistory();
@@ -873,7 +1108,7 @@
       }
       list.innerHTML = comments.slice().reverse().map((comment) => `
         <article class="comment-item">
-          <div class="comment-meta"><strong>${esc(comment.author || "admin")}</strong> · ${esc(comment.created_at || "")}</div>
+          <div class="comment-meta"><strong>${esc(comment.author || t("fallbackActor"))}</strong> · ${esc(comment.created_at || "")}</div>
           <p>${esc(comment.body || "")}</p>
         </article>
       `).join("");
@@ -889,8 +1124,8 @@
       }
       list.innerHTML = history.slice().reverse().map((event) => `
         <article class="history-item">
-          <strong>${esc(event.message || event.action || "Mise à jour")}</strong>
-          <p>${esc(event.actor || "admin")} · ${esc(event.at || "")}</p>
+          <strong>${esc(event.message || event.action || t("fallbackHistoryEvent"))}</strong>
+          <p>${esc(event.actor || t("fallbackActor"))} · ${esc(event.at || "")}</p>
         </article>
       `).join("");
     }
@@ -931,7 +1166,7 @@
     }
 
     async function loadBoard() {
-      setStatus("board-status", "Chargement du suivi projet...");
+      setStatus("board-status", t("statusLoading"));
       const payload = await fetchJson(apiUrl("/admin/tracking/cards"));
       state.metadata = payload.metadata;
       state.cards = Array.isArray(payload.cards) ? payload.cards : [];
@@ -959,7 +1194,7 @@
         body: JSON.stringify(cardPayload)
       });
       if (!silent) {
-        setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : "Carte enregistrée.");
+        setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : t("statusSaved"));
       }
       await loadBoard();
       if (payload.card?.record_id) openCard(payload.card.record_id);
@@ -975,13 +1210,13 @@
       });
       setStatus("drawer-status", [
         result.errors?.join(" "),
-        result.warnings?.join(" ") || "Vérification terminée."
+        result.warnings?.join(" ") || t("statusValidated")
       ].filter(Boolean).join(" "));
     }
 
     async function addComment() {
       if (!state.currentCard?.record_id) {
-        setStatus("drawer-status", "Enregistre d’abord la carte avant d’ajouter un commentaire.");
+        setStatus("drawer-status", t("statusCommentNeedsSave"));
         return;
       }
       const body = document.getElementById("comment-body").value.trim();
@@ -997,7 +1232,7 @@
       document.getElementById("comment-body").value = "";
       renderComments();
       renderHistory();
-      setStatus("drawer-status", "Commentaire ajouté.");
+      setStatus("drawer-status", t("statusCommentAdded"));
     }
 
     async function deleteCurrentCard() {
@@ -1005,7 +1240,7 @@
         closeDrawer();
         return;
       }
-      if (!window.confirm("Supprimer définitivement cette carte ?")) return;
+      if (!window.confirm(t("statusDeleteConfirm"))) return;
       await fetchJson(apiUrl(`/admin/tracking/cards/${state.currentCard.record_id}`), { method: "DELETE" });
       closeDrawer();
       await loadBoard();
@@ -1014,10 +1249,10 @@
     async function runDraft(createDirectly) {
       const text = document.getElementById("quick-note").value.trim();
       if (!text) {
-        setStatus("quick-status", "Ajoute d’abord un texte libre.");
+        setStatus("quick-status", t("statusNeedFreeText"));
         return;
       }
-      setStatus("quick-status", createDirectly ? "Création en cours..." : "Structuration en cours...");
+      setStatus("quick-status", createDirectly ? t("statusCreating") : t("statusStructuring"));
       const payload = await fetchJson(apiUrl("/admin/tracking/ai/draft"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1030,19 +1265,19 @@
       });
       if (createDirectly && payload.card?.record_id) {
         document.getElementById("quick-note").value = "";
-        setStatus("quick-status", payload.warnings?.join(" ") || "Carte créée.");
+        setStatus("quick-status", payload.warnings?.join(" ") || t("statusCreated"));
         await loadBoard();
         openCard(payload.card.record_id);
         return;
       }
       state.currentCard = structuredClone(payload.card);
-      setStatus("quick-status", payload.warnings?.join(" ") || "Brouillon prêt.");
+      setStatus("quick-status", payload.warnings?.join(" ") || t("statusDraftReady"));
       renderDrawer();
     }
 
     async function translateCurrentCard(targetLanguage) {
       const card = readFormCard();
-      setStatus("translation-status", "Traduction en cours...");
+      setStatus("translation-status", t("statusTranslating"));
       const payload = await fetchJson(apiUrl("/admin/tracking/ai/translate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1054,7 +1289,7 @@
       if (translated.attendu) document.getElementById("card-attendu").value = translated.attendu;
       if (translated.observe) document.getElementById("card-observe").value = translated.observe;
       if (translated.contexte) document.getElementById("card-contexte").value = translated.contexte;
-      setStatus("translation-status", payload.warnings?.join(" ") || "Traduction appliquée au formulaire courant.");
+      setStatus("translation-status", payload.warnings?.join(" ") || t("statusTranslationApplied"));
     }
 
     document.getElementById("filter-search").addEventListener("input", renderBoard);
@@ -1085,7 +1320,7 @@
 
     bindAutoResize();
     loadBoard().catch((error) => {
-      setStatus("board-status", error.message || "Chargement impossible");
+      setStatus("board-status", error.message || t("statusLoadError"));
     });
   </script>
 </body>
