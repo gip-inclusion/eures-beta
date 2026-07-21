@@ -140,7 +140,13 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) repeat(5, minmax(130px, 0.5fr)) auto;
+      gap: 0.9rem;
+      align-items: start;
+    }
+
+    .toolbar-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.35fr) repeat(5, minmax(130px, 0.55fr));
       gap: 0.8rem;
       align-items: start;
     }
@@ -207,6 +213,15 @@
     .toolbar-actions {
       justify-content: flex-end;
       align-self: end;
+      padding-top: 0.15rem;
+    }
+
+    .toolbar-actions button {
+      white-space: nowrap;
+    }
+
+    .filter-field.search-field {
+      min-width: 0;
     }
 
     .status-line {
@@ -463,7 +478,7 @@
     }
 
     @media (max-width: 1080px) {
-      .toolbar {
+      .toolbar-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
@@ -478,7 +493,7 @@
         grid-template-columns: 1fr;
       }
 
-      .toolbar {
+      .toolbar-grid {
         grid-template-columns: 1fr;
       }
 
@@ -536,7 +551,8 @@
             <p id="filters-help">Recherche, filtre puis reviens rapidement à la vue par défaut sans perdre le contexte du tableau.</p>
           </div>
           <div class="toolbar">
-            <label class="filter-field" for="filter-search">
+            <div class="toolbar-grid">
+            <label class="filter-field search-field" for="filter-search">
               <span id="filter-search-label">Recherche</span>
               <input id="filter-search" type="search" placeholder="Rechercher un titre, un texte, un responsable">
             </label>
@@ -560,6 +576,7 @@
               <span id="filter-blocking-label">Blocage</span>
               <select id="filter-blocking"></select>
             </label>
+            </div>
             <div class="toolbar-actions">
               <button class="primary" id="new-card-btn" type="button">Nouvelle carte</button>
               <button id="reset-filters-btn" type="button">Réinitialiser les filtres</button>
