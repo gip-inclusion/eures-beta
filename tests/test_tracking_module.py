@@ -74,6 +74,41 @@ class TrackingModuleTest(unittest.TestCase):
             {'Authorization': 'Bearer api-key', 'Accept': 'application/json', 'Content-Type': 'application/json'},
         )
 
+    @patch.dict(app.os.environ, {}, clear=True)
+    def test_translate_tracking_card_payload_reports_missing_api_key(self):
+        translated, warnings = app.translate_tracking_card_payload({
+            'langue_source': 'fr',
+            'titre': 'Titre',
+            'description': 'Description',
+            'attendu': '',
+            'observe': '',
+            'contexte': '',
+        }, 'en')
+
+        self.assertEqual(translated['target_language'], 'en')
+        self.assertEqual(warnings, [
+            "Automatic translation is not enabled. Use your computer's built-in translation tools or another translation tool, then paste the translated text here.",
+        ])
+
+    @patch.object(app.requests, 'post')
+    @patch.dict(app.os.environ, {'OPENAI_API_KEY': 'test-key'}, clear=False)
+    def test_translate_tracking_card_payload_reports_http_error(self, requests_post):
+        requests_post.return_value = SimpleNamespace(status_code=429, text='rate limited')
+
+        translated, warnings = app.translate_tracking_card_payload({
+            'langue_source': 'fr',
+            'titre': 'Titre',
+            'description': 'Description',
+            'attendu': '',
+            'observe': '',
+            'contexte': '',
+        }, 'de')
+
+        self.assertEqual(translated['target_language'], 'de')
+        self.assertEqual(warnings, [
+            'Die automatische Ubersetzung ist derzeit nicht verfugbar (OpenAI HTTP 429). Nutzen Sie die integrierten Ubersetzungstools Ihres Computers oder ein anderes Ubersetzungstool und fugen Sie den ubersetzten Text anschliessend hier ein.',
+        ])
+
 
 if __name__ == '__main__':
     unittest.main()

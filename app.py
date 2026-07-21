@@ -6320,10 +6320,10 @@ def draft_tracking_card_from_text(text: str, source_language: str = 'fr', actor:
     return validated
 
 
-def _tracking_openai_json(prompt: str, schema_hint: str) -> dict | None:
+def _tracking_openai_json(prompt: str, schema_hint: str) -> tuple[dict | None, str | None]:
     api_key = os.environ.get('OPENAI_API_KEY', '').strip()
     if not api_key:
-        return None
+        return None, 'missing_api_key'
     model = os.environ.get('OPENAI_TEXT_MODEL', 'gpt-4.1-mini').strip() or 'gpt-4.1-mini'
     try:
         response = requests.post(
@@ -6348,7 +6348,7 @@ def _tracking_openai_json(prompt: str, schema_hint: str) -> dict | None:
             timeout=25,
         )
         if response.status_code != 200:
-            return None
+            return None, f'openai_http_{response.status_code}'
         payload = _parse_response_json_safe(response)
         chunks = []
         for item in payload.get('output', []) if isinstance(payload, dict) else []:
@@ -6356,9 +6356,45 @@ def _tracking_openai_json(prompt: str, schema_hint: str) -> dict | None:
                 if content.get('type') in {'output_text', 'text'} and content.get('text'):
                     chunks.append(content.get('text'))
         raw = ''.join(chunks).strip()
-        return json.loads(raw) if raw else None
+        if not raw:
+            return None, 'empty_response'
+        parsed = json.loads(raw)
+        return parsed, None
     except Exception:
-        return None
+        return None, 'invalid_response'
+
+
+def _tracking_translation_warning(target_language: str, error_code: str | None) -> str:
+    target = _tracking_ui_language(target_language)
+    messages = {
+        'fr': {
+            'missing_api_key': "Traduction automatique non activée. Utilisez les outils de traduction intégrés à votre ordinateur ou un autre outil de traduction, puis collez ici le texte traduit.",
+            'invalid_response': "Traduction automatique indisponible. Utilisez les outils de traduction intégrés à votre ordinateur ou un autre outil de traduction, puis collez ici le texte traduit.",
+            'empty_response': "Traduction automatique indisponible. Utilisez les outils de traduction intégrés à votre ordinateur ou un autre outil de traduction, puis collez ici le texte traduit.",
+            'default': "Traduction automatique indisponible. Utilisez les outils de traduction intégrés à votre ordinateur ou un autre outil de traduction, puis collez ici le texte traduit.",
+        },
+        'en': {
+            'missing_api_key': "Automatic translation is not enabled. Use your computer's built-in translation tools or another translation tool, then paste the translated text here.",
+            'invalid_response': "Automatic translation is unavailable. Use your computer's built-in translation tools or another translation tool, then paste the translated text here.",
+            'empty_response': "Automatic translation is unavailable. Use your computer's built-in translation tools or another translation tool, then paste the translated text here.",
+            'default': "Automatic translation is unavailable. Use your computer's built-in translation tools or another translation tool, then paste the translated text here.",
+        },
+        'de': {
+            'missing_api_key': "Die automatische Ubersetzung ist nicht aktiviert. Nutzen Sie die integrierten Ubersetzungstools Ihres Computers oder ein anderes Ubersetzungstool und fugen Sie den ubersetzten Text anschliessend hier ein.",
+            'invalid_response': "Die automatische Ubersetzung ist nicht verfugbar. Nutzen Sie die integrierten Ubersetzungstools Ihres Computers oder ein anderes Ubersetzungstool und fugen Sie den ubersetzten Text anschliessend hier ein.",
+            'empty_response': "Die automatische Ubersetzung ist nicht verfugbar. Nutzen Sie die integrierten Ubersetzungstools Ihres Computers oder ein anderes Ubersetzungstool und fugen Sie den ubersetzten Text anschliessend hier ein.",
+            'default': "Die automatische Ubersetzung ist nicht verfugbar. Nutzen Sie die integrierten Ubersetzungstools Ihres Computers oder ein anderes Ubersetzungstool und fugen Sie den ubersetzten Text anschliessend hier ein.",
+        },
+    }
+    lang_messages = messages.get(target, messages['fr'])
+    if error_code and error_code.startswith('openai_http_'):
+        status_code = error_code.replace('openai_http_', '')
+        if target == 'en':
+            return f"Automatic translation is unavailable right now (OpenAI HTTP {status_code}). Use your computer's built-in translation tools or another translation tool, then paste the translated text here."
+        if target == 'de':
+            return f"Die automatische Ubersetzung ist derzeit nicht verfugbar (OpenAI HTTP {status_code}). Nutzen Sie die integrierten Ubersetzungstools Ihres Computers oder ein anderes Ubersetzungstool und fugen Sie den ubersetzten Text anschliessend hier ein."
+        return f"Traduction automatique indisponible pour le moment (OpenAI HTTP {status_code}). Utilisez les outils de traduction intégrés à votre ordinateur ou un autre outil de traduction, puis collez ici le texte traduit."
+    return lang_messages.get(error_code or '', lang_messages['default'])
 
 
 def translate_tracking_card_payload(card: dict, target_language: str) -> tuple[dict, list[str]]:
@@ -6378,7 +6414,7 @@ def translate_tracking_card_payload(card: dict, target_language: str) -> tuple[d
     if target == source:
         return translated, []
 
-    llm_payload = _tracking_openai_json(
+    llm_payload, translate_error = _tracking_openai_json(
         (
             f"Traduis les champs textuels d'une carte projet de {source} vers {target}. "
             "Conserve le sens métier et ne traduis pas les codes structurés.\n"
@@ -6392,7 +6428,7 @@ def translate_tracking_card_payload(card: dict, target_language: str) -> tuple[d
         return translated, []
 
     return translated, [
-        "Traduction automatique indisponible : les textes libres sont conservés dans leur langue source.",
+        _tracking_translation_warning(target, translate_error),
     ]
 
 
