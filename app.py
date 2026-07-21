@@ -6009,6 +6009,18 @@ def _tracking_text(value) -> str:
     return str(value or '').strip()
 
 
+def _tracking_summarize_title(value: str, max_length: int = 72) -> str:
+    text = ' '.join(str(value or '').split())
+    if not text:
+        return ''
+    trimmed = text[:max_length + 1]
+    if len(text) <= max_length:
+        return trimmed.rstrip(' .:;,-')
+    if ' ' in trimmed:
+        trimmed = trimmed.rsplit(' ', 1)[0]
+    return trimmed.rstrip(' .:;,-') + '...'
+
+
 def _tracking_now() -> str:
     return _now_iso_utc()
 
@@ -6211,7 +6223,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
     candidate.update({
         'card_id': _tracking_text(payload.get('card_id')) or base['card_id'],
         'langue_source': _tracking_ui_language(payload.get('langue_source') or base['langue_source']),
-        'titre': _tracking_text(payload.get('titre') or base['titre']),
+        'titre': _tracking_summarize_title(payload.get('titre') or base['titre']),
         'type': _tracking_choice(payload.get('type') or base['type'], EURES_TRACKING_TYPES, base['type']),
         'description': _tracking_text(payload.get('description') or base['description']),
         'attendu': _tracking_text(payload.get('attendu') or base['attendu']),
@@ -6235,7 +6247,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
     errors = []
     warnings = []
     if not candidate['titre'] and candidate['description']:
-        candidate['titre'] = candidate['description'].splitlines()[0][:96].rstrip(' .:;,-')
+        candidate['titre'] = _tracking_summarize_title(candidate['description'])
         warnings.append("Le titre a été déduit de la description.")
     if not candidate['titre']:
         errors.append("Le titre est obligatoire.")
@@ -6271,7 +6283,7 @@ def draft_tracking_card_from_text(text: str, source_language: str = 'fr', actor:
     normalized = _tracking_text(text)
     folded = eures_fold_text(normalized)
     lines = [line.strip(' -•\t') for line in normalized.splitlines() if line.strip()]
-    title = lines[0][:96] if lines else normalized[:96]
+    title = _tracking_summarize_title(lines[0] if lines else normalized)
 
     detected_type = 'evolution'
     if any(token in folded for token in ('bug', 'erreur', 'anomal', 'incident', 'defect', 'fehler')):

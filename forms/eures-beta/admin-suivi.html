@@ -139,8 +139,9 @@
     }
 
     .composer textarea {
-      min-height: 112px;
-      resize: vertical;
+      min-height: 56px;
+      overflow: hidden;
+      resize: none;
     }
 
     .composer-actions {
@@ -205,11 +206,11 @@
       border: 1px solid var(--line);
       border-radius: 22px;
       background: rgba(255, 255, 255, 0.96);
-      padding: 0.9rem;
+      padding: 0.85rem;
       box-shadow: 0 14px 28px rgba(23, 50, 77, 0.08);
       cursor: pointer;
       display: grid;
-      gap: 0.65rem;
+      gap: 0.55rem;
     }
 
     .card-item[draggable="true"] {
@@ -222,16 +223,20 @@
 
     .card-item h3 {
       margin: 0;
-      font-size: 1rem;
-      line-height: 1.25;
+      font-size: 0.98rem;
+      line-height: 1.18;
       color: var(--accent-strong);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .card-item p {
+    .card-meta {
       margin: 0;
       color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.5;
+      font-size: 0.8rem;
+      line-height: 1.35;
     }
 
     .card-tags,
@@ -249,11 +254,12 @@
       align-items: center;
       gap: 0.35rem;
       border-radius: 999px;
-      padding: 0.38rem 0.7rem;
+      padding: 0.26rem 0.58rem;
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.86);
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       font-weight: 700;
+      line-height: 1.1;
     }
 
     .pill.blocking {
@@ -328,8 +334,9 @@
     }
 
     textarea {
-      resize: vertical;
-      min-height: 110px;
+      resize: none;
+      min-height: 56px;
+      overflow: hidden;
     }
 
     .detail-list,
@@ -368,6 +375,11 @@
     .history-item p {
       margin: 0.25rem 0 0;
       line-height: 1.6;
+    }
+
+    #card-liens,
+    #comment-body {
+      min-height: 48px;
     }
 
     .comment-meta,
@@ -609,6 +621,22 @@
       document.getElementById(id).textContent = text || "";
     }
 
+    function autoResizeTextarea(textarea) {
+      if (!textarea) return;
+      textarea.style.height = "auto";
+      textarea.style.height = `${Math.max(textarea.scrollHeight, 56)}px`;
+    }
+
+    function bindAutoResize(scope = document) {
+      for (const textarea of scope.querySelectorAll("textarea")) {
+        autoResizeTextarea(textarea);
+        if (!textarea.dataset.autoResizeBound) {
+          textarea.addEventListener("input", () => autoResizeTextarea(textarea));
+          textarea.dataset.autoResizeBound = "true";
+        }
+      }
+    }
+
     function normalizeText(value) {
       return String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
@@ -779,18 +807,16 @@
 
     function renderCardHtml(card) {
       const labels = currentLabels();
-      const excerpt = card.description || card.observe || card.attendu || card.contexte || "";
       return `
         <article class="card-item" data-record-id="${Number(card.record_id)}" draggable="true">
           <h3>${esc(card.titre || "Sans titre")}</h3>
-          <p>${esc(excerpt.slice(0, 140))}</p>
           <div class="card-tags">
             <span class="pill">${esc(labels.priorities?.[card.priorite] || card.priorite)}</span>
             <span class="pill">${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</span>
             <span class="pill">${esc(labels.types?.[card.type] || card.type)}</span>
             ${card.bloquant ? `<span class="pill blocking">⛔ Bloquant</span>` : ""}
           </div>
-          <p>${esc(card.responsable || "Responsable non défini")} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</p>
+          <div class="card-meta">${esc(card.responsable || "Responsable non défini")} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
         </article>
       `;
     }
@@ -821,6 +847,8 @@
       document.getElementById("card-contexte").value = card.contexte || "";
       document.getElementById("card-liens").value = (card.liens || []).join("\n");
       document.getElementById("card-bloquant").checked = Boolean(card.bloquant);
+      bindAutoResize(document.getElementById("card-form"));
+      autoResizeTextarea(document.getElementById("comment-body"));
 
       document.getElementById("detail-list").innerHTML = `
         <div class="detail-row"><dt>ID</dt><dd>${esc(card.card_id || "")}</dd></div>
@@ -911,6 +939,7 @@
       renderStaticText();
       renderFilters();
       renderBoard();
+      bindAutoResize();
       setStatus("board-status", (uiText[state.lang] || uiText.fr).boardLoaded(state.cards.length));
       if (state.currentCard?.record_id) {
         const fresh = state.cards.find((card) => Number(card.record_id) === Number(state.currentCard.record_id));
@@ -1054,6 +1083,7 @@
       if (event.target.id === "drawer-shell") closeDrawer();
     });
 
+    bindAutoResize();
     loadBoard().catch((error) => {
       setStatus("board-status", error.message || "Chargement impossible");
     });
