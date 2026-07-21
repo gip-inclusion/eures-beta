@@ -105,16 +105,49 @@
       transform: translateY(-1px);
     }
 
+    .workspace-top {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .composer-panel,
+    .filters-panel {
+      border: 1px solid rgba(0, 48, 102, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 1rem;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 0.25rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--accent-strong);
+      font-size: 1.2rem;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 72ch;
+    }
+
     .toolbar {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) repeat(5, minmax(150px, 0.55fr)) auto;
+      grid-template-columns: minmax(0, 1.35fr) repeat(5, minmax(130px, 0.5fr)) auto;
       gap: 0.8rem;
       align-items: start;
-      margin-bottom: 1rem;
     }
 
     .toolbar input,
     .toolbar select,
+    .filter-field span,
     .composer textarea,
     .drawer form input,
     .drawer form select,
@@ -132,14 +165,13 @@
 
     .composer {
       display: grid;
-      grid-template-columns: minmax(0, 1.6fr) auto;
+      grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
       gap: 0.8rem;
       align-items: start;
-      margin-bottom: 1rem;
     }
 
     .composer textarea {
-      min-height: 56px;
+      min-height: 112px;
       overflow: hidden;
       resize: none;
     }
@@ -147,6 +179,34 @@
     .composer-actions {
       display: grid;
       gap: 0.75rem;
+      align-content: start;
+    }
+
+    .composer-help {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-top: 0.55rem;
+    }
+
+    .filter-field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .filter-field span {
+      min-height: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .toolbar-actions {
+      justify-content: flex-end;
+      align-self: end;
     }
 
     .status-line {
@@ -422,6 +482,10 @@
         grid-template-columns: 1fr;
       }
 
+      .toolbar-actions {
+        justify-content: stretch;
+      }
+
       .head-actions {
         width: 100%;
       }
@@ -446,29 +510,63 @@
     </section>
 
     <section class="admin-card">
-      <div class="composer">
-        <div>
-          <label for="quick-note" id="quick-note-label">Créer une carte à partir d’un texte libre</label>
-          <textarea id="quick-note" placeholder="Décrire un besoin, un bug, une idée ou une décision à préparer..."></textarea>
-        </div>
-        <div class="composer-actions">
-          <button class="primary" id="quick-draft-btn" type="button">Préparer le brouillon</button>
-          <button id="quick-create-btn" type="button">Créer directement la carte</button>
-          <div class="status-line" id="quick-status"></div>
-        </div>
-      </div>
+      <div class="workspace-top">
+        <section class="composer-panel">
+          <div class="section-head">
+            <h2 id="quick-note-title">Créer une carte à partir d’un texte libre</h2>
+            <p id="quick-note-help">Décris le besoin en langage naturel. Tu peux soit préparer un brouillon à relire, soit créer directement la carte si le sujet est déjà clair.</p>
+          </div>
+          <div class="composer">
+            <div>
+              <label for="quick-note" id="quick-note-label">Texte libre</label>
+              <textarea id="quick-note" placeholder="Décrire un besoin, un bug, une idée ou une décision à préparer..."></textarea>
+            </div>
+            <div class="composer-actions">
+              <button class="primary" id="quick-draft-btn" type="button">Préparer le brouillon</button>
+              <button id="quick-create-btn" type="button">Créer directement la carte</button>
+              <p class="composer-help" id="quick-note-subhelp">Le brouillon ouvre la carte pour relecture. La création directe l’ajoute immédiatement au kanban.</p>
+              <div class="status-line" id="quick-status"></div>
+            </div>
+          </div>
+        </section>
 
-      <div class="toolbar">
-        <input id="filter-search" type="search" placeholder="Rechercher un titre, un texte, un responsable">
-        <select id="filter-archive"></select>
-        <select id="filter-type"></select>
-        <select id="filter-priority"></select>
-        <select id="filter-size"></select>
-        <select id="filter-blocking"></select>
-        <div class="toolbar-actions">
-          <button class="primary" id="new-card-btn" type="button">Nouvelle carte</button>
-          <button id="reload-btn" type="button">Rafraîchir</button>
-        </div>
+        <section class="filters-panel">
+          <div class="section-head">
+            <h2 id="filters-title">Piloter le kanban</h2>
+            <p id="filters-help">Recherche, filtre puis reviens rapidement à la vue par défaut sans perdre le contexte du tableau.</p>
+          </div>
+          <div class="toolbar">
+            <label class="filter-field" for="filter-search">
+              <span id="filter-search-label">Recherche</span>
+              <input id="filter-search" type="search" placeholder="Rechercher un titre, un texte, un responsable">
+            </label>
+            <label class="filter-field" for="filter-archive">
+              <span id="filter-archive-label">Archive</span>
+              <select id="filter-archive"></select>
+            </label>
+            <label class="filter-field" for="filter-type">
+              <span id="filter-type-label">Type</span>
+              <select id="filter-type"></select>
+            </label>
+            <label class="filter-field" for="filter-priority">
+              <span id="filter-priority-label">Priorité</span>
+              <select id="filter-priority"></select>
+            </label>
+            <label class="filter-field" for="filter-size">
+              <span id="filter-size-label">Taille</span>
+              <select id="filter-size"></select>
+            </label>
+            <label class="filter-field" for="filter-blocking">
+              <span id="filter-blocking-label">Blocage</span>
+              <select id="filter-blocking"></select>
+            </label>
+            <div class="toolbar-actions">
+              <button class="primary" id="new-card-btn" type="button">Nouvelle carte</button>
+              <button id="reset-filters-btn" type="button">Réinitialiser les filtres</button>
+              <button id="reload-btn" type="button">Rafraîchir</button>
+            </div>
+          </div>
+        </section>
       </div>
 
       <div class="status-line" id="board-status">Chargement...</div>
@@ -584,6 +682,9 @@
         pageTitle: "Suivi projet",
         lede: "Un kanban embarqué dans l’admin EURES pour suivre les sujets, les arbitrages, les blocages et les décisions sans sortir du projet.",
         quickLabel: "Créer une carte à partir d’un texte libre",
+        quickFieldLabel: "Texte libre",
+        quickHelp: "Décris le besoin en langage naturel. Tu peux soit préparer un brouillon à relire, soit créer directement la carte si le sujet est déjà clair.",
+        quickSubhelp: "Le brouillon ouvre la carte pour relecture. La création directe l’ajoute immédiatement au kanban.",
         browserTitle: "EURES beta - Suivi projet",
         backAdmin: "Retour à l’admin EURES",
         logout: "Se déconnecter",
@@ -593,6 +694,15 @@
         searchPlaceholder: "Rechercher un titre, un texte, un responsable",
         newCard: "Nouvelle carte",
         reload: "Rafraîchir",
+        resetFilters: "Réinitialiser les filtres",
+        filtersTitle: "Piloter le kanban",
+        filtersHelp: "Recherche, filtre puis reviens rapidement à la vue par défaut sans perdre le contexte du tableau.",
+        filterSearch: "Recherche",
+        filterArchive: "Archive",
+        filterType: "Type",
+        filterPriority: "Priorité",
+        filterSize: "Taille",
+        filterBlocking: "Blocage",
         drawerTitle: "Carte projet",
         close: "Fermer",
         save: "Enregistrer",
@@ -671,6 +781,9 @@
         pageTitle: "Project tracking",
         lede: "A native kanban inside the EURES admin to track topics, decisions, blockers and delivery work without leaving the project.",
         quickLabel: "Create a card from free text",
+        quickFieldLabel: "Free text",
+        quickHelp: "Describe the need in plain language. You can either prepare a draft to review or create the card directly if the topic is already clear.",
+        quickSubhelp: "Draft mode opens the card for review. Direct creation adds it immediately to the kanban.",
         browserTitle: "EURES beta - Project tracking",
         backAdmin: "Back to EURES admin",
         logout: "Log out",
@@ -680,6 +793,15 @@
         searchPlaceholder: "Search a title, a text or an owner",
         newCard: "New card",
         reload: "Refresh",
+        resetFilters: "Reset filters",
+        filtersTitle: "Control the kanban",
+        filtersHelp: "Search, filter, then return quickly to the default view without losing the board context.",
+        filterSearch: "Search",
+        filterArchive: "Archive",
+        filterType: "Type",
+        filterPriority: "Priority",
+        filterSize: "Size",
+        filterBlocking: "Blocking",
         drawerTitle: "Project card",
         close: "Close",
         save: "Save",
@@ -758,6 +880,9 @@
         pageTitle: "Projektverfolgung",
         lede: "Ein natives Kanban im EURES-Admin, um Themen, Entscheidungen, Blocker und Umsetzungen direkt im Projekt zu verfolgen.",
         quickLabel: "Karte aus Freitext erstellen",
+        quickFieldLabel: "Freitext",
+        quickHelp: "Beschreiben Sie den Bedarf in klarer Sprache. Sie konnen entweder einen Entwurf zur Prufung vorbereiten oder die Karte direkt erstellen, wenn das Thema bereits klar ist.",
+        quickSubhelp: "Der Entwurf offnet die Karte zur Durchsicht. Die direkte Erstellung fugt sie sofort dem Kanban hinzu.",
         browserTitle: "EURES beta - Projektverfolgung",
         backAdmin: "Zuruck zum EURES-Admin",
         logout: "Abmelden",
@@ -767,6 +892,15 @@
         searchPlaceholder: "Titel, Text oder verantwortliche Person suchen",
         newCard: "Neue Karte",
         reload: "Aktualisieren",
+        resetFilters: "Filter zurucksetzen",
+        filtersTitle: "Kanban steuern",
+        filtersHelp: "Suchen, filtern und schnell zur Standardansicht zuruckkehren, ohne den Kontext des Boards zu verlieren.",
+        filterSearch: "Suche",
+        filterArchive: "Archiv",
+        filterType: "Typ",
+        filterPriority: "Prioritat",
+        filterSize: "Umfang",
+        filterBlocking: "Blockierung",
         drawerTitle: "Projektkarte",
         close: "Schliessen",
         save: "Speichern",
@@ -955,12 +1089,24 @@
       document.getElementById("page-lede").textContent = t("lede");
       document.getElementById("back-admin-link").textContent = t("backAdmin");
       document.getElementById("logout-link").textContent = t("logout");
-      document.getElementById("quick-note-label").textContent = t("quickLabel");
+      document.getElementById("quick-note-title").textContent = t("quickLabel");
+      document.getElementById("quick-note-help").textContent = t("quickHelp");
+      document.getElementById("quick-note-label").textContent = t("quickFieldLabel");
       document.getElementById("quick-note").placeholder = t("quickPlaceholder");
+      document.getElementById("quick-note-subhelp").textContent = t("quickSubhelp");
       document.getElementById("quick-draft-btn").textContent = t("quickDraft");
       document.getElementById("quick-create-btn").textContent = t("quickCreate");
+      document.getElementById("filters-title").textContent = t("filtersTitle");
+      document.getElementById("filters-help").textContent = t("filtersHelp");
+      document.getElementById("filter-search-label").textContent = t("filterSearch");
+      document.getElementById("filter-archive-label").textContent = t("filterArchive");
+      document.getElementById("filter-type-label").textContent = t("filterType");
+      document.getElementById("filter-priority-label").textContent = t("filterPriority");
+      document.getElementById("filter-size-label").textContent = t("filterSize");
+      document.getElementById("filter-blocking-label").textContent = t("filterBlocking");
       document.getElementById("filter-search").placeholder = t("searchPlaceholder");
       document.getElementById("new-card-btn").textContent = t("newCard");
+      document.getElementById("reset-filters-btn").textContent = t("resetFilters");
       document.getElementById("reload-btn").textContent = t("reload");
       document.getElementById("close-drawer-btn").textContent = t("close");
       document.getElementById("save-card-btn").textContent = t("save");
@@ -993,6 +1139,11 @@
 
     function renderFilters() {
       const labels = currentLabels();
+      const currentArchive = document.getElementById("filter-archive").value || "active";
+      const currentType = document.getElementById("filter-type").value;
+      const currentPriority = document.getElementById("filter-priority").value;
+      const currentSize = document.getElementById("filter-size").value;
+      const currentBlocking = document.getElementById("filter-blocking").value;
       const archive = document.getElementById("filter-archive");
       archive.innerHTML = `
         <option value="active">${esc(t("activeOnly"))}</option>
@@ -1008,6 +1159,11 @@
         <option value="true">${esc(t("blockingOnly"))}</option>
         <option value="false">${esc(t("nonBlockingOnly"))}</option>
       `;
+      archive.value = currentArchive;
+      document.getElementById("filter-type").value = currentType;
+      document.getElementById("filter-priority").value = currentPriority;
+      document.getElementById("filter-size").value = currentSize;
+      blocking.value = currentBlocking;
 
       populateSelect("card-langue", state.metadata.languages, { fr: "FR", en: "EN", de: "DE" });
       populateSelect("card-type", state.metadata.types, labels.types);
@@ -1213,6 +1369,16 @@
       renderDrawer();
     }
 
+    function resetFilters() {
+      document.getElementById("filter-search").value = "";
+      document.getElementById("filter-archive").value = "active";
+      document.getElementById("filter-type").value = "";
+      document.getElementById("filter-priority").value = "";
+      document.getElementById("filter-size").value = "";
+      document.getElementById("filter-blocking").value = "";
+      renderBoard();
+    }
+
     function readFormCard() {
       const base = state.currentCard || defaultCard();
       return {
@@ -1383,6 +1549,7 @@
     document.getElementById("filter-size").addEventListener("change", renderBoard);
     document.getElementById("filter-blocking").addEventListener("change", renderBoard);
     document.getElementById("reload-btn").addEventListener("click", loadBoard);
+    document.getElementById("reset-filters-btn").addEventListener("click", resetFilters);
     document.getElementById("new-card-btn").addEventListener("click", () => {
       state.currentCard = defaultCard();
       renderDrawer();
