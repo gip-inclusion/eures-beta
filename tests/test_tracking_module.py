@@ -79,6 +79,7 @@ class TrackingModuleTest(unittest.TestCase):
                 'card_id': 'card-17',
                 'titre': 'Carte archivee',
                 'description': 'Description',
+                'indicateurs_suivi': 'Taux de completion et nombre de doublons',
                 'archived': True,
                 'archived_at': '2026-07-21T10:00:00Z',
                 'archived_by': 'eric@example.org',
@@ -91,6 +92,7 @@ class TrackingModuleTest(unittest.TestCase):
         card = app._tracking_card_from_record(record)
 
         self.assertTrue(card['archived'])
+        self.assertEqual(card['indicateurs_suivi'], 'Taux de completion et nombre de doublons')
         self.assertEqual(card['archived_at'], '2026-07-21T10:00:00Z')
         self.assertEqual(card['archived_by'], 'eric@example.org')
         self.assertTrue(app._tracking_record_fields(card)['archived'])

@@ -671,7 +671,7 @@
         <form id="card-form">
           <div class="form-grid">
             <label class="full" id="label-card-titre">Sujet
-              <input id="card-titre" name="titre" required>
+              <input id="card-titre" name="titre" required placeholder="Ex. Empêcher la création en double d’une carte">
             </label>
             <label id="label-card-priorite">Priorité
               <select id="card-priorite" name="priorite"></select>
@@ -689,22 +689,25 @@
               <select id="card-taille" name="taille_dev"></select>
             </label>
             <label id="label-card-responsable">Responsable
-              <input id="card-responsable" name="responsable">
+              <input id="card-responsable" name="responsable" placeholder="Ex. Eric, équipe produit, dev front">
             </label>
             <label id="label-card-source">Source
-              <input id="card-source" name="source">
+              <input id="card-source" name="source" placeholder="Ex. atelier PO, retour terrain, admin_ui">
             </label>
             <label class="full" id="label-card-description">Problème ou besoin
-              <textarea id="card-description" name="description"></textarea>
+              <textarea id="card-description" name="description" placeholder="Décris simplement le besoin, le bug ou la demande métier."></textarea>
             </label>
             <label class="full" id="label-card-observe">Situation actuelle
-              <textarea id="card-observe" name="observe"></textarea>
+              <textarea id="card-observe" name="observe" placeholder="Explique ce qui se passe aujourd’hui, avec un exemple concret si possible."></textarea>
             </label>
             <label class="full" id="label-card-attendu">Idée de solution
-              <textarea id="card-attendu" name="attendu"></textarea>
+              <textarea id="card-attendu" name="attendu" placeholder="Décris la solution envisagée ou le résultat attendu après correction."></textarea>
             </label>
             <label class="full" id="label-card-contexte">Contexte utile
-              <textarea id="card-contexte" name="contexte"></textarea>
+              <textarea id="card-contexte" name="contexte" placeholder="Ajoute ici les éléments utiles : contrainte, règle métier, écran concerné, audience, urgence..."></textarea>
+            </label>
+            <label class="full" id="label-card-indicateurs">Indicateurs associés
+              <textarea id="card-indicateurs" name="indicateurs_suivi" placeholder="Qu’est-ce qu’on mesure après la mise en production ? Ex. taux de complétion, nombre de doublons, temps de saisie, usage de la fonctionnalité..."></textarea>
             </label>
             <label class="full" id="label-card-liens">Liens
               <textarea id="card-liens" name="liens" placeholder="Un lien par ligne"></textarea>
@@ -808,6 +811,15 @@
         fieldExpected: "Idée de solution",
         fieldObserved: "Situation actuelle",
         fieldContext: "Contexte utile",
+        fieldIndicators: "Indicateurs associés",
+        fieldTitlePlaceholder: "Ex. Empêcher la création en double d’une carte",
+        fieldOwnerPlaceholder: "Ex. Eric, équipe produit, dev front",
+        fieldSourcePlaceholder: "Ex. atelier PO, retour terrain, admin_ui",
+        fieldDescriptionPlaceholder: "Décris simplement le besoin, le bug ou la demande métier.",
+        fieldObservedPlaceholder: "Explique ce qui se passe aujourd’hui, avec un exemple concret si possible.",
+        fieldExpectedPlaceholder: "Décris la solution envisagée ou le résultat attendu après correction.",
+        fieldContextPlaceholder: "Ajoute ici les éléments utiles : contrainte, règle métier, écran concerné, audience, urgence...",
+        fieldIndicatorsPlaceholder: "Qu’est-ce qu’on mesure après la mise en production ? Ex. taux de complétion, nombre de doublons, temps de saisie, usage de la fonctionnalité...",
         fieldLinks: "Liens",
         fieldLinksPlaceholder: "Un lien par ligne",
         fieldImages: "Images jointes",
@@ -916,6 +928,15 @@
         fieldExpected: "Solution idea",
         fieldObserved: "Current situation",
         fieldContext: "Useful context",
+        fieldIndicators: "Success indicators",
+        fieldTitlePlaceholder: "Ex. Prevent duplicate card creation",
+        fieldOwnerPlaceholder: "Ex. Eric, product team, frontend dev",
+        fieldSourcePlaceholder: "Ex. PO workshop, field feedback, admin_ui",
+        fieldDescriptionPlaceholder: "Describe the need, bug or business request in simple terms.",
+        fieldObservedPlaceholder: "Explain what happens today, ideally with a concrete example.",
+        fieldExpectedPlaceholder: "Describe the proposed solution or the expected result after the fix.",
+        fieldContextPlaceholder: "Add useful context here: constraint, business rule, impacted screen, audience, urgency...",
+        fieldIndicatorsPlaceholder: "What should be measured after production release? Ex. completion rate, duplicate count, time to complete, feature usage...",
         fieldLinks: "Links",
         fieldLinksPlaceholder: "One link per line",
         fieldImages: "Attached images",
@@ -1024,6 +1045,15 @@
         fieldExpected: "Losungsidee",
         fieldObserved: "Aktuelle Situation",
         fieldContext: "Nutzlicher Kontext",
+        fieldIndicators: "Erfolgsindikatoren",
+        fieldTitlePlaceholder: "Z. B. Doppelte Kartenerstellung verhindern",
+        fieldOwnerPlaceholder: "Z. B. Eric, Produktteam, Frontend-Entwicklung",
+        fieldSourcePlaceholder: "Z. B. PO-Workshop, Feldruckmeldung, admin_ui",
+        fieldDescriptionPlaceholder: "Beschreiben Sie den Bedarf, den Fehler oder die fachliche Anfrage in einfachen Worten.",
+        fieldObservedPlaceholder: "Erklaren Sie, was heute passiert, moglichst mit einem konkreten Beispiel.",
+        fieldExpectedPlaceholder: "Beschreiben Sie die angedachte Losung oder das erwartete Ergebnis nach der Korrektur.",
+        fieldContextPlaceholder: "Fugen Sie hier nutzlichen Kontext hinzu: Einschrankung, Fachregel, betroffener Bildschirm, Zielgruppe, Dringlichkeit...",
+        fieldIndicatorsPlaceholder: "Was soll nach dem Produktivgang gemessen werden? Z. B. Abschlussquote, Anzahl von Duplikaten, Eingabezeit, Nutzung der Funktion...",
         fieldLinks: "Links",
         fieldLinksPlaceholder: "Ein Link pro Zeile",
         fieldImages: "Bilder",
@@ -1162,6 +1192,7 @@
         attendu: "",
         observe: "",
         contexte: "",
+        indicateurs_suivi: "",
         statut: "a_qualifier",
         priorite: "moyenne",
         taille_dev: "chat",
@@ -1194,6 +1225,7 @@
         attendu: card.attendu || "",
         observe: card.observe || "",
         contexte: card.contexte || "",
+        indicateurs_suivi: card.indicateurs_suivi || "",
         statut: card.statut || "a_qualifier",
         priorite: card.priorite || "moyenne",
         taille_dev: card.taille_dev || "chat",
@@ -1349,6 +1381,15 @@
       document.getElementById("label-card-attendu").childNodes[0].textContent = t("fieldExpected");
       document.getElementById("label-card-observe").childNodes[0].textContent = t("fieldObserved");
       document.getElementById("label-card-contexte").childNodes[0].textContent = t("fieldContext");
+      document.getElementById("label-card-indicateurs").childNodes[0].textContent = t("fieldIndicators");
+      document.getElementById("card-titre").placeholder = t("fieldTitlePlaceholder");
+      document.getElementById("card-responsable").placeholder = t("fieldOwnerPlaceholder");
+      document.getElementById("card-source").placeholder = t("fieldSourcePlaceholder");
+      document.getElementById("card-description").placeholder = t("fieldDescriptionPlaceholder");
+      document.getElementById("card-observe").placeholder = t("fieldObservedPlaceholder");
+      document.getElementById("card-attendu").placeholder = t("fieldExpectedPlaceholder");
+      document.getElementById("card-contexte").placeholder = t("fieldContextPlaceholder");
+      document.getElementById("card-indicateurs").placeholder = t("fieldIndicatorsPlaceholder");
       document.getElementById("label-card-liens").childNodes[0].textContent = t("fieldLinks");
       document.getElementById("card-liens").placeholder = t("fieldLinksPlaceholder");
       document.getElementById("label-card-images").childNodes[0].textContent = t("fieldImages");
@@ -1531,6 +1572,7 @@
       document.getElementById("card-attendu").value = card.attendu || "";
       document.getElementById("card-observe").value = card.observe || "";
       document.getElementById("card-contexte").value = card.contexte || "";
+      document.getElementById("card-indicateurs").value = card.indicateurs_suivi || "";
       document.getElementById("card-liens").value = (card.liens || []).join("\n");
       document.getElementById("archive-card-btn").textContent = card.archived ? t("restore") : t("archive");
       document.getElementById("card-images-input").value = "";
@@ -1738,6 +1780,7 @@
         attendu: document.getElementById("card-attendu").value.trim(),
         observe: document.getElementById("card-observe").value.trim(),
         contexte: document.getElementById("card-contexte").value.trim(),
+        indicateurs_suivi: document.getElementById("card-indicateurs").value.trim(),
         images: Array.isArray(base.images) ? base.images : [],
         liens: document.getElementById("card-liens").value.split("\n").map((item) => item.trim()).filter(Boolean),
         archived: Boolean(base.archived)

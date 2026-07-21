@@ -115,6 +115,7 @@ EURES_TRACKING_CARD_FIELDS = {
     'attendu',
     'observe',
     'contexte',
+    'indicateurs_suivi',
     'statut',
     'priorite',
     'taille_dev',
@@ -147,6 +148,7 @@ EURES_TRACKING_TABLE_COLUMNS = {
     'attendu': 'Text',
     'observe': 'Text',
     'contexte': 'Text',
+    'indicateurs_suivi': 'Text',
     'statut': 'Text',
     'priorite': 'Text',
     'taille_dev': 'Text',
@@ -6150,6 +6152,7 @@ def _tracking_default_card() -> dict:
         'attendu': '',
         'observe': '',
         'contexte': '',
+        'indicateurs_suivi': '',
         'statut': 'a_qualifier',
         'priorite': 'moyenne',
         'taille_dev': 'chat',
@@ -6255,6 +6258,7 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'attendu': _tracking_text(fields.get('attendu')),
         'observe': _tracking_text(fields.get('observe')),
         'contexte': _tracking_text(fields.get('contexte')),
+        'indicateurs_suivi': _tracking_text(fields.get('indicateurs_suivi')),
         'statut': _tracking_choice(fields.get('statut'), EURES_TRACKING_STATUSES, 'a_qualifier'),
         'priorite': _tracking_choice(fields.get('priorite'), EURES_TRACKING_PRIORITIES, 'moyenne'),
         'taille_dev': _tracking_choice(fields.get('taille_dev'), EURES_TRACKING_SIZES, 'chat'),
@@ -6292,6 +6296,7 @@ def _tracking_record_fields(card: dict) -> dict:
         'attendu': card['attendu'],
         'observe': card['observe'],
         'contexte': card['contexte'],
+        'indicateurs_suivi': card['indicateurs_suivi'],
         'statut': card['statut'],
         'priorite': card['priorite'],
         'taille_dev': card['taille_dev'],
@@ -6331,6 +6336,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'attendu': _tracking_text(payload.get('attendu') or base['attendu']),
         'observe': _tracking_text(payload.get('observe') or base['observe']),
         'contexte': _tracking_text(payload.get('contexte') or base['contexte']),
+        'indicateurs_suivi': _tracking_text(payload.get('indicateurs_suivi') or base['indicateurs_suivi']),
         'statut': _tracking_choice(payload.get('statut') or base['statut'], EURES_TRACKING_STATUSES, base['statut']),
         'priorite': _tracking_choice(payload.get('priorite') or base['priorite'], EURES_TRACKING_PRIORITIES, base['priorite']),
         'taille_dev': _tracking_choice(payload.get('taille_dev') or base['taille_dev'], EURES_TRACKING_SIZES, base['taille_dev']),
@@ -6365,7 +6371,7 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         warnings.append("Le titre a été déduit de la description.")
     if not candidate['titre']:
         errors.append("Le titre est obligatoire.")
-    if not candidate['description'] and not candidate['observe'] and not candidate['attendu'] and not candidate['contexte']:
+    if not candidate['description'] and not candidate['observe'] and not candidate['attendu'] and not candidate['contexte'] and not candidate['indicateurs_suivi']:
         errors.append("Ajoutez au moins une description, un constat, un attendu ou un contexte.")
     if invalid_links:
         warnings.append("Certains liens ont été ignorés car ils ne sont pas au format http(s).")
