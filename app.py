@@ -18,6 +18,7 @@ import json
 import time
 import csv
 import secrets
+import threading
 import unicodedata
 from html import escape
 from collections import Counter, defaultdict
@@ -62,6 +63,7 @@ app.config.update(
 _ADMIN_MAGIC_LINK_REQUESTS: dict[tuple[str, str], float] = {}
 _ADMIN_MAGIC_LINK_USED: dict[str, float] = {}
 _EURES_PUBLIC_WRITE_ATTEMPTS: dict[tuple[str, str], list[float]] = {}
+_EURES_TRACKING_SAVE_LOCK = threading.Lock()
 
 GRIST_BASE_URL = os.environ.get('GRIST_BASE_URL', 'https://grist.numerique.gouv.fr').rstrip('/')
 APP_MODE = os.environ.get('APP_MODE', 'eures-beta').strip().lower() or 'eures-beta'
@@ -6556,39 +6558,40 @@ def _tracking_find_record_by_card_id(card_id: str) -> tuple[dict | None, dict, d
 
 
 def save_tracking_card(payload: dict, actor: str = 'admin') -> dict:
-    existing_record = None
-    existing_card = None
-    config = None
-    headers = None
-    record_id = payload.get('record_id')
-    if record_id:
-        config, headers = _tracking_table_ready()
-        existing_record = fetch_record_by_id(config['doc_id'], config['table_id'], int(record_id), headers)
-    else:
-        existing_record, config, headers = _tracking_find_record_by_card_id(_tracking_text(payload.get('card_id')))
-    if existing_record:
-        existing_card = _tracking_card_from_record(existing_record)
+    with _EURES_TRACKING_SAVE_LOCK:
+        existing_record = None
+        existing_card = None
+        config = None
+        headers = None
+        record_id = payload.get('record_id')
+        if record_id:
+            config, headers = _tracking_table_ready()
+            existing_record = fetch_record_by_id(config['doc_id'], config['table_id'], int(record_id), headers)
+        else:
+            existing_record, config, headers = _tracking_find_record_by_card_id(_tracking_text(payload.get('card_id')))
+        if existing_record:
+            existing_card = _tracking_card_from_record(existing_record)
 
-    validated = validate_tracking_card(payload, existing=existing_card, actor=actor)
-    if validated['errors']:
-        return {'ok': False, **validated}
+        validated = validate_tracking_card(payload, existing=existing_card, actor=actor)
+        if validated['errors']:
+            return {'ok': False, **validated}
 
-    card = validated['card']
-    fields = _tracking_record_fields(card)
-    base_url = f"{GRIST_BASE_URL}/api/docs/{config['doc_id']}/tables/{config['table_id']}/records"
-    if existing_record:
-        resp = write_grist_records('PATCH', base_url, {'records': [{'id': existing_record['id'], 'fields': fields}]}, headers)
-        card['record_id'] = existing_record['id']
-    else:
-        resp = write_grist_records('POST', base_url, {'records': [{'fields': fields}]}, headers)
-    if resp.status_code != 200:
-        raise RuntimeError(f'Failed to save tracking card: HTTP {resp.status_code} - {resp.text}')
-    if not existing_record:
-        payload_json = _parse_response_json_safe(resp)
-        records = payload_json.get('records', []) if isinstance(payload_json, dict) else []
-        if records:
-            card['record_id'] = records[0].get('id')
-    return {'ok': True, 'card': card, 'warnings': validated['warnings'], 'errors': []}
+        card = validated['card']
+        fields = _tracking_record_fields(card)
+        base_url = f"{GRIST_BASE_URL}/api/docs/{config['doc_id']}/tables/{config['table_id']}/records"
+        if existing_record:
+            resp = write_grist_records('PATCH', base_url, {'records': [{'id': existing_record['id'], 'fields': fields}]}, headers)
+            card['record_id'] = existing_record['id']
+        else:
+            resp = write_grist_records('POST', base_url, {'records': [{'fields': fields}]}, headers)
+        if resp.status_code != 200:
+            raise RuntimeError(f'Failed to save tracking card: HTTP {resp.status_code} - {resp.text}')
+        if not existing_record:
+            payload_json = _parse_response_json_safe(resp)
+            records = payload_json.get('records', []) if isinstance(payload_json, dict) else []
+            if records:
+                card['record_id'] = records[0].get('id')
+        return {'ok': True, 'card': card, 'warnings': validated['warnings'], 'errors': []}
 
 
 def delete_tracking_card(record_id: int):

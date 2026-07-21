@@ -163,6 +163,42 @@ class TrackingModuleTest(unittest.TestCase):
             {'Authorization': 'Bearer api-key', 'Accept': 'application/json', 'Content-Type': 'application/json'},
         )
 
+    @patch.object(app, 'write_grist_records')
+    @patch.object(app, '_tracking_find_record_by_card_id')
+    def test_save_tracking_card_updates_existing_card_with_same_card_id(self, find_by_card_id, write_grist_records):
+        existing_record = {
+            'id': 9,
+            'fields': {
+                'card_id': 'card-test-1',
+                'titre': 'Carte test 1',
+                'description': 'Version initiale',
+                'liens_json': '[]',
+                'commentaires_json': '[]',
+                'historique_json': '[]',
+            },
+        }
+        find_by_card_id.return_value = (
+            existing_record,
+            {'doc_id': 'doc-eures', 'table_id': 'Suivi_Projet', 'api_key': 'api-key'},
+            {'Authorization': 'Bearer api-key', 'Accept': 'application/json', 'Content-Type': 'application/json'},
+        )
+        write_grist_records.return_value = SimpleNamespace(status_code=200, text='')
+
+        result = app.save_tracking_card({
+            'card_id': 'card-test-1',
+            'titre': 'Carte test 1',
+            'description': 'Version modifiee',
+        }, actor='tester')
+
+        self.assertTrue(result['ok'])
+        self.assertEqual(result['card']['record_id'], 9)
+        write_grist_records.assert_called_once()
+        method, url, payload, _headers = write_grist_records.call_args.args
+        self.assertEqual(method, 'PATCH')
+        self.assertEqual(url, 'https://grist.numerique.gouv.fr/api/docs/doc-eures/tables/Suivi_Projet/records')
+        self.assertEqual(payload['records'][0]['id'], 9)
+        self.assertEqual(payload['records'][0]['fields']['description'], 'Version modifiee')
+
     @patch.dict(app.os.environ, {}, clear=True)
     def test_translate_tracking_card_payload_reports_missing_api_key(self):
         translated, warnings = app.translate_tracking_card_payload({

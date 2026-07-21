@@ -593,7 +593,7 @@
         <section class="composer-panel">
           <div class="section-head">
             <h2 id="quick-note-title">Créer une carte à partir d’un texte libre</h2>
-            <p id="quick-note-help">Décris le besoin en langage naturel. Tu peux soit préparer un brouillon à relire, soit créer directement la carte si le sujet est déjà clair.</p>
+            <p id="quick-note-help">Décris le besoin en langage naturel et crée directement une carte prête à être classée dans le kanban.</p>
           </div>
           <div class="composer">
             <div>
@@ -601,9 +601,8 @@
               <textarea id="quick-note" placeholder="Décrire un besoin, un bug, une idée ou une décision à préparer..."></textarea>
             </div>
             <div class="composer-actions">
-              <button class="primary" id="quick-draft-btn" type="button">Préparer le brouillon</button>
-              <button id="quick-create-btn" type="button">Créer directement la carte</button>
-              <p class="composer-help" id="quick-note-subhelp">Le brouillon ouvre la carte pour relecture. La création directe l’ajoute immédiatement au kanban.</p>
+              <button class="primary" id="quick-create-btn" type="button">Créer la carte</button>
+              <p class="composer-help" id="quick-note-subhelp">La carte est créée puis ouverte immédiatement pour compléter, classer ou corriger si besoin.</p>
               <div class="status-line" id="quick-status"></div>
             </div>
           </div>
@@ -665,6 +664,7 @@
           <button id="delete-card-btn" type="button">Supprimer</button>
         </div>
         <div class="status-line" id="drawer-status"></div>
+        <div class="status-line" id="draft-status"></div>
       </section>
 
       <section>
@@ -717,6 +717,9 @@
               </div>
             </label>
           </div>
+          <div class="drawer-actions drawer-actions-bottom">
+            <button class="primary" id="save-card-btn-bottom" type="button">Enregistrer</button>
+          </div>
         </form>
       </section>
 
@@ -759,6 +762,8 @@
       draggingRecordId: null,
       suppressNextCardClick: false,
       isSavingCard: false,
+      draftTimer: null,
+      lastSavedDraftSnapshot: "",
     };
 
     const uiText = {
@@ -767,14 +772,13 @@
         lede: "Un kanban embarqué dans l’admin EURES pour suivre les sujets, les arbitrages, les blocages et les décisions sans sortir du projet.",
         quickLabel: "Créer une carte à partir d’un texte libre",
         quickFieldLabel: "Texte libre",
-        quickHelp: "Décris le besoin en langage naturel. Tu peux soit préparer un brouillon à relire, soit créer directement la carte si le sujet est déjà clair.",
-        quickSubhelp: "Le brouillon ouvre la carte pour relecture. La création directe l’ajoute immédiatement au kanban.",
+        quickHelp: "Décris le besoin en langage naturel et crée directement une carte prête à être classée dans le kanban.",
+        quickSubhelp: "La carte est créée puis ouverte immédiatement pour compléter, classer ou corriger si besoin.",
         browserTitle: "EURES beta - Suivi projet",
         backAdmin: "Retour à l’admin EURES",
         logout: "Se déconnecter",
         quickPlaceholder: "Décrire un besoin, un bug, une idée ou une décision à préparer...",
-        quickDraft: "Préparer le brouillon",
-        quickCreate: "Créer directement la carte",
+        quickCreate: "Créer la carte",
         searchPlaceholder: "Rechercher un titre, un texte, un responsable",
         newCard: "Nouvelle carte",
         reload: "Rafraîchir",
@@ -853,9 +857,10 @@
         statusDeleteConfirm: "Supprimer définitivement cette carte ?",
         statusNeedFreeText: "Ajoute d’abord un texte libre.",
         statusCreating: "Création en cours...",
-        statusStructuring: "Structuration en cours...",
         statusCreated: "Carte créée.",
-        statusDraftReady: "Brouillon prêt.",
+        statusDraftLocalSaved: "Saisie conservée automatiquement sur cet appareil.",
+        statusDraftLocalRestored: "Dernière saisie non enregistrée restaurée.",
+        statusDraftLocalCleared: "Saisie locale supprimée après enregistrement.",
         statusTranslating: "Traduction en cours...",
         statusTranslationApplied: "Traduction appliquée au formulaire courant.",
         statusLoadError: "Chargement impossible",
@@ -868,14 +873,13 @@
         lede: "A native kanban inside the EURES admin to track topics, decisions, blockers and delivery work without leaving the project.",
         quickLabel: "Create a card from free text",
         quickFieldLabel: "Free text",
-        quickHelp: "Describe the need in plain language. You can either prepare a draft to review or create the card directly if the topic is already clear.",
-        quickSubhelp: "Draft mode opens the card for review. Direct creation adds it immediately to the kanban.",
+        quickHelp: "Describe the need in plain language and create a card directly, ready to be sorted in the kanban.",
+        quickSubhelp: "The card is created and opened immediately so you can complete it, classify it or adjust it if needed.",
         browserTitle: "EURES beta - Project tracking",
         backAdmin: "Back to EURES admin",
         logout: "Log out",
         quickPlaceholder: "Describe a need, a bug, an idea or a decision to prepare...",
-        quickDraft: "Prepare draft",
-        quickCreate: "Create card directly",
+        quickCreate: "Create card",
         searchPlaceholder: "Search a title, a text or an owner",
         newCard: "New card",
         reload: "Refresh",
@@ -954,9 +958,10 @@
         statusDeleteConfirm: "Delete this card permanently?",
         statusNeedFreeText: "Add some free text first.",
         statusCreating: "Creating card...",
-        statusStructuring: "Structuring draft...",
         statusCreated: "Card created.",
-        statusDraftReady: "Draft ready.",
+        statusDraftLocalSaved: "Your typing is being kept automatically on this device.",
+        statusDraftLocalRestored: "Your last unsaved typing has been restored.",
+        statusDraftLocalCleared: "Local typing cleared after save.",
         statusTranslating: "Translating...",
         statusTranslationApplied: "Translation applied to the current form.",
         statusLoadError: "Unable to load",
@@ -969,14 +974,13 @@
         lede: "Ein natives Kanban im EURES-Admin, um Themen, Entscheidungen, Blocker und Umsetzungen direkt im Projekt zu verfolgen.",
         quickLabel: "Karte aus Freitext erstellen",
         quickFieldLabel: "Freitext",
-        quickHelp: "Beschreiben Sie den Bedarf in klarer Sprache. Sie konnen entweder einen Entwurf zur Prufung vorbereiten oder die Karte direkt erstellen, wenn das Thema bereits klar ist.",
-        quickSubhelp: "Der Entwurf offnet die Karte zur Durchsicht. Die direkte Erstellung fugt sie sofort dem Kanban hinzu.",
+        quickHelp: "Beschreiben Sie den Bedarf in klarer Sprache und erstellen Sie direkt eine Karte, die im Kanban eingeordnet werden kann.",
+        quickSubhelp: "Die Karte wird sofort erstellt und geoffnet, damit Sie sie bei Bedarf vervollstandigen, einordnen oder anpassen konnen.",
         browserTitle: "EURES beta - Projektverfolgung",
         backAdmin: "Zuruck zum EURES-Admin",
         logout: "Abmelden",
         quickPlaceholder: "Beschreiben Sie einen Bedarf, einen Fehler, eine Idee oder eine Entscheidung, die vorbereitet werden soll...",
-        quickDraft: "Entwurf vorbereiten",
-        quickCreate: "Karte direkt erstellen",
+        quickCreate: "Karte erstellen",
         searchPlaceholder: "Titel, Text oder verantwortliche Person suchen",
         newCard: "Neue Karte",
         reload: "Aktualisieren",
@@ -1055,9 +1059,10 @@
         statusDeleteConfirm: "Diese Karte endgultig loschen?",
         statusNeedFreeText: "Fugen Sie zuerst einen Freitext hinzu.",
         statusCreating: "Karte wird erstellt...",
-        statusStructuring: "Entwurf wird strukturiert...",
         statusCreated: "Karte erstellt.",
-        statusDraftReady: "Entwurf bereit.",
+        statusDraftLocalSaved: "Ihre Eingabe wird auf diesem Gerat automatisch gesichert.",
+        statusDraftLocalRestored: "Die letzte nicht gespeicherte Eingabe wurde wiederhergestellt.",
+        statusDraftLocalCleared: "Die lokale Eingabe wurde nach dem Speichern entfernt.",
         statusTranslating: "Ubersetzung lauft...",
         statusTranslationApplied: "Ubersetzung auf das aktuelle Formular angewendet.",
         statusLoadError: "Laden nicht moglich",
@@ -1093,10 +1098,10 @@
 
     function setCardSavingState(isSaving) {
       state.isSavingCard = Boolean(isSaving);
-      const saveButton = document.getElementById("save-card-btn");
-      if (!saveButton) return;
-      saveButton.disabled = state.isSavingCard;
-      saveButton.setAttribute("aria-disabled", state.isSavingCard ? "true" : "false");
+      for (const saveButton of document.querySelectorAll("#save-card-btn, #save-card-btn-bottom")) {
+        saveButton.disabled = state.isSavingCard;
+        saveButton.setAttribute("aria-disabled", state.isSavingCard ? "true" : "false");
+      }
     }
 
     function autoResizeTextarea(textarea) {
@@ -1151,6 +1156,100 @@
       };
     }
 
+    function currentDraftStorageKey(card = state.currentCard) {
+      if (!card) return null;
+      return card.record_id ? `eures-tracking-draft-record-${card.record_id}` : `eures-tracking-draft-card-${card.card_id || "new"}`;
+    }
+
+    function draftSnapshot(card) {
+      if (!card) return "";
+      return JSON.stringify({
+        card_id: card.card_id || "",
+        record_id: card.record_id || "",
+        titre: card.titre || "",
+        langue_source: card.langue_source || "fr",
+        type: card.type || "evolution",
+        description: card.description || "",
+        attendu: card.attendu || "",
+        observe: card.observe || "",
+        contexte: card.contexte || "",
+        statut: card.statut || "a_qualifier",
+        priorite: card.priorite || "moyenne",
+        taille_dev: card.taille_dev || "chat",
+        responsable: card.responsable || "",
+        source: card.source || "admin_ui",
+        archived: Boolean(card.archived),
+        liens: Array.isArray(card.liens) ? card.liens : [],
+        images: Array.isArray(card.images) ? card.images : [],
+      });
+    }
+
+    function saveDraftLocally(showStatus = false) {
+      if (!state.currentCard) return;
+      const draft = readFormCard();
+      state.currentCard = { ...state.currentCard, ...draft };
+      const key = currentDraftStorageKey(state.currentCard);
+      if (!key) return;
+      const snapshot = draftSnapshot(state.currentCard);
+      if (snapshot === state.lastSavedDraftSnapshot) return;
+      localStorage.setItem(key, snapshot);
+      state.lastSavedDraftSnapshot = snapshot;
+      if (showStatus) setStatus("draft-status", t("statusDraftLocalSaved"));
+    }
+
+    function clearLocalDraft(card = state.currentCard, showStatus = false) {
+      const key = currentDraftStorageKey(card);
+      if (key) localStorage.removeItem(key);
+      state.lastSavedDraftSnapshot = "";
+      if (showStatus) setStatus("draft-status", t("statusDraftLocalCleared"));
+      else setStatus("draft-status", "");
+    }
+
+    function restoreLocalDraftIfAny(card) {
+      const key = currentDraftStorageKey(card);
+      if (!key) return card;
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        state.lastSavedDraftSnapshot = draftSnapshot(card);
+        setStatus("draft-status", "");
+        return card;
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        const restored = { ...card, ...parsed };
+        state.lastSavedDraftSnapshot = draftSnapshot(restored);
+        setStatus("draft-status", t("statusDraftLocalRestored"));
+        return restored;
+      } catch (error) {
+        localStorage.removeItem(key);
+        state.lastSavedDraftSnapshot = draftSnapshot(card);
+        setStatus("draft-status", "");
+        return card;
+      }
+    }
+
+    function scheduleDraftAutosave() {
+      if (state.draftTimer) window.clearTimeout(state.draftTimer);
+      state.draftTimer = window.setTimeout(() => {
+        saveDraftLocally(true);
+        scheduleDraftAutosave();
+      }, 10000);
+    }
+
+    function bindDraftAutosave() {
+      const form = document.getElementById("card-form");
+      if (form.dataset.draftAutosaveBound) return;
+      form.addEventListener("input", () => {
+        saveDraftLocally(false);
+        scheduleDraftAutosave();
+      });
+      form.addEventListener("change", () => {
+        saveDraftLocally(true);
+        scheduleDraftAutosave();
+      });
+      form.dataset.draftAutosaveBound = "true";
+    }
+
     async function fetchJson(url, options = {}) {
       const response = await fetch(url, { credentials: "same-origin", ...options });
       const payload = await response.json().catch(() => ({}));
@@ -1200,7 +1299,6 @@
       document.getElementById("quick-note-label").textContent = t("quickFieldLabel");
       document.getElementById("quick-note").placeholder = t("quickPlaceholder");
       document.getElementById("quick-note-subhelp").textContent = t("quickSubhelp");
-      document.getElementById("quick-draft-btn").textContent = t("quickDraft");
       document.getElementById("quick-create-btn").textContent = t("quickCreate");
       document.getElementById("filters-title").textContent = t("filtersTitle");
       document.getElementById("filters-help").textContent = t("filtersHelp");
@@ -1215,6 +1313,7 @@
       document.getElementById("reload-btn").textContent = t("reload");
       document.getElementById("close-drawer-btn").textContent = t("close");
       document.getElementById("save-card-btn").textContent = t("save");
+      document.getElementById("save-card-btn-bottom").textContent = t("save");
       document.getElementById("archive-card-btn").textContent = state.currentCard?.archived ? t("restore") : t("archive");
       document.getElementById("delete-card-btn").textContent = t("delete");
       document.getElementById("label-card-titre").childNodes[0].textContent = t("fieldTitle");
@@ -1240,6 +1339,9 @@
       document.getElementById("comment-body").placeholder = t("commentPlaceholder");
       document.getElementById("comment-save-btn").textContent = t("commentAdd");
       document.getElementById("history-heading").textContent = t("historyHeading");
+      if (!document.getElementById("draft-status").textContent) {
+        setStatus("draft-status", "");
+      }
     }
 
     function renderFilters() {
@@ -1460,6 +1562,8 @@
       if (!state.currentCard) return;
       state.currentCard.images = (state.currentCard.images || []).filter((image) => image.id !== imageId);
       renderImageGallery();
+      saveDraftLocally(true);
+      scheduleDraftAutosave();
       setStatus("drawer-status", t("imageCount")(state.currentCard.images.length));
     }
 
@@ -1509,7 +1613,7 @@
 
     async function handleImageSelection(fileList) {
       if (!state.currentCard) {
-        state.currentCard = defaultCard();
+        state.currentCard = restoreLocalDraftIfAny(defaultCard());
       }
       const files = Array.from(fileList || []).filter((file) => String(file.type || "").startsWith("image/"));
       if (!files.length) return;
@@ -1522,6 +1626,8 @@
       }
       state.currentCard.images = nextImages.slice(0, 4);
       renderImageGallery();
+      saveDraftLocally(true);
+      scheduleDraftAutosave();
       setStatus("drawer-status", t("imageCount")(state.currentCard.images.length));
       document.getElementById("card-images-input").value = "";
     }
@@ -1560,16 +1666,22 @@
 
     function openCard(recordId) {
       const card = state.cards.find((item) => Number(item.record_id) === Number(recordId));
-      state.currentCard = card ? structuredClone(card) : defaultCard();
+      state.currentCard = restoreLocalDraftIfAny(card ? structuredClone(card) : defaultCard());
       setStatus("drawer-status", "");
       setStatus("translation-status", "");
       renderDrawer();
+      scheduleDraftAutosave();
     }
 
     function closeDrawer() {
+      if (state.draftTimer) {
+        window.clearTimeout(state.draftTimer);
+        state.draftTimer = null;
+      }
       state.currentCard = null;
       document.getElementById("comment-body").value = "";
       document.getElementById("card-images-input").value = "";
+      setStatus("draft-status", "");
       renderDrawer();
     }
 
@@ -1613,12 +1725,13 @@
       renderStaticText();
       renderFilters();
       renderBoard();
+      bindDraftAutosave();
       bindAutoResize();
       setStatus("board-status", (uiText[state.lang] || uiText.fr).boardLoaded(state.cards.length));
       if (state.currentCard?.record_id) {
         const fresh = state.cards.find((card) => Number(card.record_id) === Number(state.currentCard.record_id));
         if (fresh) {
-          state.currentCard = structuredClone(fresh);
+          state.currentCard = restoreLocalDraftIfAny(structuredClone(fresh));
           renderDrawer();
         }
       }
@@ -1626,6 +1739,8 @@
 
     async function saveCard(cardPayload, recordId = null, silent = false, reopenAfterSave = true) {
       if (state.isSavingCard) return;
+      const draftCardBeforeSave = state.currentCard ? { ...state.currentCard, ...cardPayload } : cardPayload;
+      const previousDraftKey = currentDraftStorageKey(draftCardBeforeSave);
       const url = recordId ? apiUrl(`/admin/tracking/cards/${recordId}`) : apiUrl("/admin/tracking/cards");
       const method = recordId ? "PATCH" : "POST";
       setCardSavingState(true);
@@ -1638,10 +1753,12 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cardPayload)
         });
+        if (previousDraftKey) localStorage.removeItem(previousDraftKey);
         if (!silent) {
           setStatus("drawer-status", payload.warnings?.length ? payload.warnings.join(" ") : t("statusSaved"));
         }
         await loadBoard();
+        clearLocalDraft(payload.card || draftCardBeforeSave, !silent);
         if (reopenAfterSave && payload.card?.record_id) openCard(payload.card.record_id);
       } finally {
         setCardSavingState(false);
@@ -1694,13 +1811,13 @@
       setStatus("drawer-status", t(nextArchived ? "statusArchived" : "statusRestored"));
     }
 
-    async function runDraft(createDirectly) {
+    async function createCardFromFreeText() {
       const text = document.getElementById("quick-note").value.trim();
       if (!text) {
         setStatus("quick-status", t("statusNeedFreeText"));
         return;
       }
-      setStatus("quick-status", createDirectly ? t("statusCreating") : t("statusStructuring"));
+      setStatus("quick-status", t("statusCreating"));
       const payload = await fetchJson(apiUrl("/admin/tracking/ai/draft"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1708,19 +1825,15 @@
           text,
           langue_source: state.lang,
           source: "free_text",
-          create: createDirectly
+          create: true
         })
       });
-      if (createDirectly && payload.card?.record_id) {
+      if (payload.card?.record_id) {
         document.getElementById("quick-note").value = "";
         setStatus("quick-status", payload.warnings?.join(" ") || t("statusCreated"));
         await loadBoard();
         openCard(payload.card.record_id);
-        return;
       }
-      state.currentCard = structuredClone(payload.card);
-      setStatus("quick-status", payload.warnings?.join(" ") || t("statusDraftReady"));
-      renderDrawer();
     }
 
     async function translateCurrentCard(targetLanguage) {
@@ -1748,8 +1861,9 @@
     document.getElementById("reload-btn").addEventListener("click", loadBoard);
     document.getElementById("reset-filters-btn").addEventListener("click", resetFilters);
     document.getElementById("new-card-btn").addEventListener("click", () => {
-      state.currentCard = defaultCard();
+      state.currentCard = restoreLocalDraftIfAny(defaultCard());
       renderDrawer();
+      scheduleDraftAutosave();
     });
     document.getElementById("close-drawer-btn").addEventListener("click", closeDrawer);
     document.getElementById("card-images-input").addEventListener("change", async (event) => {
@@ -1759,16 +1873,18 @@
         setStatus("drawer-status", error.message || t("statusRequestError"));
       }
     });
-    document.getElementById("save-card-btn").addEventListener("click", async () => {
+    async function handleSaveCurrentCard() {
       if (state.isSavingCard) return;
       const payload = readFormCard();
       await saveCard(payload, state.currentCard?.record_id || null);
-    });
+    }
+
+    document.getElementById("save-card-btn").addEventListener("click", handleSaveCurrentCard);
+    document.getElementById("save-card-btn-bottom").addEventListener("click", handleSaveCurrentCard);
     document.getElementById("archive-card-btn").addEventListener("click", toggleArchiveCurrentCard);
     document.getElementById("comment-save-btn").addEventListener("click", addComment);
     document.getElementById("delete-card-btn").addEventListener("click", deleteCurrentCard);
-    document.getElementById("quick-draft-btn").addEventListener("click", () => runDraft(false));
-    document.getElementById("quick-create-btn").addEventListener("click", () => runDraft(true));
+    document.getElementById("quick-create-btn").addEventListener("click", createCardFromFreeText);
     document.getElementById("translate-en-btn").addEventListener("click", () => translateCurrentCard("en"));
     document.getElementById("translate-de-btn").addEventListener("click", () => translateCurrentCard("de"));
     document.getElementById("drawer-shell").addEventListener("click", (event) => {
