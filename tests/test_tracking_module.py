@@ -1,4 +1,5 @@
 import base64
+import json
 import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
@@ -198,6 +199,89 @@ class TrackingModuleTest(unittest.TestCase):
         self.assertEqual(url, 'https://grist.numerique.gouv.fr/api/docs/doc-eures/tables/Suivi_Projet/records')
         self.assertEqual(payload['records'][0]['id'], 9)
         self.assertEqual(payload['records'][0]['fields']['description'], 'Version modifiee')
+
+    @patch.object(app, '_tracking_update_card_record')
+    @patch.object(app, '_tracking_find_record_by_reference')
+    def test_apply_tracking_github_event_updates_card_from_pull_request(self, find_by_reference, update_card_record):
+        record = {
+            'id': 23,
+            'fields': {
+                'card_id': 'trk_abc123',
+                'titre': 'Automatiser le suivi',
+                'description': 'Description',
+                'statut': 'a_faire',
+                'liens_json': '[]',
+                'commentaires_json': '[]',
+                'historique_json': '[]',
+            },
+        }
+        find_by_reference.return_value = (
+            record,
+            {'doc_id': 'doc-eures', 'table_id': 'Suivi_Projet', 'api_key': 'api-key'},
+            {'Authorization': 'Bearer api-key'},
+        )
+        update_card_record.side_effect = lambda rec, _config, _headers, card: card
+
+        result = app.apply_tracking_github_event({
+            'action': 'opened',
+            'number': 42,
+            'pull_request': {
+                'number': 42,
+                'title': 'EURES-23 autosave',
+                'html_url': 'https://github.com/gip-inclusion/eures-beta/pull/42',
+                'head': {'ref': 'feature/EURES-23-autosave'},
+                'base': {'ref': 'main'},
+                'labels': [],
+            },
+        }, 'pull_request')
+
+        self.assertTrue(result['ok'])
+        self.assertTrue(result['updated'])
+        self.assertEqual(result['reference'], 'EURES-23')
+        self.assertEqual(result['card']['statut'], 'en_cours')
+        self.assertEqual(result['card']['github_pr_state'], 'open')
+        self.assertEqual(result['card']['github_pr_number'], '42')
+        self.assertEqual(result['card']['github_branch'], 'feature/EURES-23-autosave')
+        self.assertIn('https://github.com/gip-inclusion/eures-beta/pull/42', result['card']['liens'])
+        self.assertTrue(any(event['action'] == 'github_pr_opened' for event in result['card']['historique']))
+
+    @patch.object(app, '_tracking_update_card_record')
+    @patch.object(app, '_tracking_find_record_by_reference')
+    def test_apply_tracking_deployment_event_marks_card_done(self, find_by_reference, update_card_record):
+        record = {
+            'id': 23,
+            'fields': {
+                'card_id': 'trk_abc123',
+                'titre': 'Automatiser le suivi',
+                'description': 'Description',
+                'statut': 'en_cours',
+                'liens_json': json.dumps(['https://github.com/gip-inclusion/eures-beta/pull/42']),
+                'commentaires_json': '[]',
+                'historique_json': '[]',
+            },
+        }
+        find_by_reference.return_value = (
+            record,
+            {'doc_id': 'doc-eures', 'table_id': 'Suivi_Projet', 'api_key': 'api-key'},
+            {'Authorization': 'Bearer api-key'},
+        )
+        update_card_record.side_effect = lambda rec, _config, _headers, card: card
+
+        result = app.apply_tracking_deployment_event({
+            'reference': 'EURES-23',
+            'status': 'success',
+            'environment': 'production',
+            'deployment_url': 'https://eures-beta.osc-fr1.scalingo.io',
+        })
+
+        self.assertTrue(result['ok'])
+        self.assertTrue(result['updated'])
+        self.assertEqual(result['card']['statut'], 'fait')
+        self.assertEqual(result['card']['production_environment'], 'production')
+        self.assertEqual(result['card']['production_url'], 'https://eures-beta.osc-fr1.scalingo.io')
+        self.assertTrue(result['card']['production_deployed_at'])
+        self.assertIn('https://eures-beta.osc-fr1.scalingo.io', result['card']['liens'])
+        self.assertTrue(any(event['action'] == 'deployment_succeeded' for event in result['card']['historique']))
 
     @patch.dict(app.os.environ, {}, clear=True)
     def test_translate_tracking_card_payload_reports_missing_api_key(self):

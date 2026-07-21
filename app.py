@@ -13,6 +13,8 @@ Environment variables:
 
 import os
 import base64
+import hashlib
+import hmac
 import re
 import json
 import time
@@ -126,6 +128,13 @@ EURES_TRACKING_CARD_FIELDS = {
     'liens_json',
     'commentaires_json',
     'historique_json',
+    'github_branch',
+    'github_pr_url',
+    'github_pr_number',
+    'github_pr_state',
+    'production_url',
+    'production_environment',
+    'production_deployed_at',
     'created_at',
     'updated_at',
 }
@@ -151,6 +160,13 @@ EURES_TRACKING_TABLE_COLUMNS = {
     'liens_json': 'Text',
     'commentaires_json': 'Text',
     'historique_json': 'Text',
+    'github_branch': 'Text',
+    'github_pr_url': 'Text',
+    'github_pr_number': 'Numeric',
+    'github_pr_state': 'Text',
+    'production_url': 'Text',
+    'production_environment': 'Text',
+    'production_deployed_at': 'Text',
     'created_at': 'Text',
     'updated_at': 'Text',
 }
@@ -6076,6 +6092,12 @@ def _tracking_card_token() -> str:
     return f"trk_{secrets.token_urlsafe(8).replace('-', '').replace('_', '').lower()}"
 
 
+def _tracking_reference(record_id: int | None, card_id: str | None = None) -> str:
+    if record_id:
+        return f"EURES-{int(record_id)}"
+    return _tracking_text(card_id)
+
+
 def _tracking_extract_links(value) -> tuple[list[str], list[str]]:
     if isinstance(value, list):
         raw_items = [str(item or '').strip() for item in value]
@@ -6119,6 +6141,7 @@ def _tracking_comment(author: str, body: str) -> dict:
 
 def _tracking_default_card() -> dict:
     return {
+        'reference': '',
         'card_id': _tracking_card_token(),
         'langue_source': 'fr',
         'titre': '',
@@ -6140,6 +6163,13 @@ def _tracking_default_card() -> dict:
         'liens': [],
         'commentaires': [],
         'historique': [],
+        'github_branch': '',
+        'github_pr_url': '',
+        'github_pr_number': '',
+        'github_pr_state': '',
+        'production_url': '',
+        'production_environment': '',
+        'production_deployed_at': '',
         'created_at': '',
         'updated_at': '',
     }
@@ -6238,9 +6268,17 @@ def _tracking_card_from_record(rec: dict) -> dict | None:
         'liens': _tracking_list(fields.get('liens_json')),
         'commentaires': _tracking_list(fields.get('commentaires_json')),
         'historique': _tracking_list(fields.get('historique_json')),
+        'github_branch': _tracking_text(fields.get('github_branch')),
+        'github_pr_url': _tracking_text(fields.get('github_pr_url')),
+        'github_pr_number': _tracking_text(fields.get('github_pr_number')),
+        'github_pr_state': _tracking_text(fields.get('github_pr_state')),
+        'production_url': _tracking_text(fields.get('production_url')),
+        'production_environment': _tracking_text(fields.get('production_environment')),
+        'production_deployed_at': _tracking_text(fields.get('production_deployed_at')),
         'created_at': _tracking_text(fields.get('created_at')),
         'updated_at': _tracking_text(fields.get('updated_at')),
     })
+    card['reference'] = _tracking_reference(rec.get('id'), card.get('card_id'))
     return card
 
 
@@ -6267,6 +6305,13 @@ def _tracking_record_fields(card: dict) -> dict:
         'liens_json': json.dumps(card['liens'], ensure_ascii=False),
         'commentaires_json': json.dumps(card['commentaires'], ensure_ascii=False),
         'historique_json': json.dumps(card['historique'], ensure_ascii=False),
+        'github_branch': card['github_branch'],
+        'github_pr_url': card['github_pr_url'],
+        'github_pr_number': card['github_pr_number'],
+        'github_pr_state': card['github_pr_state'],
+        'production_url': card['production_url'],
+        'production_environment': card['production_environment'],
+        'production_deployed_at': card['production_deployed_at'],
         'created_at': card['created_at'],
         'updated_at': card['updated_at'],
     }
@@ -6298,6 +6343,13 @@ def validate_tracking_card(payload: dict, existing: dict | None = None, actor: s
         'images': list(base.get('images') or []),
         'commentaires': list(base.get('commentaires') or []),
         'historique': list(base.get('historique') or []),
+        'github_branch': _tracking_text(payload.get('github_branch') if 'github_branch' in payload else base.get('github_branch')),
+        'github_pr_url': _tracking_text(payload.get('github_pr_url') if 'github_pr_url' in payload else base.get('github_pr_url')),
+        'github_pr_number': _tracking_text(payload.get('github_pr_number') if 'github_pr_number' in payload else base.get('github_pr_number')),
+        'github_pr_state': _tracking_text(payload.get('github_pr_state') if 'github_pr_state' in payload else base.get('github_pr_state')),
+        'production_url': _tracking_text(payload.get('production_url') if 'production_url' in payload else base.get('production_url')),
+        'production_environment': _tracking_text(payload.get('production_environment') if 'production_environment' in payload else base.get('production_environment')),
+        'production_deployed_at': _tracking_text(payload.get('production_deployed_at') if 'production_deployed_at' in payload else base.get('production_deployed_at')),
         'created_at': _tracking_text(base.get('created_at')),
         'updated_at': _tracking_now(),
     })
@@ -6557,6 +6609,210 @@ def _tracking_find_record_by_card_id(card_id: str) -> tuple[dict | None, dict, d
     return record, config, headers
 
 
+def _tracking_find_record_by_reference(reference: str) -> tuple[dict | None, dict, dict]:
+    ref = _tracking_text(reference).upper()
+    if ref.startswith('EURES-'):
+        suffix = ''.join(ch for ch in ref[6:] if ch.isdigit())
+        if suffix:
+            config, headers = _tracking_table_ready()
+            record = fetch_record_by_id(config['doc_id'], config['table_id'], int(suffix), headers)
+            return record, config, headers
+    return _tracking_find_record_by_card_id(reference)
+
+
+def _tracking_get_github_webhook_secret() -> str:
+    return (
+        os.environ.get('GITHUB_WEBHOOK_SECRET_EURES_BETA', '').strip()
+        or os.environ.get('GITHUB_WEBHOOK_SECRET', '').strip()
+    )
+
+
+def _tracking_get_deploy_webhook_secret() -> str:
+    return (
+        os.environ.get('EURES_TRACKING_DEPLOY_WEBHOOK_SECRET', '').strip()
+        or os.environ.get('TRACKING_DEPLOY_WEBHOOK_SECRET', '').strip()
+    )
+
+
+def _tracking_verify_hmac_signature(secret: str, payload: bytes, signature_header: str, prefix: str = 'sha256=') -> bool:
+    if not secret or not signature_header or not signature_header.startswith(prefix):
+        return False
+    digest = hmac.new(secret.encode('utf-8'), payload, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(f'{prefix}{digest}', signature_header)
+
+
+def _tracking_extract_reference_from_texts(*values) -> str:
+    for value in values:
+        text = _tracking_text(value)
+        if not text:
+            continue
+        match = re.search(r'\bEURES-(\d+)\b', text, flags=re.IGNORECASE)
+        if match:
+            return f"EURES-{match.group(1)}"
+    return ''
+
+
+def _tracking_history_append_unique(history: list[dict], actor: str, action: str, message: str, extra: dict | None = None):
+    if history:
+        last = history[-1]
+        if (
+            _tracking_text(last.get('action')) == _tracking_text(action)
+            and _tracking_text(last.get('message')) == _tracking_text(message)
+            and (last.get('extra') or {}) == (extra or {})
+        ):
+            return
+    history.append(_tracking_history_event(actor, action, message, extra))
+
+
+def _tracking_update_card_record(record: dict, config: dict, headers: dict, card: dict):
+    card['reference'] = _tracking_reference(record.get('id') if isinstance(record, dict) else card.get('record_id'), card.get('card_id'))
+    update_table_record_by_id(
+        config,
+        int(record['id']),
+        _tracking_record_fields(card),
+        headers,
+        EURES_TRACKING_CARD_FIELDS,
+    )
+    card['record_id'] = int(record['id'])
+    card['reference'] = _tracking_reference(card['record_id'], card.get('card_id'))
+    return card
+
+
+def apply_tracking_github_event(payload: dict, event_name: str) -> dict:
+    if event_name != 'pull_request':
+        return {'ok': True, 'updated': False, 'reason': 'ignored_event'}
+    action = _tracking_text(payload.get('action'))
+    pr = payload.get('pull_request') if isinstance(payload, dict) else {}
+    pr = pr if isinstance(pr, dict) else {}
+    head = pr.get('head') if isinstance(pr.get('head'), dict) else {}
+    base = pr.get('base') if isinstance(pr.get('base'), dict) else {}
+    labels = pr.get('labels') if isinstance(pr.get('labels'), list) else []
+    reference = _tracking_extract_reference_from_texts(
+        pr.get('title'),
+        pr.get('body'),
+        head.get('ref'),
+        base.get('ref'),
+        *[label.get('name') for label in labels if isinstance(label, dict)],
+    )
+    if not reference:
+        return {'ok': True, 'updated': False, 'reason': 'reference_not_found'}
+    record, config, headers = _tracking_find_record_by_reference(reference)
+    if not record:
+        return {'ok': True, 'updated': False, 'reason': 'card_not_found', 'reference': reference}
+    card = _tracking_card_from_record(record)
+    if not card:
+        return {'ok': False, 'error': 'Tracking card payload is invalid.'}
+
+    pr_number = str(pr.get('number') or payload.get('number') or '')
+    pr_url = _tracking_text(pr.get('html_url'))
+    branch = _tracking_text(head.get('ref'))
+    merged = bool(pr.get('merged'))
+    actor = 'github'
+    history = list(card.get('historique') or [])
+
+    if branch:
+        card['github_branch'] = branch
+    if pr_url:
+        card['github_pr_url'] = pr_url
+        if pr_url not in (card.get('liens') or []):
+            card['liens'] = list(card.get('liens') or []) + [pr_url]
+    if pr_number:
+        card['github_pr_number'] = pr_number
+
+    if action in {'opened', 'reopened'}:
+        card['github_pr_state'] = 'open'
+        if card.get('statut') in {'a_qualifier', 'a_faire'}:
+            card['statut'] = 'en_cours'
+        _tracking_history_append_unique(
+            history,
+            actor,
+            'github_pr_opened',
+            f"PR #{pr_number or '?'} ouverte sur GitHub.",
+            {'reference': reference, 'branch': branch, 'url': pr_url},
+        )
+    elif action == 'synchronize':
+        card['github_pr_state'] = 'open'
+        _tracking_history_append_unique(
+            history,
+            actor,
+            'github_pr_updated',
+            f"PR #{pr_number or '?'} mise à jour sur GitHub.",
+            {'reference': reference, 'branch': branch, 'url': pr_url},
+        )
+    elif action == 'closed' and merged:
+        card['github_pr_state'] = 'merged'
+        if card.get('statut') == 'a_qualifier':
+            card['statut'] = 'en_cours'
+        _tracking_history_append_unique(
+            history,
+            actor,
+            'github_pr_merged',
+            f"PR #{pr_number or '?'} fusionnée dans {base.get('ref') or 'la branche cible'}.",
+            {'reference': reference, 'branch': branch, 'url': pr_url},
+        )
+    elif action == 'closed':
+        card['github_pr_state'] = 'closed'
+        _tracking_history_append_unique(
+            history,
+            actor,
+            'github_pr_closed',
+            f"PR #{pr_number or '?'} fermée sans fusion.",
+            {'reference': reference, 'branch': branch, 'url': pr_url},
+        )
+    else:
+        return {'ok': True, 'updated': False, 'reason': 'ignored_action', 'reference': reference}
+
+    card['historique'] = history
+    card['updated_at'] = _tracking_now()
+    if not card.get('created_at'):
+        card['created_at'] = card['updated_at']
+    _tracking_update_card_record(record, config, headers, card)
+    return {'ok': True, 'updated': True, 'reference': card['reference'], 'card': card}
+
+
+def apply_tracking_deployment_event(payload: dict, actor: str = 'deployment-bot') -> dict:
+    reference = _tracking_extract_reference_from_texts(
+        payload.get('reference'),
+        payload.get('card_reference'),
+        payload.get('branch'),
+        payload.get('description'),
+        payload.get('message'),
+    )
+    if not reference:
+        return {'ok': True, 'updated': False, 'reason': 'reference_not_found'}
+    status = _tracking_text(payload.get('status') or payload.get('state'))
+    environment = _tracking_text(payload.get('environment') or 'production')
+    if status not in {'success', 'ok', 'completed'}:
+        return {'ok': True, 'updated': False, 'reason': 'ignored_status', 'reference': reference}
+    record, config, headers = _tracking_find_record_by_reference(reference)
+    if not record:
+        return {'ok': True, 'updated': False, 'reason': 'card_not_found', 'reference': reference}
+    card = _tracking_card_from_record(record)
+    if not card:
+        return {'ok': False, 'error': 'Tracking card payload is invalid.'}
+
+    production_url = _tracking_text(payload.get('url') or payload.get('deployment_url'))
+    if production_url:
+        card['production_url'] = production_url
+        if production_url not in (card.get('liens') or []):
+            card['liens'] = list(card.get('liens') or []) + [production_url]
+    card['production_environment'] = environment or 'production'
+    card['production_deployed_at'] = _tracking_now()
+    card['statut'] = 'fait'
+    history = list(card.get('historique') or [])
+    _tracking_history_append_unique(
+        history,
+        actor,
+        'deployment_succeeded',
+        f"Déploiement {card['production_environment']} réussi.",
+        {'reference': reference, 'url': production_url},
+    )
+    card['historique'] = history
+    card['updated_at'] = card['production_deployed_at']
+    _tracking_update_card_record(record, config, headers, card)
+    return {'ok': True, 'updated': True, 'reference': card['reference'], 'card': card}
+
+
 def save_tracking_card(payload: dict, actor: str = 'admin') -> dict:
     with _EURES_TRACKING_SAVE_LOCK:
         existing_record = None
@@ -6591,6 +6847,7 @@ def save_tracking_card(payload: dict, actor: str = 'admin') -> dict:
             records = payload_json.get('records', []) if isinstance(payload_json, dict) else []
             if records:
                 card['record_id'] = records[0].get('id')
+        card['reference'] = _tracking_reference(card.get('record_id'), card.get('card_id'))
         return {'ok': True, 'card': card, 'warnings': validated['warnings'], 'errors': []}
 
 
@@ -8923,6 +9180,42 @@ def admin_eures_tracking_ai_translate(form_id: str):
     payload = request.get_json(silent=True) or {}
     translated, warnings = translate_tracking_card_payload(payload.get('card') or {}, payload.get('target_language') or 'fr')
     return jsonify({'ok': True, 'translated': translated, 'warnings': warnings})
+
+
+@app.route('/api/forms/<form_id>/tracking/github/webhook', methods=['POST'])
+def eures_tracking_github_webhook(form_id: str):
+    if form_id != 'eures-beta':
+        return jsonify({'error': f'Unknown tracking webhook form: {form_id}'}), 404
+    secret = _tracking_get_github_webhook_secret()
+    signature = request.headers.get('X-Hub-Signature-256', '')
+    raw_payload = request.get_data(cache=False)
+    if not _tracking_verify_hmac_signature(secret, raw_payload, signature):
+        return jsonify({'error': 'Invalid webhook signature.'}), 403
+    event_name = _tracking_text(request.headers.get('X-GitHub-Event'))
+    payload = request.get_json(silent=True) or {}
+    try:
+        result = apply_tracking_github_event(payload, event_name)
+        return jsonify(result), 200
+    except Exception as e:
+        app.logger.exception('EURES tracking GitHub webhook failed')
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/forms/<form_id>/tracking/deployments/webhook', methods=['POST'])
+def eures_tracking_deployment_webhook(form_id: str):
+    if form_id != 'eures-beta':
+        return jsonify({'error': f'Unknown tracking deployment form: {form_id}'}), 404
+    secret = _tracking_get_deploy_webhook_secret()
+    header_secret = _tracking_text(request.headers.get('X-Tracking-Webhook-Secret'))
+    if not secret or not header_secret or not hmac.compare_digest(header_secret, secret):
+        return jsonify({'error': 'Invalid deployment webhook secret.'}), 403
+    payload = request.get_json(silent=True) or {}
+    try:
+        result = apply_tracking_deployment_event(payload)
+        return jsonify(result), 200
+    except Exception as e:
+        app.logger.exception('EURES tracking deployment webhook failed')
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/forms/<form_id>/public-stats', methods=['GET'])

@@ -835,10 +835,17 @@
         noOwner: "Responsable non défini",
         archivedBadge: "Archivée",
         detailId: "ID",
+        detailReference: "Référence dev",
         detailStatus: "Statut",
         detailPriority: "Priorité",
         detailSize: "Taille",
         detailType: "Type",
+        detailGithubBranch: "Branche GitHub",
+        detailGithubPr: "Pull request GitHub",
+        detailGithubState: "État GitHub",
+        detailDeploymentUrl: "URL de déploiement",
+        detailDeploymentEnv: "Environnement déployé",
+        detailDeploymentAt: "Déployé le",
         detailArchiveState: "Archivage",
         detailArchivedAt: "Archivée le",
         detailArchivedBy: "Archivée par",
@@ -936,10 +943,17 @@
         noOwner: "No owner",
         archivedBadge: "Archived",
         detailId: "ID",
+        detailReference: "Dev reference",
         detailStatus: "Status",
         detailPriority: "Priority",
         detailSize: "Size",
         detailType: "Type",
+        detailGithubBranch: "GitHub branch",
+        detailGithubPr: "GitHub pull request",
+        detailGithubState: "GitHub state",
+        detailDeploymentUrl: "Deployment URL",
+        detailDeploymentEnv: "Deployed environment",
+        detailDeploymentAt: "Deployed at",
         detailArchiveState: "Archive state",
         detailArchivedAt: "Archived at",
         detailArchivedBy: "Archived by",
@@ -1037,10 +1051,17 @@
         noOwner: "Keine verantwortliche Person",
         archivedBadge: "Archiviert",
         detailId: "ID",
+        detailReference: "Dev-Referenz",
         detailStatus: "Status",
         detailPriority: "Prioritat",
         detailSize: "Umfang",
         detailType: "Typ",
+        detailGithubBranch: "GitHub-Branch",
+        detailGithubPr: "GitHub-Pull-Request",
+        detailGithubState: "GitHub-Status",
+        detailDeploymentUrl: "Deployment-URL",
+        detailDeploymentEnv: "Deployte Umgebung",
+        detailDeploymentAt: "Deployt am",
         detailArchiveState: "Archivstatus",
         detailArchivedAt: "Archiviert am",
         detailArchivedBy: "Archiviert von",
@@ -1481,7 +1502,7 @@
             ${Array.isArray(card.images) && card.images.length ? `<span class="pill">Img ${card.images.length}</span>` : ""}
             ${card.archived ? `<span class="pill archived">${esc(t("archivedBadge"))}</span>` : ""}
           </div>
-          <div class="card-meta">${esc(card.responsable || t("noOwner"))} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
+          <div class="card-meta">${esc(card.reference || card.card_id || "")} · ${esc(card.responsable || t("noOwner"))} · ${esc((card.updated_at || "").replace("T", " ").slice(0, 16))}</div>
         </article>
       `;
     }
@@ -1519,10 +1540,17 @@
 
       document.getElementById("detail-list").innerHTML = `
         <div class="detail-row"><dt>${esc(t("detailId"))}</dt><dd>${esc(card.card_id || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailReference"))}</dt><dd>${esc(card.reference || "")}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailStatus"))}</dt><dd>${esc(labels.statuses?.[card.statut] || card.statut)}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailPriority"))}</dt><dd>${esc(labels.priorities?.[card.priorite] || card.priorite)}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailSize"))}</dt><dd>${esc(labels.sizes?.[card.taille_dev] || card.taille_dev)}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailType"))}</dt><dd>${esc(labels.types?.[card.type] || card.type)}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailGithubBranch"))}</dt><dd>${esc(card.github_branch || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailGithubPr"))}</dt><dd>${card.github_pr_url ? `<a href="${esc(card.github_pr_url)}" target="_blank" rel="noreferrer">${esc(card.github_pr_number ? `#${card.github_pr_number}` : card.github_pr_url)}</a>` : ""}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailGithubState"))}</dt><dd>${esc(card.github_pr_state || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailDeploymentUrl"))}</dt><dd>${card.production_url ? `<a href="${esc(card.production_url)}" target="_blank" rel="noreferrer">${esc(card.production_url)}</a>` : ""}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailDeploymentEnv"))}</dt><dd>${esc(card.production_environment || "")}</dd></div>
+        <div class="detail-row"><dt>${esc(t("detailDeploymentAt"))}</dt><dd>${esc(card.production_deployed_at || "")}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailArchiveState"))}</dt><dd>${esc(card.archived ? t("archivedBadge") : t("activeOnly"))}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailArchivedAt"))}</dt><dd>${esc(card.archived_at || "")}</dd></div>
         <div class="detail-row"><dt>${esc(t("detailArchivedBy"))}</dt><dd>${esc(card.archived_by || "")}</dd></div>
