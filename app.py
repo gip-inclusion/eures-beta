@@ -197,7 +197,7 @@ EURES_TRACKING_UI_LABELS = {
             'critique': '🔴 Critique',
         },
         'sizes': {
-            'puce': '· Puce',
+            'puce': '🦋 Papillon',
             'souris': '🐭 Souris',
             'chat': '🐱 Chat',
             'elephant': '🐘 Éléphant',
@@ -228,7 +228,7 @@ EURES_TRACKING_UI_LABELS = {
             'critique': '🔴 Critical',
         },
         'sizes': {
-            'puce': '· Tiny',
+            'puce': '🦋 Butterfly',
             'souris': '🐭 Small fix',
             'chat': '🐱 Small feature',
             'elephant': '🐘 Significant',
@@ -259,7 +259,7 @@ EURES_TRACKING_UI_LABELS = {
             'critique': '🔴 Kritisch',
         },
         'sizes': {
-            'puce': '· Mini',
+            'puce': '🦋 Schmetterling',
             'souris': '🐭 Klein',
             'chat': '🐱 Kleine Entwicklung',
             'elephant': '🐘 Umfangreich',
