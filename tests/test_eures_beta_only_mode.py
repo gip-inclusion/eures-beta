@@ -144,6 +144,14 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
         self.assertIn(b'Journal du projet', response.data)
         response.close()
 
+    def test_privacy_page_is_available_in_isolated_mode(self):
+        with patch.object(app, 'APP_MODE', 'eures-beta'):
+            response = self.client.get('/forms/eures-beta/privacy')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'data-page="privacy"', response.data)
+        response.close()
+
 
 if __name__ == '__main__':
     unittest.main()

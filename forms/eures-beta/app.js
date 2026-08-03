@@ -4,6 +4,63 @@ const LANGS = ["fr", "en", "de"];
 const DEFAULT_LANG = "fr";
 const PUBLIC_PROJECT_NAME = "Match Europe";
 
+const privacyCopy = {
+  fr: {
+    navLabel: "Protection des données",
+    eyebrow: "Information sur vos données personnelles",
+    title: "Comment Match Europe utilise vos informations",
+    lead: "Match Europe est une expérimentation du réseau EURES portée avec France Travail. Cette notice décrit les traitements actuellement prévus pour les questionnaires, le matching et le test limité de WhatsApp Business.",
+    draft: "Version du 3 août 2026. Le traitement est placé sous la responsabilité de France Travail dans le cadre de l’expérimentation Match Europe. Eric Barthélémy est le point de contact unique pendant cette phase.",
+    sections: [
+      ["Pourquoi utilisons-nous vos données ?", ["Comprendre le projet professionnel ou le besoin de recrutement.", "Identifier des correspondances possibles entre candidats et employeurs.", "Proposer et suivre une mise en relation avec intervention humaine.", "Évaluer l’utilité de l’expérimentation à partir d’indicateurs agrégés."]],
+      ["Quelles informations sont concernées ?", ["Les réponses aux questionnaires candidat ou employeur.", "Les coordonnées nécessaires pour vous recontacter.", "Les informations professionnelles utiles au matching.", "La preuve de vos choix, les dates de contact et l’issue de la mise en relation."]],
+      ["Qui peut y accéder ?", ["Les personnes habilitées de l’équipe Match Europe et, lorsque cela est nécessaire à une mise en relation, les partenaires EURES concernés.", "Un employeur ou un candidat ne reçoit que les informations nécessaires à la mise en relation proposée.", "Les données ne sont pas publiées et les statistiques publiques sont agrégées."]],
+      ["Participation volontaire", ["Vous pouvez refuser de participer ou demander l’arrêt des échanges.", "Le refus de WhatsApp n’empêche pas l’utilisation d’un autre canal, notamment le courriel ou le téléphone.", "Aucune décision de recrutement n’est prise automatiquement par Match Europe."]],
+      ["Test limité de WhatsApp Business", ["WhatsApp n’est proposé qu’après l’identification d’un matching et après l’accord distinct du candidat et de l’employeur.", "Dans un groupe, les autres participants voient votre numéro, votre nom ou pseudonyme, votre photo selon vos réglages et les messages que vous publiez.", "Il ne faut transmettre aucun document d’identité, donnée de santé, mot de passe ou autre information sensible dans le groupe.", "Match Europe conserve dans EURES beta la preuve de l’accord et l’issue du matching, mais ne recopie pas la conversation WhatsApp.", "WhatsApp est un service de Meta soumis à ses propres conditions et traitements de données. Les messages peuvent rester sur les appareils des participants jusqu’à leur suppression."]],
+      ["Durée et sécurité", ["Les données opérationnelles sont conservées pendant 12 mois après le dernier contact, puis supprimées ou anonymisées lorsqu’elles ne sont plus nécessaires.", "Les accès sont limités aux personnes habilitées et les comptes professionnels sont protégés par une authentification renforcée.", "Un incident de données ou un usage détourné entraîne la suspension du test concerné."]],
+      ["Vos droits et contact", ["Vous pouvez demander l’accès, la rectification ou l’effacement de vos données, retirer votre accord ou vous opposer à certains usages lorsque la réglementation le permet.", "Eric Barthélémy est le point de contact unique pendant cette phase. Pour exercer vos droits ou poser une question : matcheurope.00040@francetravail.fr.", "Vous pouvez également introduire une réclamation auprès de l’autorité de protection des données compétente, notamment la CNIL en France."]]
+    ],
+    back: "Retour à l’accueil",
+    separateConsent: "L’utilisation éventuelle de WhatsApp fera l’objet d’un accord distinct au moment d’une mise en relation."
+  },
+  en: {
+    navLabel: "Data protection",
+    eyebrow: "Information about your personal data",
+    title: "How Match Europe uses your information",
+    lead: "Match Europe is an EURES network experiment conducted with France Travail. This notice describes the processing currently planned for questionnaires, matching and the limited WhatsApp Business test.",
+    draft: "Version dated 3 August 2026. France Travail is responsible for the processing carried out as part of the Match Europe experiment. Eric Barthélémy is the sole contact point during this phase.",
+    sections: [
+      ["Why do we use your data?", ["Understand a professional mobility project or recruitment need.", "Identify possible matches between candidates and employers.", "Offer and monitor a human-supervised introduction.", "Assess the experiment using aggregated indicators."]],
+      ["What information is involved?", ["Answers to the candidate or employer questionnaire.", "Contact details needed to contact you again.", "Professional information relevant to matching.", "Evidence of your choices, contact dates and the outcome of an introduction."]],
+      ["Who can access it?", ["Authorised members of the Match Europe team and, where needed for an introduction, the relevant EURES partners.", "An employer or candidate receives only the information needed for the proposed introduction.", "Personal data is not published; public statistics are aggregated."]],
+      ["Voluntary participation", ["You may refuse to participate or ask for contact to stop.", "Refusing WhatsApp does not prevent the use of another channel such as email or telephone.", "Match Europe does not make automated recruitment decisions."]],
+      ["Limited WhatsApp Business test", ["WhatsApp is offered only after a match has been identified and after separate agreement from the candidate and employer.", "In a group, other participants can see your number, name or username, profile picture depending on your settings, and the messages you post.", "Do not share identity documents, health data, passwords or other sensitive information in the group.", "Match Europe records evidence of agreement and the matching outcome in EURES beta but does not copy the WhatsApp conversation.", "WhatsApp is a Meta service governed by its own terms and data processing. Messages may remain on participants’ devices until deleted."]],
+      ["Retention and security", ["Operational data is retained for 12 months after the last contact, then deleted or anonymised when no longer needed.", "Access is limited to authorised staff and professional accounts use strengthened authentication.", "A data incident or misuse will suspend the relevant test."]],
+      ["Your rights and contact", ["You may request access, rectification or deletion, withdraw your agreement or object to certain uses where the law allows.", "Eric Barthélémy is the sole contact point during this phase. To exercise your rights or ask a question: matcheurope.00040@francetravail.fr.", "You may also lodge a complaint with the competent data protection authority."]]
+    ],
+    back: "Back to home",
+    separateConsent: "Any use of WhatsApp will require separate agreement when an introduction is proposed."
+  },
+  de: {
+    navLabel: "Datenschutz",
+    eyebrow: "Informationen zu Ihren personenbezogenen Daten",
+    title: "Wie Match Europe Ihre Angaben verwendet",
+    lead: "Match Europe ist eine Erprobung des EURES-Netzwerks mit France Travail. Dieser Hinweis beschreibt die derzeit für Fragebögen, Matching und den begrenzten WhatsApp-Business-Test vorgesehenen Verarbeitungen.",
+    draft: "Version vom 3. August 2026. France Travail ist für die Verarbeitung im Rahmen der Erprobung Match Europe verantwortlich. Eric Barthélémy ist in dieser Phase die einzige Kontaktperson.",
+    sections: [
+      ["Warum verwenden wir Ihre Daten?", ["Ihr berufliches Mobilitätsvorhaben oder Ihren Personalbedarf verstehen.", "Mögliche Übereinstimmungen zwischen Kandidaten und Arbeitgebern erkennen.", "Eine menschlich begleitete Kontaktaufnahme vorschlagen und nachverfolgen.", "Den Nutzen der Erprobung anhand aggregierter Kennzahlen bewerten."]],
+      ["Welche Angaben sind betroffen?", ["Antworten aus dem Kandidaten- oder Arbeitgeberfragebogen.", "Kontaktdaten für eine erneute Kontaktaufnahme.", "Berufliche Angaben, die für das Matching relevant sind.", "Nachweise Ihrer Entscheidungen, Kontaktdaten und das Ergebnis der Kontaktaufnahme."]],
+      ["Wer kann darauf zugreifen?", ["Berechtigte Mitglieder des Match-Europe-Teams und, soweit erforderlich, die beteiligten EURES-Partner.", "Arbeitgeber oder Kandidaten erhalten nur die für die vorgeschlagene Kontaktaufnahme notwendigen Informationen.", "Personenbezogene Daten werden nicht veröffentlicht; öffentliche Statistiken sind aggregiert."]],
+      ["Freiwillige Teilnahme", ["Sie können die Teilnahme ablehnen oder die Beendigung der Kontaktaufnahme verlangen.", "Die Ablehnung von WhatsApp schließt andere Kanäle wie E-Mail oder Telefon nicht aus.", "Match Europe trifft keine automatisierten Einstellungsentscheidungen."]],
+      ["Begrenzter WhatsApp-Business-Test", ["WhatsApp wird erst nach Feststellung eines Matchings und nach getrennter Zustimmung von Kandidat und Arbeitgeber angeboten.", "In einer Gruppe sehen die anderen Teilnehmer Ihre Nummer, Ihren Namen oder Benutzernamen, je nach Einstellungen Ihr Profilbild und Ihre Nachrichten.", "Teilen Sie dort keine Ausweisdokumente, Gesundheitsdaten, Passwörter oder andere sensible Informationen.", "Match Europe speichert in EURES beta den Nachweis der Zustimmung und das Ergebnis, kopiert jedoch nicht den WhatsApp-Chat.", "WhatsApp ist ein Dienst von Meta mit eigenen Bedingungen und Datenverarbeitungen. Nachrichten können bis zur Löschung auf den Geräten verbleiben."]],
+      ["Speicherdauer und Sicherheit", ["Betriebsdaten werden 12 Monate nach dem letzten Kontakt aufbewahrt und anschließend gelöscht oder anonymisiert, wenn sie nicht mehr benötigt werden.", "Der Zugriff ist auf berechtigte Personen beschränkt; berufliche Konten werden durch verstärkte Authentifizierung geschützt.", "Ein Datenschutzvorfall oder Missbrauch führt zur Aussetzung des betroffenen Tests."]],
+      ["Ihre Rechte und Kontakt", ["Sie können Auskunft, Berichtigung oder Löschung verlangen, Ihre Zustimmung widerrufen oder bestimmten Nutzungen widersprechen, soweit dies rechtlich vorgesehen ist.", "Eric Barthélémy ist in dieser Phase die einzige Kontaktperson. Kontakt für Ihre Rechte oder Fragen: matcheurope.00040@francetravail.fr.", "Sie können sich außerdem bei der zuständigen Datenschutzaufsichtsbehörde beschweren."]]
+    ],
+    back: "Zurück zur Startseite",
+    separateConsent: "Eine mögliche Nutzung von WhatsApp erfordert bei einer vorgeschlagenen Kontaktaufnahme eine gesonderte Zustimmung."
+  }
+};
+
 const copy = {
   fr: {
     common: {
@@ -2650,7 +2707,8 @@ function pageUrl(page, lang) {
     project: `${BASE_PATH}/le-projet`,
     journal: `${BASE_PATH}/journal`,
     "candidate-questionnaire": `${BASE_PATH}/questionnaire-candidate`,
-    "employer-questionnaire": `${BASE_PATH}/questionnaire-employer`
+    "employer-questionnaire": `${BASE_PATH}/questionnaire-employer`,
+    privacy: `${BASE_PATH}/privacy`
   };
   return `${map[page]}?lang=${lang}`;
 }
@@ -2665,6 +2723,7 @@ function nav(page, lang, t) {
     stat: "stat",
     project: "project",
     journal: "journal",
+    privacy: "privacy",
   };
   const activeGroup = activeGroupByPage[page] || "";
   const navPillClass = (group) => `nav-pill${activeGroup === group ? " is-active" : ""}`;
@@ -2703,6 +2762,8 @@ function footer(page, t) {
   const current = currentLang();
   const isProjectPage = page === "project";
   const isJournalPage = page === "journal";
+  const isPrivacyPage = page === "privacy";
+  const privacy = privacyCopy[current] || privacyCopy.fr;
   return `
     <footer class="footer">
       <div class="shell footer-grid">
@@ -2713,11 +2774,42 @@ function footer(page, t) {
           <div class="footer-actions">
             <a class="nav-pill${isProjectPage ? " is-active" : ""}" href="${pageUrl("project", current)}">${t.common.navProject}</a>
             <a class="nav-pill${isJournalPage ? " is-active" : ""}" href="${pageUrl("journal", current)}">${t.common.navJournal}</a>
+            <a class="nav-pill${isPrivacyPage ? " is-active" : ""}" href="${pageUrl("privacy", current)}">${privacy.navLabel}</a>
             <a class="nav-pill" href="/admin/eures-beta/login">${t.common.navAdmin}</a>
           </div>
         </div>
       </div>
     </footer>
+  `;
+}
+
+function privacyTemplate(lang, t) {
+  const content = privacyCopy[lang] || privacyCopy.fr;
+  return `
+    ${nav("privacy", lang, t)}
+    <main class="section privacy-page">
+      <div class="shell privacy-shell">
+        <header class="panel privacy-hero">
+          <div class="eyebrow">${content.eyebrow}</div>
+          <h1>${content.title}</h1>
+          <p class="lede">${content.lead}</p>
+          <p class="privacy-draft"><strong>${content.draft}</strong></p>
+        </header>
+        <div class="privacy-sections">
+          ${content.sections.map(([title, items], index) => `
+            <section class="panel privacy-section">
+              <span class="privacy-index">${String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h2>${title}</h2>
+                ${list(items)}
+              </div>
+            </section>
+          `).join("")}
+        </div>
+        <a class="ghost-action" href="${pageUrl("home", lang)}">${content.back}</a>
+      </div>
+    </main>
+    ${footer("privacy", t)}
   `;
 }
 
@@ -3677,6 +3769,10 @@ function candidateTallyQuestionnaireTemplate(lang, t) {
                 <input type="checkbox" name="tally_q37" value="yes" required>
                 <span>${content.consentText}</span>
               </label>
+              <p class="privacy-inline-link">
+                <a href="${pageUrl("privacy", lang)}" target="_blank" rel="noopener">${privacyCopy[lang].navLabel}</a>.
+                ${privacyCopy[lang].separateConsent}
+              </p>
             </section>
 
             <div class="questionnaire-actions">
@@ -3909,6 +4005,10 @@ function employerTallyQuestionnaireTemplate(lang, t) {
                 <input type="checkbox" name="tally_q21" value="yes" required>
                 <span>${content.questions.consent}</span>
               </label>
+              <p class="privacy-inline-link">
+                <a href="${pageUrl("privacy", lang)}" target="_blank" rel="noopener">${privacyCopy[lang].navLabel}</a>.
+                ${privacyCopy[lang].separateConsent}
+              </p>
             </section>
 
             <div class="questionnaire-actions">
@@ -4899,6 +4999,11 @@ function render() {
 
   if (page === "journal") {
     root.innerHTML = journalTemplate(lang, t);
+    return;
+  }
+
+  if (page === "privacy") {
+    root.innerHTML = privacyTemplate(lang, t);
     return;
   }
 

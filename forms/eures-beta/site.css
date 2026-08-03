@@ -922,6 +922,73 @@ body[data-page="home"] .hero-card h1 {
   accent-color: var(--accent);
 }
 
+.privacy-inline-link {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.privacy-inline-link a {
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.privacy-shell {
+  max-width: 980px;
+}
+
+.privacy-hero {
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.privacy-draft {
+  margin: 1.4rem 0 0;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--gold);
+  border-radius: 0 12px 12px 0;
+  background: rgba(242, 192, 76, 0.14);
+  line-height: 1.55;
+}
+
+.privacy-sections {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.privacy-section {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.4rem;
+}
+
+.privacy-index {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+.privacy-section h2 {
+  margin-top: 0.3rem;
+}
+
+.privacy-section ul {
+  margin-bottom: 0;
+}
+
+@media (max-width: 620px) {
+  .privacy-section {
+    grid-template-columns: 1fr;
+  }
+}
+
 .status {
   min-height: 1.2rem;
   color: var(--muted);
