@@ -152,6 +152,69 @@ class EuresBetaOnlyModeTest(unittest.TestCase):
         self.assertIn(b'data-page="privacy"', response.data)
         response.close()
 
+    @patch.dict(app.os.environ, {
+        'ADMIN_AUTH_MODE_EURES_BETA': 'basic',
+        'ADMIN_USERNAME_EURES_BETA': 'eures-admin',
+        'ADMIN_PASSWORD_EURES_BETA': 'eures-password',
+    }, clear=False)
+    def test_whatsapp_group_requires_both_explicit_agreements(self):
+        token = base64.b64encode(b'eures-admin:eures-password').decode('ascii')
+        with patch.object(app, 'APP_MODE', 'eures-beta'):
+            response = self.client.post(
+                '/api/forms/eures-beta/admin/matchings/42/whatsapp',
+                headers={'Authorization': f'Basic {token}'},
+                json={
+                    'candidate_consent_status': 'accepted',
+                    'employer_consent_status': 'requested',
+                    'alternative_channel': 'none',
+                    'group_status': 'open',
+                    'outcome': 'pending',
+                    'note': '',
+                },
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('candidat et l’employeur', response.get_json()['error'])
+
+    @patch.dict(app.os.environ, {
+        'ADMIN_AUTH_MODE_EURES_BETA': 'basic',
+        'ADMIN_USERNAME_EURES_BETA': 'eures-admin',
+        'ADMIN_PASSWORD_EURES_BETA': 'eures-password',
+    }, clear=False)
+    def test_whatsapp_trace_is_saved_for_double_agreement(self):
+        token = base64.b64encode(b'eures-admin:eures-password').decode('ascii')
+        existing = {'id': 42, 'fields': {}}
+        updated = {'id': 42, 'fields': {
+            'whatsapp_candidate_consent_status': 'accepted',
+            'whatsapp_employer_consent_status': 'accepted',
+            'whatsapp_group_status': 'open',
+        }}
+        with (
+            patch.object(app, 'APP_MODE', 'eures-beta'),
+            patch.object(app, 'get_eures_matching_config', return_value={'doc_id': 'doc', 'api_key': 'key'}),
+            patch.object(app, '_eures_admin_headers', return_value={}),
+            patch.object(app, 'fetch_record_by_id', side_effect=[existing, updated]),
+            patch.object(app, 'update_matching_record_by_id') as update_record,
+        ):
+            response = self.client.post(
+                '/api/forms/eures-beta/admin/matchings/42/whatsapp',
+                headers={'Authorization': f'Basic {token}'},
+                json={
+                    'candidate_consent_status': 'accepted',
+                    'employer_consent_status': 'accepted',
+                    'alternative_channel': 'none',
+                    'group_status': 'open',
+                    'outcome': 'pending',
+                    'note': 'Test fictif',
+                },
+            )
+
+        self.assertEqual(response.status_code, 200)
+        fields = update_record.call_args.args[2]
+        self.assertEqual(fields['whatsapp_notice_version'], '2026-08-03')
+        self.assertEqual(fields['whatsapp_group_status'], 'open')
+        self.assertTrue(fields['whatsapp_group_opened_at'])
+
 
 if __name__ == '__main__':
     unittest.main()

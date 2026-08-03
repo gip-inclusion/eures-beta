@@ -3735,6 +3735,69 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
                 ${workflowMeta}
                 ${employerMeta}
               </section>
+
+              <section class="notes-box whatsapp-trace">
+                <h4>Suivi WhatsApp supervisé</h4>
+                <p class="muted">Le groupe ne peut être ouvert qu’après l’accord explicite du candidat et de l’employeur. Notice appliquée : version du 3 août 2026.</p>
+                <div class="form-grid">
+                  <label class="field">
+                    <span>Accord du candidat</span>
+                    <select id="wa-candidate-${esc(row.record_id)}">
+                      <option value="not_requested" ${row.whatsapp_candidate_consent_status === "not_requested" ? "selected" : ""}>Non demandé</option>
+                      <option value="requested" ${row.whatsapp_candidate_consent_status === "requested" ? "selected" : ""}>Demandé</option>
+                      <option value="accepted" ${row.whatsapp_candidate_consent_status === "accepted" ? "selected" : ""}>Accepté</option>
+                      <option value="refused" ${row.whatsapp_candidate_consent_status === "refused" ? "selected" : ""}>Refusé</option>
+                      <option value="withdrawn" ${row.whatsapp_candidate_consent_status === "withdrawn" ? "selected" : ""}>Retiré</option>
+                    </select>
+                    <small>Dernière décision : ${esc(row.whatsapp_candidate_consent_at || "-")}</small>
+                  </label>
+                  <label class="field">
+                    <span>Accord de l’employeur</span>
+                    <select id="wa-employer-${esc(row.record_id)}">
+                      <option value="not_requested" ${row.whatsapp_employer_consent_status === "not_requested" ? "selected" : ""}>Non demandé</option>
+                      <option value="requested" ${row.whatsapp_employer_consent_status === "requested" ? "selected" : ""}>Demandé</option>
+                      <option value="accepted" ${row.whatsapp_employer_consent_status === "accepted" ? "selected" : ""}>Accepté</option>
+                      <option value="refused" ${row.whatsapp_employer_consent_status === "refused" ? "selected" : ""}>Refusé</option>
+                      <option value="withdrawn" ${row.whatsapp_employer_consent_status === "withdrawn" ? "selected" : ""}>Retiré</option>
+                    </select>
+                    <small>Dernière décision : ${esc(row.whatsapp_employer_consent_at || "-")}</small>
+                  </label>
+                  <label class="field">
+                    <span>Canal alternatif</span>
+                    <select id="wa-alternative-${esc(row.record_id)}">
+                      <option value="none" ${row.whatsapp_alternative_channel === "none" ? "selected" : ""}>Aucun / non demandé</option>
+                      <option value="email" ${row.whatsapp_alternative_channel === "email" ? "selected" : ""}>Courriel</option>
+                      <option value="phone" ${row.whatsapp_alternative_channel === "phone" ? "selected" : ""}>Téléphone</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>État du groupe</span>
+                    <select id="wa-group-${esc(row.record_id)}">
+                      <option value="not_created" ${row.whatsapp_group_status === "not_created" ? "selected" : ""}>Non créé</option>
+                      <option value="open" ${row.whatsapp_group_status === "open" ? "selected" : ""}>Ouvert</option>
+                      <option value="closed" ${row.whatsapp_group_status === "closed" ? "selected" : ""}>Clôturé</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Issue</span>
+                    <select id="wa-outcome-${esc(row.record_id)}">
+                      <option value="pending" ${row.whatsapp_outcome === "pending" ? "selected" : ""}>En attente</option>
+                      <option value="meeting" ${row.whatsapp_outcome === "meeting" ? "selected" : ""}>Rendez-vous organisé</option>
+                      <option value="abandoned" ${row.whatsapp_outcome === "abandoned" ? "selected" : ""}>Mise en relation abandonnée</option>
+                      <option value="postponed" ${row.whatsapp_outcome === "postponed" ? "selected" : ""}>Report</option>
+                      <option value="other" ${row.whatsapp_outcome === "other" ? "selected" : ""}>Autre</option>
+                    </select>
+                  </label>
+                </div>
+                <label class="field">
+                  <span>Note WhatsApp</span>
+                  <textarea id="wa-note-${esc(row.record_id)}" maxlength="2000" placeholder="Éléments strictement nécessaires au suivi, sans recopier la conversation.">${esc(row.whatsapp_note || "")}</textarea>
+                </label>
+                <div class="hero-actions">
+                  <button class="btn-neutral" type="button" data-whatsapp-save>Enregistrer le suivi WhatsApp</button>
+                </div>
+                <div class="decision-meta">Groupe ouvert : ${esc(row.whatsapp_group_opened_at || "-")}<br>Clôturé : ${esc(row.whatsapp_group_closed_at || "-")}<br>Dernière mise à jour : ${esc(row.whatsapp_updated_at || "-")} par ${esc(row.whatsapp_updated_by || "-")}</div>
+              </section>
             </div>
           </article>
         `;
@@ -3760,6 +3823,21 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
           const note = document.getElementById(`note-${recordId}`)?.value || "";
           if (!recordId || !workflowStatus) return;
           await submitWorkflow(recordId, workflowStatus, note);
+        });
+      }
+      for (const button of list.querySelectorAll("[data-whatsapp-save]")) {
+        button.addEventListener("click", async (event) => {
+          const card = event.currentTarget.closest(".matching-card");
+          const recordId = card?.dataset.recordId;
+          if (!recordId) return;
+          await submitWhatsAppTrace(recordId, {
+            candidate_consent_status: document.getElementById(`wa-candidate-${recordId}`)?.value || "not_requested",
+            employer_consent_status: document.getElementById(`wa-employer-${recordId}`)?.value || "not_requested",
+            alternative_channel: document.getElementById(`wa-alternative-${recordId}`)?.value || "none",
+            group_status: document.getElementById(`wa-group-${recordId}`)?.value || "not_created",
+            outcome: document.getElementById(`wa-outcome-${recordId}`)?.value || "pending",
+            note: document.getElementById(`wa-note-${recordId}`)?.value || "",
+          });
         });
       }
     }
@@ -4094,6 +4172,29 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
           throw new Error(payload.error || `Erreur API (${response.status})`);
         }
         setStatus("status-line", `Workflow enregistré : ${workflowStatusLabel(payload.workflow_status)}.`);
+        await loadMatchings();
+      } catch (error) {
+        setStatus("status-line", `Erreur : ${error.message || "mise à jour impossible"}`);
+      }
+    }
+
+    async function submitWhatsAppTrace(recordId, fields) {
+      setStatus("status-line", "Enregistrement du suivi WhatsApp...");
+      try {
+        const response = await fetch(apiUrl(`/admin/matchings/${recordId}/whatsapp`), {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(fields),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `Erreur API (${response.status})`);
+        }
+        setStatus("status-line", "Suivi WhatsApp enregistré.");
         await loadMatchings();
       } catch (error) {
         setStatus("status-line", `Erreur : ${error.message || "mise à jour impossible"}`);

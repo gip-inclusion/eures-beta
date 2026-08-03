@@ -393,6 +393,19 @@ EURES_MATCHING_ADMIN_FIELDS = {
     'mise_en_relation_by',
     'embauche_confirmee_at',
     'embauche_confirmee_by',
+    'whatsapp_candidate_consent_status',
+    'whatsapp_candidate_consent_at',
+    'whatsapp_employer_consent_status',
+    'whatsapp_employer_consent_at',
+    'whatsapp_alternative_channel',
+    'whatsapp_group_status',
+    'whatsapp_group_opened_at',
+    'whatsapp_group_closed_at',
+    'whatsapp_outcome',
+    'whatsapp_notice_version',
+    'whatsapp_note',
+    'whatsapp_updated_at',
+    'whatsapp_updated_by',
 }
 EURES_NO_MATCH_NOTIFICATION_FIELDS = {
     'no_match_notification_status',
@@ -5727,6 +5740,19 @@ def list_eures_admin_matchings(status: str = 'all', include_candidate_cv: bool =
             'mise_en_relation_by': fields.get('mise_en_relation_by', ''),
             'embauche_confirmee_at': fields.get('embauche_confirmee_at', ''),
             'embauche_confirmee_by': fields.get('embauche_confirmee_by', ''),
+            'whatsapp_candidate_consent_status': fields.get('whatsapp_candidate_consent_status', 'not_requested'),
+            'whatsapp_candidate_consent_at': fields.get('whatsapp_candidate_consent_at', ''),
+            'whatsapp_employer_consent_status': fields.get('whatsapp_employer_consent_status', 'not_requested'),
+            'whatsapp_employer_consent_at': fields.get('whatsapp_employer_consent_at', ''),
+            'whatsapp_alternative_channel': fields.get('whatsapp_alternative_channel', 'none'),
+            'whatsapp_group_status': fields.get('whatsapp_group_status', 'not_created'),
+            'whatsapp_group_opened_at': fields.get('whatsapp_group_opened_at', ''),
+            'whatsapp_group_closed_at': fields.get('whatsapp_group_closed_at', ''),
+            'whatsapp_outcome': fields.get('whatsapp_outcome', 'pending'),
+            'whatsapp_notice_version': fields.get('whatsapp_notice_version', ''),
+            'whatsapp_note': fields.get('whatsapp_note', ''),
+            'whatsapp_updated_at': fields.get('whatsapp_updated_at', ''),
+            'whatsapp_updated_by': fields.get('whatsapp_updated_by', ''),
             'candidat': {
                 'nom': candidat.get('nom', ''),
                 'email': candidat.get('email', ''),
@@ -9144,6 +9170,88 @@ def admin_eures_matching_workflow(form_id: str, record_id: int):
         }), 200
     except Exception as e:
         app.logger.exception('EURES matching workflow update failed')
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/forms/<form_id>/admin/matchings/<int:record_id>/whatsapp', methods=['POST'])
+@admin_required
+def admin_eures_matching_whatsapp(form_id: str, record_id: int):
+    """Save consent and lifecycle evidence for one supervised WhatsApp matching."""
+    proxied = maybe_proxy_eures_request(form_id)
+    if proxied:
+        return proxied
+    if form_id != 'eures-beta':
+        return jsonify({'error': f'Unknown admin matching form: {form_id}'}), 404
+
+    data = request.get_json() or {}
+    consent_statuses = {'not_requested', 'requested', 'accepted', 'refused', 'withdrawn'}
+    alternative_channels = {'none', 'email', 'phone'}
+    group_statuses = {'not_created', 'open', 'closed'}
+    outcomes = {'pending', 'meeting', 'abandoned', 'postponed', 'other'}
+
+    candidate_status = str(data.get('candidate_consent_status') or '').strip().lower()
+    employer_status = str(data.get('employer_consent_status') or '').strip().lower()
+    alternative_channel = str(data.get('alternative_channel') or '').strip().lower()
+    group_status = str(data.get('group_status') or '').strip().lower()
+    outcome = str(data.get('outcome') or '').strip().lower()
+    note = str(data.get('note') or '').strip()
+
+    if candidate_status not in consent_statuses or employer_status not in consent_statuses:
+        return jsonify({'error': 'Invalid WhatsApp consent status'}), 400
+    if alternative_channel not in alternative_channels:
+        return jsonify({'error': 'Invalid alternative channel'}), 400
+    if group_status not in group_statuses:
+        return jsonify({'error': 'Invalid WhatsApp group status'}), 400
+    if outcome not in outcomes:
+        return jsonify({'error': 'Invalid WhatsApp outcome'}), 400
+    if len(note) > 2000:
+        return jsonify({'error': 'WhatsApp note is too long'}), 400
+    if group_status in {'open', 'closed'} and (candidate_status != 'accepted' or employer_status != 'accepted'):
+        return jsonify({'error': 'Le groupe ne peut être ouvert que lorsque le candidat et l’employeur ont accepté.'}), 400
+
+    config = get_eures_matching_config()
+    if not config:
+        return jsonify({'error': 'EURES beta matching configuration is incomplete.'}), 500
+
+    headers = _eures_admin_headers(config)
+    try:
+        existing = fetch_record_by_id(config['doc_id'], EURES_MATCHINGS_TABLE, record_id, headers)
+        if not existing:
+            return jsonify({'error': 'Matching not found'}), 404
+        existing_fields = existing.get('fields', {}) if isinstance(existing.get('fields'), dict) else {}
+        now = _now_iso_utc()
+        actor = get_admin_actor(form_id)
+        update_fields = {
+            'whatsapp_candidate_consent_status': candidate_status,
+            'whatsapp_employer_consent_status': employer_status,
+            'whatsapp_alternative_channel': alternative_channel,
+            'whatsapp_group_status': group_status,
+            'whatsapp_outcome': outcome,
+            'whatsapp_notice_version': '2026-08-03',
+            'whatsapp_note': note,
+            'whatsapp_updated_at': now,
+            'whatsapp_updated_by': actor,
+        }
+        if candidate_status != str(existing_fields.get('whatsapp_candidate_consent_status') or 'not_requested'):
+            update_fields['whatsapp_candidate_consent_at'] = now
+        if employer_status != str(existing_fields.get('whatsapp_employer_consent_status') or 'not_requested'):
+            update_fields['whatsapp_employer_consent_at'] = now
+        previous_group_status = str(existing_fields.get('whatsapp_group_status') or 'not_created')
+        if group_status == 'open' and previous_group_status != 'open':
+            update_fields['whatsapp_group_opened_at'] = now
+        if group_status == 'closed' and previous_group_status != 'closed':
+            update_fields['whatsapp_group_closed_at'] = now
+
+        update_matching_record_by_id(config['doc_id'], record_id, update_fields, headers)
+        updated = fetch_record_by_id(config['doc_id'], EURES_MATCHINGS_TABLE, record_id, headers)
+        updated_fields = updated.get('fields', {}) if isinstance(updated, dict) else {}
+        return jsonify({
+            'ok': True,
+            'record_id': record_id,
+            'whatsapp': {key: updated_fields.get(key, value) for key, value in update_fields.items()},
+        }), 200
+    except Exception as e:
+        app.logger.exception('EURES WhatsApp matching trace update failed')
         return jsonify({'error': str(e)}), 500
 
 
