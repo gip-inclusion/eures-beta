@@ -3388,7 +3388,8 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
             </div>
           `;
           actions = `
-            <button class="btn-accept" type="button" data-task-matching-action="accepted">Accepter</button>
+            <button class="btn-accept" type="button" data-task-matching-action="accepted" data-send-emails="true">Valider et envoyer les mails</button>
+            <button class="btn-secondary" type="button" data-task-matching-action="accepted" data-send-emails="false">Valider sans envoyer</button>
             <button class="btn-refuse" type="button" data-task-matching-action="refused">Refuser</button>
           `;
         } else if (row.task_type === "no_match_followup") {
@@ -3538,7 +3539,8 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
           const employerEmailComment = document.getElementById(`task-employer-comment-matching_review-${recordId}`)?.value || "";
           const candidateEmailComment = document.getElementById(`task-candidate-comment-matching_review-${recordId}`)?.value || "";
           if (!recordId || !decision) return;
-          await submitDecision(recordId, decision, note, employerEmailComment, candidateEmailComment);
+          const sendEmails = event.currentTarget.dataset.sendEmails !== "false";
+          await submitDecision(recordId, decision, note, employerEmailComment, candidateEmailComment, sendEmails);
           await loadTasks();
           await loadCockpit();
         });
@@ -4130,8 +4132,9 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
       }
     }
 
-    async function submitDecision(recordId, decision, note, employerEmailComment = "", candidateEmailComment = "") {
-      setStatus("status-line", `Enregistrement de la décision ${decision}...`);
+    async function submitDecision(recordId, decision, note, employerEmailComment = "", candidateEmailComment = "", sendEmails = true) {
+      const emailMode = decision === "accepted" ? (sendEmails ? " avec envoi des mails" : " sans envoi des mails") : "";
+      setStatus("status-line", `Enregistrement de la décision ${decision}${emailMode}...`);
       try {
         const response = await fetch(apiUrl(`/admin/matchings/${recordId}/decision`), {
           method: "POST",
@@ -4140,13 +4143,13 @@ employer,bob@company.com,Bob,Dupont,ACME,fr,campagne_juin,EMP-001,,</pre>
             "Content-Type": "application/json",
             "Accept": "application/json",
           },
-          body: JSON.stringify({ decision, note, employer_email_comment: employerEmailComment, candidate_email_comment: candidateEmailComment }),
+          body: JSON.stringify({ decision, note, employer_email_comment: employerEmailComment, candidate_email_comment: candidateEmailComment, send_emails: sendEmails }),
         });
         const payload = await response.json();
         if (!response.ok || !payload.ok) {
           throw new Error(payload.error || `Erreur API (${response.status})`);
         }
-        setStatus("status-line", `Décision enregistrée : ${decision}.`);
+        setStatus("status-line", `Décision enregistrée : ${decision}${payload.email_sent ? " ; mails envoyés." : "."}`);
         await loadMatchings();
         await loadTasks();
         await loadCockpit();

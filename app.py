@@ -5682,7 +5682,12 @@ def list_eures_admin_matchings(status: str = 'all', include_candidate_cv: bool =
             continue
         scoring_status = str(fields.get('statut') or '').strip().lower()
         admin_status = _eures_admin_status(fields)
-        if scoring_status not in {'a_valider', 'auto_envoyable'} and admin_status == 'pending':
+        is_manual_matching = str(fields.get('manual_matching_source') or '').strip().lower() == 'admin_manual'
+        if (
+            not is_manual_matching
+            and scoring_status not in {'a_valider', 'auto_envoyable'}
+            and admin_status == 'pending'
+        ):
             continue
         if status in {'pending', 'accepted', 'refused'} and admin_status != status:
             continue
@@ -8961,6 +8966,8 @@ def admin_eures_matching_decision(form_id: str, record_id: int):
     note = str(data.get('note') or '').strip()
     employer_email_comment = str(data.get('employer_email_comment') or '').strip()
     candidate_email_comment = str(data.get('candidate_email_comment') or '').strip()
+    send_emails = data.get('send_emails')
+    send_emails = True if send_emails is None else bool(send_emails)
     if decision not in {'accepted', 'refused'}:
         return jsonify({'error': 'Decision must be accepted or refused'}), 400
 
@@ -8975,7 +8982,7 @@ def admin_eures_matching_decision(form_id: str, record_id: int):
             return jsonify({'error': 'Matching not found'}), 404
         existing_fields = existing.get('fields', {}) if isinstance(existing.get('fields'), dict) else {}
 
-        if decision == 'accepted':
+        if decision == 'accepted' and send_emails:
             ensure_brevo_ready(check_api=True)
 
         decided_by = get_admin_actor(form_id)
@@ -9007,7 +9014,7 @@ def admin_eures_matching_decision(form_id: str, record_id: int):
         updated_fields = updated.get('fields', {}) if isinstance(updated, dict) else {}
         brevo_result = None
         candidate_brevo_result = None
-        if decision == 'accepted':
+        if decision == 'accepted' and send_emails:
             matching_rows = list_eures_admin_matchings(status='all', include_candidate_cv=True)
             matching_row = next((row for row in matching_rows if int(row.get('record_id') or 0) == record_id), None)
             if not matching_row:
@@ -9059,7 +9066,7 @@ def admin_eures_matching_decision(form_id: str, record_id: int):
             'admin_decision_note': updated_fields.get('admin_decision_note', note),
             'employer_email_comment': updated_fields.get('employer_email_comment', employer_email_comment),
             'candidate_email_comment': updated_fields.get('candidate_email_comment', candidate_email_comment),
-            'email_sent': decision == 'accepted',
+            'email_sent': decision == 'accepted' and send_emails,
             'email_result': brevo_result,
             'candidate_email_result': candidate_brevo_result,
         }), 200
